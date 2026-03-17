@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Geist } from "next/font/google";
+import { cn } from "../lib/utils";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,13 +15,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    return (
+    <html lang="es" className={cn("dark font-sans", geist.variable)} >
+      <body>
+        <div className="h-dvh bg-background overflow-hidden p-4">
+
+          <main className="overflow-auto border h-full bg-card rounded-2xl">
+            {children}
+          </main>
+
+        </div>
       </body>
     </html>
+  
   );
 }
