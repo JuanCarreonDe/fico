@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -6,10 +7,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card"
-import { ChevronRightIcon } from "lucide-react"
+} from "../../../components/ui/card"
+import {Database} from "@/database.types";
 
-export function TransactionSumary() {
+
+
+export function TransactionSumary({summary}: {summary: Database["public"]["Functions"]["get_monthly_financial_summary"]["Returns"]}) {
   const featureName = "Balance"
 
   return (
@@ -21,7 +24,9 @@ export function TransactionSumary() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        content
+        <div>
+          {JSON.stringify(summary)}
+    </div>
       </CardContent>
       <CardFooter className="flex-col gap-2">
         <Button size="lg" className="w-full">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "../lib/utils";
+import { Toaster } from "sonner";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -20,10 +21,10 @@ export default function RootLayout({
       <body>
         <div className="h-dvh bg-background overflow-hidden p-4">
 
-          <main className="overflow-auto border h-full bg-card rounded-2xl">
+          <main className="overflow-auto border h-full bg-card rounded-2xl relative">
             {children}
           </main>
-
+        <Toaster />
         </div>
       </body>
     </html>
