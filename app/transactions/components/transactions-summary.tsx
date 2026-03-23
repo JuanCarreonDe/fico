@@ -16,7 +16,7 @@ export function TransactionSumary({summary}: {summary: Database["public"]["Funct
   const featureName = "Balance"
 
   return (
-    <Card size="default" className="mx-auto w-full">
+    <Card size="default" className="mx-auto w-full h-fit">
       <CardHeader>
         <CardTitle>{featureName}</CardTitle>
         <CardDescription>
