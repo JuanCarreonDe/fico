@@ -10,13 +10,11 @@ import { Database } from "@/database.types";
 import { ArrowDownLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import { getTransactionsByDay } from "@/app/transactions/actions";
 import { TransactionByDaySkeleton } from "./transactions-by-day-skeleton";
 
 interface Props {
   dailySummaryCurrentMonth: Database["public"]["Functions"]["get_daily_summary_current_month"]["Returns"];
-  //   getTransactionsByDay:Database["public"]["Functions"]["get_daily_summary_current_month"]["Returns"];
 }
 
 export function TransactionList({ dailySummaryCurrentMonth }: Props) {
@@ -41,21 +39,10 @@ export function TransactionList({ dailySummaryCurrentMonth }: Props) {
     }));
 
     setIsLoading(false);
-    // await toast.promise(promise, {
-    //   loading: "Cargando transacciones...",
-    //   error: "Error al cargar",
-    //   success: (data) => {
-    //     setTransactionsByDay((prev) => ({
-    //       ...prev,
-    //       [params.p_date]: data,
-    //     }));
-    //     return "Transacciones cargadas exitosamente";
-    //   },
-    // });
   };
 
   return dailySummaryCurrentMonth.map((i) => (
-    <Card className="mx-auto w-full" key={i.day_date}>
+    <Card className="mx-auto w-full min-h-fit" key={i.day_date}>
       <CardContent>
         <Collapsible
           className="rounded-md data-[state=open]:bg-muted border"
@@ -76,10 +63,10 @@ export function TransactionList({ dailySummaryCurrentMonth }: Props) {
               <b>{i.day_date.slice(8)}</b>
               <div className="flex gap-2 items-center">
                 <div className="flex flex-col gap-1">
-                  <span className="flex gap-1 items-center text-green-400">
+                  <span className="flex gap-1 items-center text-success">
                     <ArrowDownLeft />${i.total_income}
                   </span>
-                  <span className="flex gap-1 items-center text-red-400">
+                  <span className="flex gap-1 items-center text-destructive">
                     <ArrowUpRight />${i.total_expense}
                   </span>
                 </div>

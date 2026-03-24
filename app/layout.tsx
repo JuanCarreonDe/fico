@@ -3,8 +3,11 @@ import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "../lib/utils";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "../components/theme-provider";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { NavigationMenu } from "@/components/navigation-menu";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,18 +19,31 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    return (
-    <html lang="es" className={cn("dark font-sans", geist.variable)} >
+  return (
+    <html
+      className={cn(" font-sans", geist.variable)}
+      lang="es"
+      suppressHydrationWarning
+    >
       <body>
-        <div className="h-dvh bg-background overflow-hidden p-4">
-
-          <main className="overflow-auto border h-full bg-card rounded-2xl relative">
-            {children}
-          </main>
-        <Toaster />
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="h-dvh bg-background overflow-hidden p-4 flex flex-col gap-4">
+            <ThemeToggle className="fixed top-4 right-4 z-10" />
+            <main className="overflow-auto border flex-1 bg-card rounded-2xl relative">
+              <div className="p-6">{children}</div>
+            </main>
+            <div className="h-fit">
+              <NavigationMenu />
+            </div>
+            <Toaster />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
-  
   );
 }

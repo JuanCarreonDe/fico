@@ -34,19 +34,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { createTransaction } from "../actions";
-
-// Args: {
-//           p_account_id: string
-
-//           p_amount: number
-
-//           p_category_id: string
-
-//           p_description: string
-
-//           p_transaction_date: string
-//           p_type: Database["public"]["Enums"]["transaction_type"]
-//         }
+import { Plus } from "lucide-react";
 
 const transactionSchema = z.object({
   p_account_id: z.string().min(1, "Account is required"),
@@ -78,7 +66,6 @@ export default function TransactionForm({
     reset,
     formState: { errors },
   } = useForm<Database["public"]["Functions"]["create_transaction"]["Args"]>({
-    // } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       p_type: "expense",
@@ -111,8 +98,8 @@ export default function TransactionForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size={"lg"}>
-          +
+        <Button variant="default" className="bg-accent">
+          <Plus />
         </Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
@@ -123,33 +110,10 @@ export default function TransactionForm({
           <FieldGroup>
             <FieldSet>
               <FieldGroup>
-                {/* income / expense */}
-                <RadioGroup
-                  value={selectedType}
-                  onValueChange={(value) =>
-                    setValue("p_type", value as "income" | "expense")
-                  }
-                  className="flex justify-between"
-                  defaultValue={"expense"}
-                >
-                  {Constants.public.Enums.transaction_type.map((i) => (
-                    <Field orientation="horizontal" key={i}>
-                      <RadioGroupItem value={i} id={`${i}-transaction`} />
-                      <FieldLabel
-                        htmlFor={`${i}-transaction`}
-                        className="font-normal capitalize"
-                      >
-                        {i}
-                      </FieldLabel>
-                    </Field>
-                  ))}
-                </RadioGroup>
-
                 <Field>
-                  <FieldLabel htmlFor="amount">Amount</FieldLabel>
                   <Input
                     id="amount"
-                    placeholder="99"
+                    placeholder="amount"
                     type="number"
                     {...register("p_amount", { valueAsNumber: true })}
                   />
@@ -160,10 +124,9 @@ export default function TransactionForm({
                   )}
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="description">Description</FieldLabel>
                   <Input
                     id="description"
-                    placeholder="Dinner"
+                    placeholder="description"
                     {...register("p_description")}
                   />
                   {errors.p_description && (
@@ -173,13 +136,12 @@ export default function TransactionForm({
                   )}
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="account">Account</FieldLabel>
                   <Select
                     value={watch("p_account_id")}
                     onValueChange={(value) => setValue("p_account_id", value)}
                   >
                     <SelectTrigger id="account">
-                      <SelectValue placeholder="Cuenta" />
+                      <SelectValue placeholder="account" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -198,13 +160,12 @@ export default function TransactionForm({
                   )}
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="category">Category</FieldLabel>
                   <Select
                     value={watch("p_category_id")}
                     onValueChange={(value) => setValue("p_category_id", value)}
                   >
                     <SelectTrigger id="category">
-                      <SelectValue placeholder="Category" />
+                      <SelectValue placeholder="category" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -226,9 +187,6 @@ export default function TransactionForm({
             </FieldSet>
 
             <Field>
-              <FieldLabel htmlFor="transaction_date">
-                Transaction date
-              </FieldLabel>
               <Input
                 id="transaction_date"
                 type="date"
@@ -240,18 +198,39 @@ export default function TransactionForm({
                 </p>
               )}
             </Field>
+
+            {/* income / expense */}
+            <RadioGroup
+              value={selectedType}
+              onValueChange={(value) =>
+                setValue("p_type", value as "income" | "expense")
+              }
+              className="flex justify-between"
+              defaultValue={"expense"}
+            >
+              {Constants.public.Enums.transaction_type.map((i) => (
+                <Field orientation="horizontal" key={i}>
+                  <RadioGroupItem value={i} id={`${i}-transaction`} />
+                  <FieldLabel
+                    htmlFor={`${i}-transaction`}
+                    className="font-normal capitalize"
+                  >
+                    {i}
+                  </FieldLabel>
+                </Field>
+              ))}
+            </RadioGroup>
             <FieldSeparator />
 
             <Field orientation="horizontal" className="flex justify-end">
               <Button
-                size={"lg"}
                 variant="outline"
                 type="button"
                 onClick={() => setOpen(false)}
               >
                 Cancel
               </Button>
-              <Button size={"lg"} type="submit">
+              <Button type="submit" className="bg-accent">
                 Submit
               </Button>
             </Field>
