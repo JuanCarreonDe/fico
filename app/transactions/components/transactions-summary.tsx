@@ -71,10 +71,14 @@ export function TransactionSumary({
           <CarouselItem className="">
             <Card size="default" className="mx-auto w-full h-full">
               <CardHeader>
-                <CardTitle>Add Account</CardTitle>
+                <CardTitle>New Account</CardTitle>
               </CardHeader>
               <CardContent className="items-center justify-center flex h-full">
-                <AccountForm />
+                <AccountForm
+                  buttonClassName="w-full h-full"
+                  buttonText="Add account"
+                  variant={"outline"}
+                />
               </CardContent>
             </Card>
           </CarouselItem>

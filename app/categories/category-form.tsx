@@ -18,43 +18,24 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Constants, Database } from "@/database.types";
+import { Database } from "@/database.types";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { createAccount } from "./actions";
+import { createCategory } from "./actions";
 
-interface Props {
-  variant?:
-    | "default"
-    | "link"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "destructive"
-    | null
-    | undefined;
-  buttonClassName?: string;
-  buttonText?: string;
-}
-
-const accountSchema = z.object({
-  p_name: z.string().min(1, "Account name is required"),
-  p_type: z.enum(["bank", "cash", "credit", "savings"]),
-  p_initial_balance: z.number().optional(),
+const categorySchema = z.object({
+  p_name: z.string().min(1, "Category name is required"),
+  p_type: z.enum(["income", "expense"]),
 });
 
 type AccountFormData =
-  Database["public"]["Functions"]["create_account"]["Args"];
+  Database["public"]["Functions"]["create_category"]["Args"];
 
-export default function AccountForm({
-  buttonText = "Add",
-  buttonClassName,
-  variant,
-}: Props) {
+export default function CategoryForm() {
   const [open, setOpen] = useState(false);
 
   const {
@@ -64,10 +45,10 @@ export default function AccountForm({
     watch,
     reset,
     formState: { errors },
-  } = useForm<Database["public"]["Functions"]["create_account"]["Args"]>({
-    resolver: zodResolver(accountSchema),
+  } = useForm<Database["public"]["Functions"]["create_category"]["Args"]>({
+    resolver: zodResolver(categorySchema),
     defaultValues: {
-      p_type: "bank",
+      p_type: "expense",
     },
   });
 
@@ -75,36 +56,36 @@ export default function AccountForm({
 
   const onSubmit = async (data: AccountFormData) => {
     try {
-      const promise = createAccount(data);
+      const promise = createCategory(data);
+      console.log("🚀 ~ onSubmit ~ promise:", promise);
+      console.log("🚀 ~ onSubmit ~ data:", data);
 
       toast.promise(promise, {
-        loading: "Creando cuenta...",
-        success: "Cuenta creada",
-        error: (error) => {
-          return `Error al crear la cuenta: ${error}`;
-        },
+        loading: "Creando categoría...",
+        success: "Categoría creada",
+        error: (error) => `Error al crear la categoría ${error}`,
       });
 
       setOpen(false);
       reset({
-        p_type: "bank",
+        p_type: "expense",
       });
     } catch (error) {
-      toast.error("Failed to create account");
+      toast.error("Failed to create category");
       console.error(error);
     }
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className={buttonClassName} variant={variant}>
+        <Button onClick={() => {}}>
           <Plus />
-          {buttonText}
+          Add
         </Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>Agregar cuenta</DialogTitle>
+          <DialogTitle>Agregar categoría</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
@@ -113,7 +94,7 @@ export default function AccountForm({
                 <Field>
                   <Input
                     id="name"
-                    placeholder="account name"
+                    placeholder="nombre de categoría"
                     {...register("p_name")}
                   />
                   {errors.p_name && (
@@ -122,43 +103,26 @@ export default function AccountForm({
                     </p>
                   )}
                 </Field>
-
-                <Field>
-                  <Input
-                    id="initial_balance"
-                    placeholder="balance"
-                    type="number"
-                    {...register("p_initial_balance", { valueAsNumber: true })}
-                  />
-                  {errors.p_initial_balance && (
-                    <p className="text-red-500 text-sm">
-                      {errors.p_initial_balance.message}
-                    </p>
-                  )}
-                </Field>
               </FieldGroup>
             </FieldSet>
 
-            {/* account type */}
+            {/* category type */}
             <RadioGroup
               value={selectedType}
               onValueChange={(value) =>
-                setValue(
-                  "p_type",
-                  value as "bank" | "cash" | "credit" | "savings",
-                )
+                setValue("p_type", value as "income" | "expense")
               }
               className="flex justify-between"
-              defaultValue={"bank"}
+              defaultValue={"expense"}
             >
-              {Constants.public.Enums.account_type.map((i) => (
+              {["income", "expense"].map((i) => (
                 <Field orientation="horizontal" key={i}>
-                  <RadioGroupItem value={i} id={`${i}-account`} />
+                  <RadioGroupItem value={i} id={`${i}-category`} />
                   <FieldLabel
-                    htmlFor={`${i}-account`}
+                    htmlFor={`${i}-category`}
                     className="font-normal capitalize"
                   >
-                    {i}
+                    {i === "income" ? "Ingreso" : "Gasto"}
                   </FieldLabel>
                 </Field>
               ))}

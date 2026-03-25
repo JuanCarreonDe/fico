@@ -3,7 +3,7 @@ import TransactionForm from "./components/transactions-form";
 import { TransactionList } from "./components/transactions-list";
 import { TransactionSumary } from "./components/transactions-summary";
 import {
-  getDailySummaryCurrentMonth,
+  getDailySummaryByMonth,
   getMonthlyFinancialSummary,
   getUserAccounts,
   getUserCategories,
@@ -13,7 +13,7 @@ export default async function TransactionsPage() {
   const summary = await getMonthlyFinancialSummary();
   const userAccounts = await getUserAccounts();
   const userCategories = await getUserCategories();
-  const dailySummaryCurrentMonth = await getDailySummaryCurrentMonth();
+  const dailySummaryCurrentMonth = await getDailySummaryByMonth();
   const accountBalances = await getAccountBalances();
 
   return (
@@ -23,12 +23,13 @@ export default async function TransactionsPage() {
           summary={summary}
           accountBalances={accountBalances}
         />
+        <div className="flex flex-col gap-4">
+          <TransactionList
+            dailySummaryCurrentMonth={dailySummaryCurrentMonth}
+          />
+        </div>
       </div>
-      {/* <div className="flex flex-col gap-4 flex-1 overflow-auto p-1"> */}
-      <div className="flex flex-col gap-4">
-        <TransactionList dailySummaryCurrentMonth={dailySummaryCurrentMonth} />
-      </div>
-      <div className="fixed bottom-20 right-10">
+      <div className="fixed bottom-30 right-10">
         <TransactionForm
           userAccounts={userAccounts}
           userCategories={userCategories}

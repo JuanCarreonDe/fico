@@ -243,8 +243,11 @@ export type Database = {
       get_account_balances: {
         Args: never
         Returns: {
+          account_created_at: string
+          account_currency: string
           account_id: string
           account_name: string
+          account_type: string
           balance: number
         }[]
       }
@@ -258,8 +261,8 @@ export type Database = {
           total_amount: number
         }[]
       }
-      get_daily_summary_current_month: {
-        Args: never
+      get_daily_summary_by_month: {
+        Args: { p_month?: string }
         Returns: {
           day_date: string
           total_expense: number
@@ -323,6 +326,7 @@ export type Database = {
         Returns: {
           id: string
           name: string
+          type: Database["public"]["Enums"]["transaction_type"]
         }[]
       }
       update_transaction: {

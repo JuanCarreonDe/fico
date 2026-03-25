@@ -14,7 +14,7 @@ import { getTransactionsByDay } from "@/app/transactions/actions";
 import { TransactionByDaySkeleton } from "./transactions-by-day-skeleton";
 
 interface Props {
-  dailySummaryCurrentMonth: Database["public"]["Functions"]["get_daily_summary_current_month"]["Returns"];
+  dailySummaryCurrentMonth: Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
 }
 
 export function TransactionList({ dailySummaryCurrentMonth }: Props) {
@@ -57,8 +57,8 @@ export function TransactionList({ dailySummaryCurrentMonth }: Props) {
           <CollapsibleTrigger asChild>
             <Button
               variant="ghost"
-              className="group w-full justify-between min-h-fit p-2 border"
-              disabled={i.total_expense === 0 && i.total_expense === 0}
+              className="group w-full justify-between min-h-fit p-2 border ring-0 outline-none"
+              disabled={i.total_expense === 0 && i.total_income === 0}
             >
               <b>{i.day_date.slice(8)}</b>
               <div className="flex gap-2 items-center">
@@ -75,7 +75,7 @@ export function TransactionList({ dailySummaryCurrentMonth }: Props) {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
-            <div className=" w-full">
+            <div className="w-full">
               {isLoading && <TransactionByDaySkeleton />}
               {transactionsByDay[i.day_date]?.map((t) => (
                 <div key={t.id}>

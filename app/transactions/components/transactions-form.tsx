@@ -27,14 +27,13 @@ import {
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Constants, Database } from "@/database.types";
-// import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { createTransaction } from "../actions";
-import { Plus } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Plus } from "lucide-react";
 
 const transactionSchema = z.object({
   p_account_id: z.string().min(1, "Account is required"),
@@ -42,11 +41,19 @@ const transactionSchema = z.object({
   p_category_id: z.string().min(1, "Category is required"),
   p_description: z.string().min(1, "Description is required"),
   p_transaction_date: z.string().min(1, "Date is required"),
-  p_type: z.enum(["income", "expense"]),
+  // p_type: z.enum(["income", "expense"]),
 });
 
-type TransactionFormData =
-  Database["public"]["Functions"]["create_transaction"]["Args"];
+type TransactionFormData = {
+  p_account_id: string;
+  p_amount: number;
+  p_category_id: string;
+  p_description: string;
+  p_transaction_date: string;
+  // p_type: "income" | "expense";
+};
+// Database["public"]["Functions"]["create_transaction"]["Args"];
+
 interface Props {
   userAccounts: Database["public"]["Functions"]["get_user_accounts"]["Returns"];
   userCategories: Database["public"]["Functions"]["get_user_categories"]["Returns"];
@@ -57,27 +64,27 @@ export default function TransactionForm({
   userCategories,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [transactionType, setTransactionType] = useState<"income" | "expense">(
+    "expense",
+  );
 
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
+    control,
     reset,
     formState: { errors },
-  } = useForm<Database["public"]["Functions"]["create_transaction"]["Args"]>({
+  } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
-      p_type: "expense",
+      // p_type: "expense",
       p_transaction_date: new Date().toISOString().split("T")[0],
     },
   });
 
-  const selectedType = watch("p_type");
-
   const onSubmit = async (data: TransactionFormData) => {
     try {
-      const promise = createTransaction(data);
+      const promise = createTransaction({ ...data, p_type: transactionType });
 
       toast.promise(promise, {
         loading: "Creando transacción...",
@@ -87,24 +94,41 @@ export default function TransactionForm({
 
       setOpen(false);
       reset({
-        p_type: "expense",
-        p_transaction_date: new Date().toISOString().split("T")[0],
+        // p_type: "expense",
+        // p_transaction_date: new Date().toISOString().split("T")[0],
       });
     } catch (error) {
       toast.error("Failed to create transaction");
       console.error(error);
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" className="bg-accent">
-          <Plus />
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="secondary"
+            className="ml-5"
+            onClick={() => setTransactionType("expense")}
+          >
+            <ArrowUpRight />
+          </Button>
+          <Button
+            variant="default"
+            className="mr-5 bg-accent"
+            onClick={() => setTransactionType("income")}
+          >
+            <ArrowDownLeft />
+          </Button>
+        </div>
       </DialogTrigger>
-      <DialogContent showCloseButton={false}>
+      <DialogContent
+        showCloseButton={false}
+        // onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
-          <DialogTitle>Agregar transaccion</DialogTitle>
+          <DialogTitle>Add {transactionType}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
@@ -123,6 +147,7 @@ export default function TransactionForm({
                     </p>
                   )}
                 </Field>
+
                 <Field>
                   <Input
                     id="description"
@@ -135,48 +160,66 @@ export default function TransactionForm({
                     </p>
                   )}
                 </Field>
+
+                {/* Account Select */}
                 <Field>
-                  <Select
-                    value={watch("p_account_id")}
-                    onValueChange={(value) => setValue("p_account_id", value)}
-                  >
-                    <SelectTrigger id="account">
-                      <SelectValue placeholder="account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {userAccounts?.map((i) => (
-                          <SelectItem value={i.id} key={i.name}>
-                            {i.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="p_account_id"
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger id="account">
+                          <SelectValue placeholder="account" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {userAccounts?.map((i) => (
+                              <SelectItem value={i.id} key={i.name}>
+                                {i.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                   {errors.p_account_id && (
                     <p className="text-red-500 text-sm">
                       {errors.p_account_id.message}
                     </p>
                   )}
                 </Field>
+
+                {/* Category Select */}
                 <Field>
-                  <Select
-                    value={watch("p_category_id")}
-                    onValueChange={(value) => setValue("p_category_id", value)}
-                  >
-                    <SelectTrigger id="category">
-                      <SelectValue placeholder="category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {userCategories?.map((i) => (
-                          <SelectItem value={i.id} key={i.name}>
-                            {i.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="p_category_id"
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger id="category">
+                          <SelectValue placeholder="category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {userCategories
+                              ?.filter((i) => i.type === transactionType)
+                              .map((i) => (
+                                <SelectItem value={i.id} key={i.name}>
+                                  {i.name}
+                                </SelectItem>
+                              ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
                   {errors.p_category_id && (
                     <p className="text-red-500 text-sm">
                       {errors.p_category_id.message}
@@ -184,42 +227,21 @@ export default function TransactionForm({
                   )}
                 </Field>
               </FieldGroup>
+
+              <Field>
+                <Input
+                  id="transaction_date"
+                  type="date"
+                  {...register("p_transaction_date")}
+                />
+                {errors.p_transaction_date && (
+                  <p className="text-red-500 text-sm">
+                    {errors.p_transaction_date.message}
+                  </p>
+                )}
+              </Field>
             </FieldSet>
 
-            <Field>
-              <Input
-                id="transaction_date"
-                type="date"
-                {...register("p_transaction_date")}
-              />
-              {errors.p_transaction_date && (
-                <p className="text-red-500 text-sm">
-                  {errors.p_transaction_date.message}
-                </p>
-              )}
-            </Field>
-
-            {/* income / expense */}
-            <RadioGroup
-              value={selectedType}
-              onValueChange={(value) =>
-                setValue("p_type", value as "income" | "expense")
-              }
-              className="flex justify-between"
-              defaultValue={"expense"}
-            >
-              {Constants.public.Enums.transaction_type.map((i) => (
-                <Field orientation="horizontal" key={i}>
-                  <RadioGroupItem value={i} id={`${i}-transaction`} />
-                  <FieldLabel
-                    htmlFor={`${i}-transaction`}
-                    className="font-normal capitalize"
-                  >
-                    {i}
-                  </FieldLabel>
-                </Field>
-              ))}
-            </RadioGroup>
             <FieldSeparator />
 
             <Field orientation="horizontal" className="flex justify-end">
