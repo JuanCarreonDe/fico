@@ -137,7 +137,7 @@ export default function CategoryForm() {
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-accent">
+              <Button type="submit" variant={"accent"}>
                 Submit
               </Button>
             </Field>

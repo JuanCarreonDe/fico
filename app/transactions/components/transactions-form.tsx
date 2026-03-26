@@ -115,8 +115,8 @@ export default function TransactionForm({
             <ArrowUpRight />
           </Button>
           <Button
-            variant="default"
-            className="mr-5 bg-accent"
+            variant="accent"
+            className="mr-5"
             onClick={() => setTransactionType("income")}
           >
             <ArrowDownLeft />
@@ -252,7 +252,7 @@ export default function TransactionForm({
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-accent">
+              <Button type="submit" variant={"accent"}>
                 Submit
               </Button>
             </Field>
