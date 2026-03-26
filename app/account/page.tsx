@@ -1,12 +1,12 @@
-import AccountForm from './account-form'
-import { createClient } from '@/lib/db/server'
+import AccountForm from "./account-form";
+import { createClient } from "@/lib/db/server";
 
 export default async function Account() {
-  const db = await createClient()
+  const db = await createClient();
 
   const {
     data: { user },
-  } = await db.auth.getUser()
+  } = await db.auth.getUser();
 
-  return <AccountForm user={user} />
+  return <AccountForm user={user} />;
 }

@@ -7,9 +7,6 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Settings</h1>
-      <p className="text-muted-foreground">
-        Manage your application settings and preferences.
-      </p>
 
       <div className="space-y-4">
         <div className="p-4 border rounded-lg">
@@ -51,7 +48,7 @@ export default function SettingsPage() {
               <span className="text-sm">Name</span>
               <span className="text-sm text-muted-foreground">John Doe</span>
             </div>
-            <div className="flex w-full items-end">
+            <div className="flex w-full justify-center">
               <LogoutButton />
             </div>
           </div>

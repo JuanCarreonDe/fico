@@ -96,6 +96,10 @@ export default function TransactionForm({
       reset({
         // p_type: "expense",
         // p_transaction_date: new Date().toISOString().split("T")[0],
+        p_amount: undefined,
+        p_description: undefined,
+        p_account_id: undefined,
+        p_category_id: undefined,
       });
     } catch (error) {
       toast.error("Failed to create transaction");
@@ -106,16 +110,17 @@ export default function TransactionForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           <Button
-            variant="secondary"
-            className="ml-5"
+            size={"xl"}
+            className="ml-5 text-accent"
             onClick={() => setTransactionType("expense")}
           >
             <ArrowUpRight />
           </Button>
           <Button
-            variant="accent"
+            variant="outline"
+            size={"xl"}
             className="mr-5"
             onClick={() => setTransactionType("income")}
           >
