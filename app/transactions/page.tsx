@@ -1,7 +1,7 @@
 import { getAccountBalances } from "../accounts/accounts.service";
 import TransactionForm from "./components/transactions-form";
 import { TransactionList } from "./components/transactions-list";
-import { TransactionSumary } from "./components/transactions-summary";
+import { TransactionSummary } from "./components/transactions-summary";
 import {
   getDailySummaryByMonth,
   getMonthlyFinancialSummary,
@@ -19,7 +19,7 @@ export default async function TransactionsPage() {
   return (
     <div className="p-4 h-full flex flex-col gap-4">
       <div>
-        <TransactionSumary
+        <TransactionSummary
           summary={summary}
           accountBalances={accountBalances}
         />
