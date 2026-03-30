@@ -8,14 +8,6 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +17,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Constants, Database } from "@/database.types";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -39,7 +30,7 @@ const transactionSchema = z.object({
   p_account_id: z.string().min(1, "Account is required"),
   p_amount: z.number().min(0.01, "Amount must be greater than 0"),
   p_category_id: z.string().min(1, "Category is required"),
-  p_description: z.string().min(1, "Description is required"),
+  p_description: z.string().optional(),
   p_transaction_date: z.string().min(1, "Date is required"),
   // p_type: z.enum(["income", "expense"]),
 });
@@ -48,7 +39,7 @@ type TransactionFormData = {
   p_account_id: string;
   p_amount: number;
   p_category_id: string;
-  p_description: string;
+  p_description?: string;
   p_transaction_date: string;
   // p_type: "income" | "expense";
 };
@@ -69,7 +60,6 @@ export default function TransactionForm({
   );
 
   const {
-    register,
     handleSubmit,
     control,
     reset,
@@ -77,22 +67,32 @@ export default function TransactionForm({
   } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
-      // p_type: "expense",
       p_transaction_date: new Date().toISOString().split("T")[0],
     },
   });
 
   const onSubmit = async (data: TransactionFormData) => {
     try {
-      const promise = createTransaction({ ...data, p_type: transactionType });
+      setOpen(false);
+      const promise = Promise.all([
+        createTransaction({ ...data, p_type: transactionType }),
+      ]);
 
       toast.promise(promise, {
         loading: "Creando transacción...",
         success: "Transacción creada",
-        error: "Error al crear la transacción",
+        error: () => {
+          setOpen(true);
+          return "Error al crear la transacción";
+        },
       });
 
-      setOpen(false);
+      // // Wait for the transaction to be created
+      // await promise;
+
+      // // Refresh all data to update UI immediately
+      // await onTransactionCreated();
+
       reset({
         // p_type: "expense",
         // p_transaction_date: new Date().toISOString().split("T")[0],
@@ -108,7 +108,21 @@ export default function TransactionForm({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(newOpen) => {
+        if (!newOpen) {
+          reset({
+            p_amount: undefined,
+            p_description: undefined,
+            p_account_id: undefined,
+            p_category_id: undefined,
+            p_transaction_date: new Date().toISOString().split("T")[0],
+          });
+        }
+        setOpen(newOpen);
+      }}
+    >
       <DialogTrigger asChild>
         <div className="flex flex-col gap-4">
           <Button
@@ -140,11 +154,22 @@ export default function TransactionForm({
             <FieldSet>
               <FieldGroup>
                 <Field>
-                  <Input
-                    id="amount"
-                    placeholder="amount"
-                    type="number"
-                    {...register("p_amount", { valueAsNumber: true })}
+                  <Controller
+                    control={control}
+                    name="p_amount"
+                    render={({ field }) => (
+                      <Input
+                        id="amount"
+                        placeholder="amount"
+                        type="number"
+                        value={field.value || ""}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? Number(e.target.value) : undefined,
+                          )
+                        }
+                      />
+                    )}
                   />
                   {errors.p_amount && (
                     <p className="text-red-500 text-sm">
@@ -154,10 +179,17 @@ export default function TransactionForm({
                 </Field>
 
                 <Field>
-                  <Input
-                    id="description"
-                    placeholder="description"
-                    {...register("p_description")}
+                  <Controller
+                    control={control}
+                    name="p_description"
+                    render={({ field }) => (
+                      <Input
+                        id="description"
+                        placeholder="description"
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                      />
+                    )}
                   />
                   {errors.p_description && (
                     <p className="text-red-500 text-sm">
@@ -166,29 +198,33 @@ export default function TransactionForm({
                   )}
                 </Field>
 
-                {/* Account Select */}
+                {/* Account Buttons */}
                 <Field>
+                  <FieldLabel className="text-muted-foreground">
+                    Cuenta
+                  </FieldLabel>
                   <Controller
                     control={control}
                     name="p_account_id"
                     render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger id="account">
-                          <SelectValue placeholder="account" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {userAccounts?.map((i) => (
-                              <SelectItem value={i.id} key={i.name}>
-                                {i.name}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {userAccounts?.map((account) => (
+                          <Button
+                            key={account.id}
+                            type="button"
+                            variant={
+                              field.value === account.id ? "default" : "outline"
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              field.onChange(account.id);
+                            }}
+                            className="whitespace-nowrap shrink-0"
+                          >
+                            {account.name}
+                          </Button>
+                        ))}
+                      </div>
                     )}
                   />
                   {errors.p_account_id && (
@@ -198,31 +234,37 @@ export default function TransactionForm({
                   )}
                 </Field>
 
-                {/* Category Select */}
+                {/* Category Buttons */}
                 <Field>
+                  <FieldLabel className="text-muted-foreground">
+                    Categoría
+                  </FieldLabel>
                   <Controller
                     control={control}
                     name="p_category_id"
                     render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger id="category">
-                          <SelectValue placeholder="category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {userCategories
-                              ?.filter((i) => i.type === transactionType)
-                              .map((i) => (
-                                <SelectItem value={i.id} key={i.name}>
-                                  {i.name}
-                                </SelectItem>
-                              ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {userCategories
+                          ?.filter((i) => i.type === transactionType)
+                          .map((category) => (
+                            <Button
+                              key={category.id}
+                              type="button"
+                              variant={
+                                field.value === category.id
+                                  ? "default"
+                                  : "outline"
+                              }
+                              onClick={(e) => {
+                                e.preventDefault();
+                                field.onChange(category.id);
+                              }}
+                              className="whitespace-nowrap shrink-0"
+                            >
+                              {category.name}
+                            </Button>
+                          ))}
+                      </div>
                     )}
                   />
                   {errors.p_category_id && (
@@ -234,10 +276,17 @@ export default function TransactionForm({
               </FieldGroup>
 
               <Field>
-                <Input
-                  id="transaction_date"
-                  type="date"
-                  {...register("p_transaction_date")}
+                <Controller
+                  control={control}
+                  name="p_transaction_date"
+                  render={({ field }) => (
+                    <Input
+                      id="transaction_date"
+                      type="date"
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
                 {errors.p_transaction_date && (
                   <p className="text-red-500 text-sm">
@@ -253,7 +302,16 @@ export default function TransactionForm({
               <Button
                 variant="outline"
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  reset({
+                    p_amount: undefined,
+                    p_description: undefined,
+                    p_account_id: undefined,
+                    p_category_id: undefined,
+                    p_transaction_date: new Date().toISOString().split("T")[0],
+                  });
+                  setOpen(false);
+                }}
               >
                 Cancel
               </Button>

@@ -3,11 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "../../../components/ui/card";
 import {
   Eye,
-  Wallet,
   ArrowUpRight,
   ArrowDownRight,
   DollarSign,
-  CreditCard,
+  Receipt,
 } from "lucide-react";
 import { TransactionsMetricCard } from "./transactions-metric-card";
 import { cn } from "@/lib/utils";
@@ -31,7 +30,7 @@ export function TransactionsSummaryCard({
     <>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Wallet className="w-6 h-6 text-muted-foreground" />
+          <Receipt className="w-6 h-6 text-muted-foreground" />
           <h2 className="text-xl font-semibold">Saldo total</h2>
         </div>
         <Button variant="ghost" size="sm" className="p-2">

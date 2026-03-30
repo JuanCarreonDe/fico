@@ -148,7 +148,7 @@ export default function AccountForm({
                   value as "bank" | "cash" | "credit" | "savings",
                 )
               }
-              className="flex justify-between"
+              className="grid grid-cols-2 md:grid-cols-1"
               defaultValue={"bank"}
             >
               {Constants.public.Enums.account_type.map((i) => (

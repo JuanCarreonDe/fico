@@ -16,7 +16,7 @@ import {
 } from "../../components/ui/card";
 import { Database } from "@/database.types";
 import AccountForm from "@/app/accounts/account-form";
-import { CreditCard, Plus } from "lucide-react";
+import { CreditCard, Plus, Wallet } from "lucide-react";
 import { AccountCard } from "./account-card";
 import {
   DialogTrigger,
@@ -55,16 +55,16 @@ export function AccountDetailsCarousel({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => {}}>
-          <Plus />
-          Add
+        <Button onClick={() => {}} className="w-full" variant={"outline"}>
+          <Wallet />
+          Manage accounts
         </Button>
       </DialogTrigger>
-      <DialogContent showCloseButton={false} className="border border-accent">
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Detalles de cuentas</DialogTitle>
         </DialogHeader>
-        <div className="w-full md:w-[70%] mx-auto border border-accent">
+        <div className="w-full md:w-[70%] mx-auto overflow-hidden">
           <Carousel setApi={setApi} className="w-full">
             <CarouselContent className="p-1">
               {accountBalances?.map((account, index) => (
@@ -76,7 +76,7 @@ export function AccountDetailsCarousel({
                 </CarouselItem>
               ))}
               <CarouselItem className="">
-                <Card className="mx-auto">
+                <Card className="mx-auto h-full">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <CreditCard className="w-5 h-5" />
