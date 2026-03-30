@@ -34,7 +34,7 @@ export function TransactionsMetricCard({
         {icon}
         <span className="text-sm font-medium">{title}</span>
       </div>
-      <div className="text-xl font-bold">{value}</div>
+      <div className="text font-bold">{value}</div>
     </div>
   );
 }

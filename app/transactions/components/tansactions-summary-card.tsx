@@ -71,7 +71,7 @@ export function TransactionsSummaryCard({
           </div>
           <div
             className={cn(
-              "text-xl font-bold",
+              "text font-bold",
               netBalance >= 0 ? "text-green-600" : "text-red-600",
             )}
           >
