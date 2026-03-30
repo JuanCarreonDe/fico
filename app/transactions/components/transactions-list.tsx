@@ -12,6 +12,9 @@ import { ArrowDownLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { getTransactionsByDay } from "@/app/transactions/actions";
 import { TransactionByDaySkeleton } from "./transactions-by-day-skeleton";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import TransactionListItem from "./transaction-list-item";
 
 interface Props {
   dailySummaryCurrentMonth: Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
@@ -60,14 +63,28 @@ export function TransactionList({ dailySummaryCurrentMonth }: Props) {
               className="group w-full justify-between min-h-fit p-2 border ring-0 outline-none"
               disabled={i.total_expense === 0 && i.total_income === 0}
             >
-              <b>{i.day_date.slice(8)}</b>
+              <div className="flex gap-2 items-center justify-start">
+                <b>{format(new Date(i.day_date + "T00:00:00"), "d")}</b>
+                <div className="flex flex-col gap-2 justify-start items-start capitalize text-xs">
+                  <span>
+                    {format(new Date(i.day_date + "T00:00:00"), "EEEE", {
+                      locale: es,
+                    })}
+                  </span>
+                  <span>
+                    {format(new Date(i.day_date + "T00:00:00"), "MMM. yyyy", {
+                      locale: es,
+                    })}
+                  </span>
+                </div>
+              </div>
               <div className="flex gap-2 items-center">
                 <div className="flex flex-col gap-1">
-                  <span className="flex gap-1 items-center text-success">
-                    <ArrowDownLeft />${i.total_income}
-                  </span>
                   <span className="flex gap-1 items-center text-destructive">
                     <ArrowUpRight />${i.total_expense}
+                  </span>
+                  <span className="flex gap-1 items-center text-success">
+                    <ArrowDownLeft />${i.total_income}
                   </span>
                 </div>
                 <ChevronDown className="group-data-[state=open]:rotate-180" />
@@ -75,12 +92,11 @@ export function TransactionList({ dailySummaryCurrentMonth }: Props) {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
-            <div className="w-full">
+            <div className="w-full flex flex-col gap-2">
               {isLoading && <TransactionByDaySkeleton />}
+
               {transactionsByDay[i.day_date]?.map((t) => (
-                <div key={t.id}>
-                  {t.description} - ${t.amount}
-                </div>
+                <TransactionListItem key={t.id} item={t} />
               ))}
             </div>
           </CollapsibleContent>
