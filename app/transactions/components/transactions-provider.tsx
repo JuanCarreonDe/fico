@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import React from "react";
 import { Database } from "@/database.types";
 import { useTransactionStore } from "@/lib/store/transaction-store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   children: React.ReactNode;
@@ -17,11 +18,18 @@ interface Props {
 
 export function TransactionsProvider({ children, initialData }: Props) {
   const initializeData = useTransactionStore((state) => state.initializeData);
+  const [isInitialized, setIsInitialized] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Initialize store with server data
     initializeData(initialData);
+    setIsInitialized(true);
   }, [initialData, initializeData]);
+
+  // Don't render children until store is initialized
+  if (!isInitialized) {
+    return <Skeleton className="" />;
+  }
 
   return <>{children}</>;
 }

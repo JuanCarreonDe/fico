@@ -27,8 +27,8 @@ export default async function TransactionsPage() {
         userCategories,
       }}
     >
-      <div className="p-4 h-full flex flex-col gap-4">
-        <div>
+      <div className="h-full flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <TransactionSummary />
           <div className="flex flex-col gap-4">
             <TransactionList />
