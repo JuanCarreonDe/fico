@@ -2,6 +2,7 @@
 
 import { Database } from "@/database.types";
 import { createClient } from "@/lib/db/server";
+import { revalidatePath } from "next/cache";
 
 export async function createTransaction(
   params: Database["public"]["Functions"]["create_transaction"]["Args"],
@@ -9,6 +10,8 @@ export async function createTransaction(
   const db = await createClient();
 
   const { error } = await db.rpc("create_transaction", params);
+
+  revalidatePath("/transactions", "page");
 
   if (error) throw error;
 }

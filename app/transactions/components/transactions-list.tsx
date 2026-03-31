@@ -15,17 +15,18 @@ import { TransactionByDaySkeleton } from "./transactions-by-day-skeleton";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import TransactionListItem from "./transaction-list-item";
+import { useTransactionStore } from "@/lib/store/transaction-store";
 
-interface Props {
-  dailySummaryCurrentMonth: Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
-}
-
-export function TransactionList({ dailySummaryCurrentMonth }: Props) {
-  const [transactionsByDay, setTransactionsByDay] = useState<{
-    [
-      key: string
-    ]: Database["public"]["Functions"]["get_transactions_by_day"]["Returns"];
-  }>({});
+export function TransactionList() {
+  const dailySummaryCurrentMonth = useTransactionStore(
+    (state) => state.dailySummaryCurrentMonth,
+  );
+  const setTransactionsByDay = useTransactionStore(
+    (state) => state.setTransactionsByDay,
+  );
+  const transactionsByDay = useTransactionStore(
+    (state) => state.transactionsByDay,
+  );
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,15 +37,12 @@ export function TransactionList({ dailySummaryCurrentMonth }: Props) {
 
     const data = await getTransactionsByDay(params);
 
-    setTransactionsByDay((prev) => ({
-      ...prev,
-      [params.p_date]: data,
-    }));
+    setTransactionsByDay(params.p_date, data);
 
     setIsLoading(false);
   };
 
-  return dailySummaryCurrentMonth.map((i) => (
+  return dailySummaryCurrentMonth?.map((i) => (
     <Card className="mx-auto w-full min-h-fit" key={i.day_date}>
       <CardContent>
         <Collapsible

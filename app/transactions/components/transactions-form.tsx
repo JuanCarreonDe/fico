@@ -25,6 +25,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { createTransaction } from "../actions";
 import { ArrowDownLeft, ArrowUpRight, Plus } from "lucide-react";
+import { useTransactionStore } from "@/lib/store/transaction-store";
 
 const transactionSchema = z.object({
   p_account_id: z.string().min(1, "Account is required"),
@@ -45,15 +46,9 @@ type TransactionFormData = {
 };
 // Database["public"]["Functions"]["create_transaction"]["Args"];
 
-interface Props {
-  userAccounts: Database["public"]["Functions"]["get_user_accounts"]["Returns"];
-  userCategories: Database["public"]["Functions"]["get_user_categories"]["Returns"];
-}
-
-export default function TransactionForm({
-  userAccounts,
-  userCategories,
-}: Props) {
+export default function TransactionForm() {
+  const userAccounts = useTransactionStore((state) => state.userAccounts);
+  const userCategories = useTransactionStore((state) => state.userCategories);
   const [open, setOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",

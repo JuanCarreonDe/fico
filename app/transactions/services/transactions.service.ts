@@ -31,13 +31,3 @@ export const getDailySummaryByMonth = async () => {
 
   return data;
 };
-
-export const getTransactionsByDay = async (dayDate: string) => {
-  const db = createClient();
-  const { data, error } = await (
-    await db
-  ).rpc("get_transactions_by_day", { p_date: dayDate });
-  if (error) throw error;
-
-  return data;
-};

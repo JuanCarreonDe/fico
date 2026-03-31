@@ -10,22 +10,21 @@ import {
 } from "lucide-react";
 import { TransactionsMetricCard } from "./transactions-metric-card";
 import { cn } from "@/lib/utils";
+import { useTransactionStore } from "@/lib/store/transaction-store";
 
 interface FinancialSummaryCardProps {
-  totalBalance: number;
-  totalIncome: number;
-  totalExpenses: number;
-  netBalance: number;
+  // summary: Database
   formatCurrency: (amount: number) => string;
 }
 
-export function TransactionsSummaryCard({
-  totalBalance,
-  totalIncome,
-  totalExpenses,
-  netBalance,
-  formatCurrency,
-}: FinancialSummaryCardProps) {
+export function TransactionsSummaryCard(
+  {
+    // formatCurrency,
+  }: FinancialSummaryCardProps,
+) {
+  const summary = useTransactionStore((state) => state.summary)?.at(0);
+  if (!summary) return;
+
   return (
     <>
       <div className="flex items-center justify-between mb-6">
@@ -40,7 +39,8 @@ export function TransactionsSummaryCard({
 
       <div className="text-center mb-8">
         <div className="text-4xl font-bold text-primary mb-2">
-          {formatCurrency(totalBalance)}
+          {/* {formatCurrency()} */}
+          {summary?.total_balance}
         </div>
         <p className="text-sm text-muted-foreground">
           Balance total de todas las cuentas
@@ -50,14 +50,15 @@ export function TransactionsSummaryCard({
       <div className="grid grid-cols-3 gap-4 mb-6">
         <TransactionsMetricCard
           title="Ingresos"
-          value={formatCurrency(totalIncome)}
+          // value={formatCurrency(totalIncome)}
+          value={summary?.total_income_month.toString()}
           icon={<ArrowUpRight className="w-4 h-4" />}
           variant="income"
         />
 
         <TransactionsMetricCard
           title="Gastos"
-          value={formatCurrency(totalExpenses)}
+          value={summary?.total_expense_month.toString()}
           icon={<ArrowDownRight className="w-4 h-4" />}
           variant="expense"
         />
@@ -72,10 +73,11 @@ export function TransactionsSummaryCard({
           <div
             className={cn(
               "text font-bold",
-              netBalance >= 0 ? "text-green-600" : "text-red-600",
+              summary?.monthly_balance >= 0 ? "text-green-600" : "text-red-600",
             )}
           >
-            {formatCurrency(netBalance)}
+            {/* {formatCurrency(netBalance)} */}
+            {summary?.monthly_balance}
           </div>
         </div>
       </div>
