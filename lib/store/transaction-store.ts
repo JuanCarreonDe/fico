@@ -24,6 +24,9 @@ interface TransactionState {
     ]: Database["public"]["Functions"]["get_transactions_by_day"]["Returns"];
   };
 
+  // Loading states
+  isLoadingDailySummary: boolean;
+
   // Actions
   setSummary: (
     summary: Database["public"]["Functions"]["get_monthly_financial_summary"]["Returns"],
@@ -31,6 +34,7 @@ interface TransactionState {
   setDailySummaryCurrentMonth: (
     dailySummary: Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"],
   ) => void;
+  setIsLoadingDailySummary: (loading: boolean) => void;
   setAccountBalances: (
     balances: Database["public"]["Functions"]["get_account_balances"]["Returns"],
   ) => void;
@@ -63,11 +67,14 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
   userAccounts: null,
   userCategories: null,
   transactionsByDay: {},
+  isLoadingDailySummary: false,
 
   // Setters
   setSummary: (summary) => set({ summary }),
   setDailySummaryCurrentMonth: (dailySummaryCurrentMonth) =>
     set({ dailySummaryCurrentMonth }),
+  setIsLoadingDailySummary: (isLoadingDailySummary) =>
+    set({ isLoadingDailySummary }),
   setAccountBalances: (accountBalances) => set({ accountBalances }),
   setUserAccounts: (userAccounts) => set({ userAccounts }),
   setUserCategories: (userCategories) => set({ userCategories }),

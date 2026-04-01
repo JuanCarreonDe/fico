@@ -1,12 +1,14 @@
 "use client";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MetricCardProps {
   title: string;
   value: string;
   icon: ReactNode;
   variant: "income" | "expense" | "balance";
+  isLoadingDailySummary: boolean;
 }
 
 export function TransactionsMetricCard({
@@ -14,6 +16,7 @@ export function TransactionsMetricCard({
   value,
   icon,
   variant,
+  isLoadingDailySummary,
 }: MetricCardProps) {
   const getVariantStyles = () => {
     switch (variant) {
@@ -29,12 +32,20 @@ export function TransactionsMetricCard({
   };
 
   return (
-    <div className={cn("text-center p-4 rounded-lg", getVariantStyles())}>
-      <div className="flex items-center justify-center gap-2 mb-2">
+    <div
+      className={cn(
+        "text-center p-4 rounded-lg flex flex-col items-center justify-center",
+        getVariantStyles(),
+      )}
+    >
+      <div className="flex items-center justify-center gap-1 mb-2">
         {icon}
         <span className="text-sm font-medium">{title}</span>
       </div>
-      <div className="text font-bold">{value}</div>
+      <div className="text font-bold flex">
+        {isLoadingDailySummary && <Skeleton className="h-5 w-15" />}
+        {!isLoadingDailySummary && value}
+      </div>
     </div>
   );
 }

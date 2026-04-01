@@ -17,14 +17,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Constants, Database } from "@/database.types";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { createTransaction } from "../actions";
-import { ArrowDownLeft, ArrowUpRight, Plus } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useTransactionStore } from "@/lib/store/transaction-store";
 
 const transactionSchema = z.object({
@@ -49,6 +48,9 @@ type TransactionFormData = {
 export default function TransactionForm() {
   const userAccounts = useTransactionStore((state) => state.userAccounts);
   const userCategories = useTransactionStore((state) => state.userCategories);
+  const setIsLoadingDailySummary = useTransactionStore(
+    (state) => state.setIsLoadingDailySummary,
+  );
   const [open, setOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",
@@ -69,32 +71,31 @@ export default function TransactionForm() {
   const onSubmit = async (data: TransactionFormData) => {
     try {
       setOpen(false);
+
+      setIsLoadingDailySummary(true);
+
       const promise = Promise.all([
         createTransaction({ ...data, p_type: transactionType }),
       ]);
 
       toast.promise(promise, {
         loading: "Creando transacción...",
-        success: "Transacción creada",
+        success: () => {
+          reset({
+            p_amount: undefined,
+            p_description: undefined,
+            p_account_id: undefined,
+            p_category_id: undefined,
+          });
+          return "Transacción creada";
+        },
         error: () => {
           setOpen(true);
           return "Error al crear la transacción";
         },
-      });
-
-      // // Wait for the transaction to be created
-      // await promise;
-
-      // // Refresh all data to update UI immediately
-      // await onTransactionCreated();
-
-      reset({
-        // p_type: "expense",
-        // p_transaction_date: new Date().toISOString().split("T")[0],
-        p_amount: undefined,
-        p_description: undefined,
-        p_account_id: undefined,
-        p_category_id: undefined,
+        finally: () => {
+          setIsLoadingDailySummary(false);
+        },
       });
     } catch (error) {
       toast.error("Failed to create transaction");
@@ -280,6 +281,7 @@ export default function TransactionForm() {
                       type="date"
                       value={field.value || ""}
                       onChange={field.onChange}
+                      max={new Date().toISOString().split("T")[0]}
                     />
                   )}
                 />

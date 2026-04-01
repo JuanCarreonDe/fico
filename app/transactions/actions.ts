@@ -27,3 +27,18 @@ export async function getTransactionsByDay(
 
   return data;
 }
+
+export async function getDailySummaryByMonth(
+  params: Database["public"]["Functions"]["get_daily_summary_by_month"]["Args"],
+) {
+  const db = await createClient();
+
+  const { data, error } = await db.rpc("get_daily_summary_by_month", params);
+
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+
+  return data;
+}

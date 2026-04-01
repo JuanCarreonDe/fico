@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "../auth-provider";
+// import { useTransactionStore } from "@/lib/store/transaction-store";
 
 export function ThemeToggle({
   className,
@@ -14,6 +15,7 @@ export function ThemeToggle({
   const { theme, setTheme } = useTheme();
   const { user } = useAuth();
   const [mounted, setMounted] = React.useState(false);
+  // const { dailySummaryCurrentMonth } = useTransactionStore();
 
   React.useEffect(() => {
     setMounted(true);
@@ -38,6 +40,7 @@ export function ThemeToggle({
         <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         <span className="sr-only">Toggle theme</span>
       </button>
+      {/* <pre>{JSON.stringify(dailySummaryCurrentMonth, null, 2)}</pre> */}
     </>
   );
 }

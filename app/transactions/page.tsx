@@ -9,6 +9,7 @@ import {
   getUserAccounts,
   getUserCategories,
 } from "./services/transactions.service";
+import TransactionsMonthPicker from "./components/transactions-month-picker";
 
 export default async function TransactionsPage() {
   const summary = await getMonthlyFinancialSummary();
@@ -28,6 +29,7 @@ export default async function TransactionsPage() {
       }}
     >
       <div className="h-full flex flex-col gap-4">
+        <TransactionsMonthPicker />
         <div className="flex flex-col gap-4">
           <TransactionSummary />
           <div className="flex flex-col gap-4">

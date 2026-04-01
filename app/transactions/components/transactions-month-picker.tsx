@@ -1,0 +1,41 @@
+"use client";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { getDailySummaryByMonth } from "../actions";
+import { useTransactionStore } from "@/lib/store/transaction-store";
+
+export default function TransactionsMonthPicker() {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+
+  const { setDailySummaryCurrentMonth, setIsLoadingDailySummary } =
+    useTransactionStore();
+
+  const handleClick = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const monthValue = e.target.value; // Format: "YYYY-MM"
+    const monthFullDate = `${monthValue}-01`;
+
+    setIsLoadingDailySummary(true);
+
+    const res = await getDailySummaryByMonth({
+      p_month: monthFullDate,
+    });
+
+    setDailySummaryCurrentMonth(res);
+    setIsLoadingDailySummary(false);
+  };
+
+  return (
+    <Field className="">
+      <Input
+        id="transaction_date"
+        type="month"
+        onChange={handleClick}
+        defaultValue={currentMonth}
+        className="max-w-40 m-auto"
+        max={currentMonth}
+      />
+    </Field>
+  );
+}
