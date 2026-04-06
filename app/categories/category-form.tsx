@@ -57,8 +57,6 @@ export default function CategoryForm() {
   const onSubmit = async (data: AccountFormData) => {
     try {
       const promise = createCategory(data);
-      console.log("🚀 ~ onSubmit ~ promise:", promise);
-      console.log("🚀 ~ onSubmit ~ data:", data);
 
       toast.promise(promise, {
         loading: "Creando categoría...",

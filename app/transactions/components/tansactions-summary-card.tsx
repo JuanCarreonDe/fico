@@ -8,6 +8,8 @@ import {
   DollarSign,
   Receipt,
   ArrowDownLeft,
+  Currency,
+  CurrencyIcon,
 } from "lucide-react";
 import { TransactionsMetricCard } from "./transactions-metric-card";
 import { cn } from "@/lib/utils";
@@ -39,7 +41,7 @@ export function TransactionsSummaryCard({
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
+      {/* <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Receipt className="w-6 h-6 text-muted-foreground" />
           <h2 className="text-xl font-semibold">Saldo total</h2>
@@ -47,10 +49,11 @@ export function TransactionsSummaryCard({
         <Button variant="ghost" size="sm" className="p-2">
           <Eye className="w-4 h-4" />
         </Button>
-      </div>
+      </div> */}
 
       <div className="text-center mb-8">
         <div className="text-4xl font-bold text-primary mb-2 flex items-center justify-center">
+          <DollarSign className="w-6 h-6 text-muted-foreground" />
           {isLoadingDailySummary && <Skeleton className="h-10 w-32" />}
           {!isLoadingDailySummary && total_balance}
         </div>

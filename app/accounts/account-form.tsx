@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Constants, Database } from "@/database.types";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -39,6 +39,7 @@ interface Props {
     | undefined;
   buttonClassName?: string;
   buttonText?: string;
+  setOpenFahterDialog?: (value: SetStateAction<boolean>) => void;
 }
 
 const accountSchema = z.object({
@@ -54,6 +55,7 @@ export default function AccountForm({
   buttonText = "Add",
   buttonClassName,
   variant,
+  setOpenFahterDialog,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -79,15 +81,22 @@ export default function AccountForm({
 
       toast.promise(promise, {
         loading: "Creando cuenta...",
-        success: "Cuenta creada",
+        success: () => {
+          return "Cuenta creada";
+        },
         error: (error) => {
           return `Error al crear la cuenta: ${error}`;
         },
+        finally() {
+          setOpen(false);
+          if (setOpenFahterDialog) setOpenFahterDialog(false);
+        },
       });
 
-      setOpen(false);
       reset({
-        p_type: "bank",
+        p_name: "",
+        p_currency: "bank",
+        p_initial_balance: undefined,
       });
     } catch (error) {
       toast.error("Failed to create account");

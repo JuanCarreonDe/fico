@@ -42,14 +42,13 @@ export default function RootLayout({
           <AuthProvider>
             <AuthSync />
             <div className="h-dvh bg-background overflow-hidden p-4 flex flex-col gap-4">
-              <ThemeToggle className="fixed top-4 right-4 z-10" />
               <main className="overflow-auto border flex-1 bg-card rounded-2xl relative">
                 <div className="h-full p-4">{children}</div>
               </main>
               <div className="h-fit">
                 <NavigationWrapper />
               </div>
-              <Toaster />
+              <Toaster position="top-center" />
             </div>
           </AuthProvider>
         </ThemeProvider>

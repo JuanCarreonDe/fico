@@ -1,16 +1,48 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
 import { Database } from "@/database.types";
-import { Wallet } from "lucide-react";
+import { Pen, Trash, Wallet } from "lucide-react";
+import { SetStateAction, useState } from "react";
+import { archiveAccount } from "./actions";
+import { toast } from "sonner";
 
 interface AccountCardProps {
   account: Database["public"]["Functions"]["get_account_balances"]["Returns"][0];
   formatCurrency: (amount: number) => string;
+  setOpenFahterDialog?: (value: SetStateAction<boolean>) => void;
 }
 
-export function AccountCard({ account, formatCurrency }: AccountCardProps) {
+export function AccountCard({
+  account,
+  formatCurrency,
+  setOpenFahterDialog,
+}: AccountCardProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const handleDelete = () => {
+    const promise = archiveAccount({ p_account_id: account.account_id });
+
+    toast.promise(promise, {
+      loading: "Eliminando cuenta...",
+      success: "Cuenta eliminada",
+      error: (error) => {
+        return `Error al eliminar la cuenta: ${error}`;
+      },
+    });
+
+    setIsDeleteDialogOpen(false);
+
+    if (setOpenFahterDialog) return setOpenFahterDialog(false);
+  };
+
+  const handleCancel = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
   return (
-    <Card className="mx-auto">
+    <Card className="mx-auto relative">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Wallet className="w-5 h-5" />
@@ -39,6 +71,22 @@ export function AccountCard({ account, formatCurrency }: AccountCardProps) {
           )}
         </div>
       </CardContent>
+      <div className="flex justify-end gap-1 px-3">
+        <Button
+          variant={"destructive"}
+          onClick={() => setIsDeleteDialogOpen(true)}
+          className="w-full"
+        >
+          <Trash />
+        </Button>
+        <DeleteConfirmationDialog
+          isOpen={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          onDelete={handleDelete}
+          onCancel={handleCancel}
+          description="¿Estás seguro de que quieres eliminar esta cuenta? Esta acción no se puede deshacer. El nombre de la cuenta seguirá apareciendo en transacciones pasadas y el balance se restará del balance total."
+        />
+      </div>
     </Card>
   );
 }

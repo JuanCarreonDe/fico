@@ -54,6 +54,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_archived: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
           user_id: string
@@ -61,6 +62,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          is_archived?: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
           user_id: string
@@ -68,6 +70,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          is_archived?: boolean | null
           name?: string
           type?: Database["public"]["Enums"]["transaction_type"]
           user_id?: string
@@ -166,6 +169,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      archive_account: { Args: { p_account_id: string }; Returns: undefined }
+      archive_category: { Args: { p_category_id: string }; Returns: undefined }
       create_account: {
         Args: {
           p_currency?: string
@@ -199,6 +204,7 @@ export type Database = {
         Returns: {
           created_at: string
           id: string
+          is_archived: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
           user_id: string
@@ -210,67 +216,36 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      create_transaction:
-        | {
-            Args: {
-              p_account_id: string
-              p_amount: number
-              p_category_id: string
-              p_description: string
-              p_transaction_date: string
-              p_type: Database["public"]["Enums"]["transaction_type"]
-            }
-            Returns: {
-              account_id: string
-              amount: number
-              category_id: string | null
-              created_at: string
-              deleted_at: string | null
-              description: string | null
-              id: string
-              transaction_date: string
-              transfer_id: string | null
-              type: Database["public"]["Enums"]["transaction_type"]
-              updated_at: string
-              user_id: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "transactions"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
-        | {
-            Args: {
-              p_account_id: string
-              p_amount: number
-              p_category_id: string
-              p_description?: string
-              p_transaction_date: string
-              p_type: Database["public"]["Enums"]["transaction_type"]
-            }
-            Returns: {
-              account_id: string
-              amount: number
-              category_id: string | null
-              created_at: string
-              deleted_at: string | null
-              description: string | null
-              id: string
-              transaction_date: string
-              transfer_id: string | null
-              type: Database["public"]["Enums"]["transaction_type"]
-              updated_at: string
-              user_id: string
-            }
-            SetofOptions: {
-              from: "*"
-              to: "transactions"
-              isOneToOne: true
-              isSetofReturn: false
-            }
-          }
+      create_transaction: {
+        Args: {
+          p_account_id: string
+          p_amount: number
+          p_category_id: string
+          p_description?: string
+          p_transaction_date: string
+          p_type: Database["public"]["Enums"]["transaction_type"]
+        }
+        Returns: {
+          account_id: string
+          amount: number
+          category_id: string | null
+          created_at: string
+          deleted_at: string | null
+          description: string | null
+          id: string
+          transaction_date: string
+          transfer_id: string | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "transactions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       get_account_balances: {
         Args: never
         Returns: {
@@ -359,6 +334,53 @@ export type Database = {
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
         }[]
+      }
+      update_account: {
+        Args: {
+          p_account_id: string
+          p_currency: string
+          p_initial_balance: number
+          p_name: string
+          p_type: Database["public"]["Enums"]["account_type"]
+        }
+        Returns: {
+          created_at: string
+          currency: string
+          id: string
+          initial_balance: number
+          is_archived: boolean
+          name: string
+          type: Database["public"]["Enums"]["account_type"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "accounts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      update_category: {
+        Args: {
+          p_category_id: string
+          p_name: string
+          p_type: Database["public"]["Enums"]["transaction_type"]
+        }
+        Returns: {
+          created_at: string
+          id: string
+          is_archived: boolean | null
+          name: string
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "categories"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       update_transaction: {
         Args: {

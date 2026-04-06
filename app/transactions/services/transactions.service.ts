@@ -25,7 +25,6 @@ export const getUserCategories = async () => {
 };
 
 export const getDailySummaryByMonth = async () => {
-  console.log("🚀 ~ getDailySummaryByMonth ~ getDailySummaryByMonth:");
   const db = createClient();
   const { data, error } = await (await db).rpc("get_daily_summary_by_month");
   if (error) throw error;

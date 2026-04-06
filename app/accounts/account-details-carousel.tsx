@@ -3,6 +3,7 @@ import * as React from "react";
 import {
   Carousel,
   CarouselApi,
+  // CarouselApi,
   CarouselContent,
   CarouselItem,
   CarouselNext,
@@ -16,7 +17,7 @@ import {
 } from "../../components/ui/card";
 import { Database } from "@/database.types";
 import AccountForm from "@/app/accounts/account-form";
-import { CreditCard, Plus, Wallet } from "lucide-react";
+import { CreditCard, Wallet } from "lucide-react";
 import { AccountCard } from "./account-card";
 import {
   DialogTrigger,
@@ -30,11 +31,13 @@ import { Button } from "@/components/ui/button";
 interface AccountDetailsCarouselProps {
   accountBalances: Database["public"]["Functions"]["get_account_balances"]["Returns"];
   formatCurrency: (amount: number) => string;
+  label?: string;
 }
 
 export function AccountDetailsCarousel({
   accountBalances,
   formatCurrency,
+  label = "Manage accounts",
 }: AccountDetailsCarouselProps) {
   const [open, setOpen] = React.useState(false);
   const [api, setApi] = React.useState<CarouselApi>();
@@ -50,14 +53,14 @@ export function AccountDetailsCarousel({
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap() + 1);
     });
-  }, [api]);
+  }, [accountBalances, api]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button onClick={() => {}} className="w-full" variant={"outline"}>
           <Wallet />
-          Manage accounts
+          {label}
         </Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
@@ -72,6 +75,7 @@ export function AccountDetailsCarousel({
                   <AccountCard
                     account={account}
                     formatCurrency={formatCurrency}
+                    setOpenFahterDialog={setOpen}
                   />
                 </CarouselItem>
               ))}
@@ -88,6 +92,7 @@ export function AccountDetailsCarousel({
                       buttonClassName="w-full h-full"
                       buttonText="Agregar cuenta"
                       variant={"outline"}
+                      setOpenFahterDialog={setOpen}
                     />
                   </CardContent>
                 </Card>
@@ -98,7 +103,6 @@ export function AccountDetailsCarousel({
               <CarouselPrevious />
             </div>
           </Carousel>
-
           {/* Carousel Indicators */}
           {count > 1 && (
             <div className="py-2 text-center text-sm text-muted-foreground mt-4">
