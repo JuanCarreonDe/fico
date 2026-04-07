@@ -57,6 +57,7 @@ export type Database = {
           is_archived: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string
           user_id: string
         }
         Insert: {
@@ -65,6 +66,7 @@ export type Database = {
           is_archived?: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
           user_id: string
         }
         Update: {
@@ -73,6 +75,7 @@ export type Database = {
           is_archived?: boolean | null
           name?: string
           type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -113,6 +116,7 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           id: string
+          is_archived: boolean | null
           transaction_date: string
           transfer_id: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -127,6 +131,7 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           id?: string
+          is_archived?: boolean | null
           transaction_date: string
           transfer_id?: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -141,6 +146,7 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           id?: string
+          is_archived?: boolean | null
           transaction_date?: string
           transfer_id?: string | null
           type?: Database["public"]["Enums"]["transaction_type"]
@@ -171,6 +177,10 @@ export type Database = {
     Functions: {
       archive_account: { Args: { p_account_id: string }; Returns: undefined }
       archive_category: { Args: { p_category_id: string }; Returns: undefined }
+      archive_transaction: {
+        Args: { p_transaction_id: string }
+        Returns: undefined
+      }
       create_account: {
         Args: {
           p_currency?: string
@@ -207,6 +217,7 @@ export type Database = {
           is_archived: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string
           user_id: string
         }
         SetofOptions: {
@@ -233,6 +244,7 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           id: string
+          is_archived: boolean | null
           transaction_date: string
           transfer_id: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -294,6 +306,7 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           id: string
+          is_archived: boolean | null
           transaction_date: string
           transfer_id: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -373,6 +386,7 @@ export type Database = {
           is_archived: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string
           user_id: string
         }
         SetofOptions: {
@@ -400,6 +414,7 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           id: string
+          is_archived: boolean | null
           transaction_date: string
           transfer_id: string | null
           type: Database["public"]["Enums"]["transaction_type"]

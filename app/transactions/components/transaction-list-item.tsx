@@ -1,3 +1,11 @@
+"use client";
+
+import { useState, useRef, useCallback } from "react";
+import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
+import { deleteTransaction } from "../actions";
+import { toast } from "sonner";
+import { useTransactionStore } from "@/lib/store/transaction-store";
+
 interface Props {
   item: {
     account_name: string;
@@ -8,27 +16,97 @@ interface Props {
     transaction_date: string;
     type: "income" | "expense";
   };
+  date: string;
 }
 
-export default function TransactionListItem({ item }: Props) {
+export default function TransactionListItem({ item, date }: Props) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const startPosRef = useRef<{ x: number; y: number } | null>(null);
+  const removeTransaction = useTransactionStore((state) => state.removeTransaction);
+
+  const cancelTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    startPosRef.current = { x: touch.clientX, y: touch.clientY };
+    timerRef.current = setTimeout(() => {
+      setIsDeleteDialogOpen(true);
+    }, 500);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!startPosRef.current) return;
+    const touch = e.touches[0];
+    const dx = Math.abs(touch.clientX - startPosRef.current.x);
+    const dy = Math.abs(touch.clientY - startPosRef.current.y);
+    if (dx > 10 || dy > 10) {
+      cancelTimer();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    cancelTimer();
+    startPosRef.current = null;
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteTransaction({ p_transaction_id: item.id });
+      removeTransaction(date, item.id);
+      setIsDeleteDialogOpen(false);
+      toast.success("Transacción eliminada");
+    } catch {
+      toast.error("Error al eliminar la transacción");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsDeleteDialogOpen(false);
+  };
+
   return (
-    <div className="flex flex-col gap-2 p-4 bg-card rounded-md">
-      <div className="flex gap-2 items-center justify-between">
-        <div className="flex gap-2 items-center">
-          <span className="px-2 py-1 bg-secondary rounded-2xl">
-            {item.category_name}
+    <>
+      <div
+        className="flex flex-col gap-2 p-4 bg-card rounded-md select-none"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="flex gap-2 items-center justify-between">
+          <div className="flex gap-2 items-center">
+            <span className="px-2 py-1 bg-secondary rounded-2xl">
+              {item.category_name}
+            </span>
+            <span className="capitalize">{item.type}</span>
+          </div>
+          <span
+            className={`justify-end ${item.type === "income" ? "text-success" : "text-destructive"}`}
+          >
+            ${item.amount}
           </span>
-          <span className="capitalize">{item.type}</span>
         </div>
-        <span
-          className={`justify-end ${item.type === "income" ? "text-success" : "text-destructive"}`}
-        >
-          ${item.amount}
-        </span>
+        {item.description && (
+          <p className="text-muted-foreground capitalize">{item.description}</p>
+        )}
       </div>
-      {item.description && (
-        <p className="text-muted-foreground capitalize">{item.description}</p>
-      )}
-    </div>
+      <DeleteConfirmationDialog
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onDelete={handleDelete}
+        onCancel={handleCancel}
+        title="Eliminar transacción"
+        description={`¿Estás seguro de que quieres eliminar la transacción de $${item.amount}?`}
+      />
+    </>
   );
 }

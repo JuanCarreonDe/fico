@@ -48,6 +48,10 @@ interface TransactionState {
     date: string,
     transactions: Database["public"]["Functions"]["get_transactions_by_day"]["Returns"],
   ) => void;
+  removeTransaction: (
+    date: string,
+    transactionId: string,
+  ) => void;
 
   // Initialize data from server
   initializeData: (data: {
@@ -82,6 +86,17 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
     set((state) => ({
       transactionsByDay: { ...state.transactionsByDay, [date]: transactions },
     })),
+  removeTransaction: (date, transactionId) =>
+    set((state) => {
+      const dayTransactions = state.transactionsByDay[date];
+      if (!dayTransactions) return state;
+      return {
+        transactionsByDay: {
+          ...state.transactionsByDay,
+          [date]: dayTransactions.filter((t) => t.id !== transactionId),
+        },
+      };
+    }),
 
   // Initialize data from server
   initializeData: (data) =>

@@ -42,3 +42,15 @@ export async function getDailySummaryByMonth(
 
   return data;
 }
+
+export async function deleteTransaction(
+  params: Database["public"]["Functions"]["archive_transaction"]["Args"],
+) {
+  const db = await createClient();
+
+  const { error } = await db.rpc("archive_transaction", params);
+
+  revalidatePath("/transactions", "page");
+
+  if (error) throw error;
+}

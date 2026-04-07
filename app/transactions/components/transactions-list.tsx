@@ -117,7 +117,7 @@ export function TransactionList() {
                     {isLoading && <TransactionByDaySkeleton />}
 
                     {transactionsByDay[i.day_date]?.map((t) => (
-                      <TransactionListItem key={t.id} item={t} />
+                      <TransactionListItem key={t.id} item={t} date={i.day_date} />
                     ))}
                   </div>
                 </CollapsibleContent>
