@@ -27,7 +27,7 @@ export function NavigationMenu() {
             <Button
               key={item.name}
               asChild
-              variant={isActive ? "accent" : "outline"}
+              variant={isActive ? "default" : "outline"}
               className={cn("transition-all duration-200")}
             >
               <Link href={item.href}>{item.name}</Link>

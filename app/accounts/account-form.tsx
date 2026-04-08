@@ -52,7 +52,7 @@ type AccountFormData =
   Database["public"]["Functions"]["create_account"]["Args"];
 
 export default function AccountForm({
-  buttonText = "Add",
+  buttonText = "",
   buttonClassName,
   variant,
   setOpenFahterDialog,

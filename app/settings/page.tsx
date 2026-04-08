@@ -34,22 +34,23 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Accounts</span>
               <div className="flex gap-2">
-                <div className="w-20">
+                <div className="w-fit">
                   {accountBalances && (
                     <AccountDetailsCarousel
                       accountBalances={accountBalances}
                       formatCurrency={formatCurrency}
-                      label="Edit"
+                      label=""
                     />
                   )}
                 </div>
+
                 <AccountForm />
               </div>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Categories</span>
               <div className="flex gap-2">
-                <div className="w-20">
+                <div className="w-fit">
                   {userCategories && (
                     <CategoryManage categories={userCategories} />
                   )}

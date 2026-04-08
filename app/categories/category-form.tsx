@@ -78,7 +78,6 @@ export default function CategoryForm() {
       <DialogTrigger asChild>
         <Button onClick={() => {}}>
           <Plus />
-          Add
         </Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false}>

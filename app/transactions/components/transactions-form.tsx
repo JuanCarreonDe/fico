@@ -123,7 +123,8 @@ export default function TransactionForm() {
         <div className="flex flex-col gap-4">
           <Button
             size={"xl"}
-            className="ml-5 text-accent"
+            className="ml-5"
+            variant={"accent"}
             onClick={() => setTransactionType("expense")}
           >
             <ArrowUpRight />

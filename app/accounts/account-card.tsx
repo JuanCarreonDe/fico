@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
 import { Database } from "@/database.types";
-import { Pen, Trash, Wallet } from "lucide-react";
+import { Trash, Wallet } from "lucide-react";
 import { SetStateAction, useState } from "react";
 import { archiveAccount } from "./actions";
 import { toast } from "sonner";

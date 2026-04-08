@@ -17,7 +17,7 @@ import {
 } from "../../components/ui/card";
 import { Database } from "@/database.types";
 import AccountForm from "@/app/accounts/account-form";
-import { CreditCard, Wallet } from "lucide-react";
+import { CreditCard, ListX, Wallet } from "lucide-react";
 import { AccountCard } from "./account-card";
 import {
   DialogTrigger,
@@ -59,7 +59,7 @@ export function AccountDetailsCarousel({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button onClick={() => {}} className="w-full" variant={"outline"}>
-          <Wallet />
+          <ListX />
           {label}
         </Button>
       </DialogTrigger>

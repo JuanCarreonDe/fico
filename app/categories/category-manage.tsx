@@ -9,7 +9,7 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import { Database } from "@/database.types";
-import { ArrowDownLeft, ArrowUpRight, Pen, Trash } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, ListX, Pen, Trash } from "lucide-react";
 import { useState } from "react";
 import { archiveCategory } from "./actions";
 import { toast } from "sonner";
@@ -45,8 +45,7 @@ export default function CategoryManage({ categories }: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"outline"} className="w-full">
-          <Pen />
-          Edit
+          <ListX />
         </Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
