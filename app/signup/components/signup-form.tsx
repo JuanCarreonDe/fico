@@ -13,12 +13,21 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
-import { signup } from "../actions";
+import { Suspense, useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { signup } from "../../login/actions";
 
 function SignupFormInner() {
   const searchParamsHook = useSearchParams();
-  const redirectTo = searchParamsHook.get("redirectTo") || "/transactions";
+  const error = searchParamsHook.get("error");
+  const toastShown = useRef(false);
+
+  useEffect(() => {
+    if (error && !toastShown.current) {
+      toastShown.current = true;
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <div className={cn("flex flex-col gap-6")}>
@@ -31,11 +40,7 @@ function SignupFormInner() {
         </CardHeader>
         <CardContent>
           <form method="POST">
-            <input
-              type="hidden"
-              name="redirectTo"
-              value={redirectTo ?? "/login"}
-            />
+            <input type="hidden" name="redirectTo" value="/login" />
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>

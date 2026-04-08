@@ -20,14 +20,22 @@ import { toast } from "sonner";
 function LoginFormInner() {
   const searchParamsHook = useSearchParams();
   const success = searchParamsHook.get("success");
-  const toastShown = useRef(false);
+  const error = searchParamsHook.get("error");
+  const toastShown = useRef({ success: false, error: false });
 
   useEffect(() => {
-    if (success === "signup" && !toastShown.current) {
-      toastShown.current = true;
+    if (success === "signup" && !toastShown.current.success) {
+      toastShown.current.success = true;
       toast.success("Revisa tu correo para confirmar tu cuenta");
     }
   }, [success]);
+
+  useEffect(() => {
+    if (error && !toastShown.current.error) {
+      toastShown.current.error = true;
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <div className={cn("flex flex-col gap-6")}>
