@@ -11,36 +11,31 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { login } from "../../login/actions";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef } from "react";
-import { toast } from "sonner";
+import { Suspense } from "react";
+import { signup } from "../actions";
 
-function LoginFormInner() {
+function SignupFormInner() {
   const searchParamsHook = useSearchParams();
-  const success = searchParamsHook.get("success");
-  const toastShown = useRef(false);
-
-  useEffect(() => {
-    if (success === "signup" && !toastShown.current) {
-      toastShown.current = true;
-      toast.success("Revisa tu correo para confirmar tu cuenta");
-    }
-  }, [success]);
+  const redirectTo = searchParamsHook.get("redirectTo") || "/transactions";
 
   return (
     <div className={cn("flex flex-col gap-6")}>
       <Card className="border-0 ring-0">
         <CardHeader>
-          <CardTitle>Iniciar sesión</CardTitle>
+          <CardTitle>Crear cuenta</CardTitle>
           <CardDescription>
-            Ingresa tu correo y contraseña para acceder a tu cuenta
+            Regístrate para empezar a controlar tus finanzas
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form method="POST">
-            <input type="hidden" name="redirectTo" value="/transactions" />
+            <input
+              type="hidden"
+              name="redirectTo"
+              value={redirectTo ?? "/login"}
+            />
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>
@@ -57,8 +52,8 @@ function LoginFormInner() {
                 <Input id="password" type="password" name="password" required />
               </Field>
               <Field>
-                <Button type="submit" variant={"accent"} formAction={login}>
-                  Iniciar sesión
+                <Button type="submit" variant="accent" formAction={signup}>
+                  Crear cuenta
                 </Button>
               </Field>
             </FieldGroup>
@@ -67,19 +62,19 @@ function LoginFormInner() {
       </Card>
 
       <p className="text-center text-sm text-muted-foreground">
-        ¿No tienes una cuenta?{" "}
-        <Link href="/signup" className="text-accent-foreground underline">
-          Regístrate
+        ¿Ya tienes una cuenta?{" "}
+        <Link href="/login" className="text-accent-foreground underline">
+          Iniciar sesión
         </Link>
       </p>
     </div>
   );
 }
 
-export default function LoginForm() {
+export default function SignupForm() {
   return (
     <Suspense fallback={<div>Cargando...</div>}>
-      <LoginFormInner />
+      <SignupFormInner />
     </Suspense>
   );
 }

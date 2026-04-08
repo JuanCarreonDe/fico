@@ -1,13 +1,9 @@
 import LoginForm from "./components/login-form";
 
-export default function LoginPage({
-  searchParams,
-}: {
-  searchParams: { redirectTo?: string };
-}) {
+export default function LoginPage() {
   return (
     <div className="h-full flex justify-center flex-col">
-      <LoginForm searchParams={searchParams} />
+      <LoginForm />
     </div>
   );
 }
