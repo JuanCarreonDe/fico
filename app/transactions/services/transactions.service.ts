@@ -25,8 +25,6 @@ export const getUserCategories = async () => {
 };
 
 export const getDailySummaryByMonth = async (params?: { p_month?: string }) => {
-  console.log("exec");
-
   const db = await createClient();
   let monthParam: string | undefined;
   if (params?.p_month) {

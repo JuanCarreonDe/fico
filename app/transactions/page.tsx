@@ -14,24 +14,7 @@ function TransactionsContent() {
     accountBalances,
     userAccounts,
     userCategories,
-    // isLoading,
   } = useTransactionStore();
-
-  // if (isLoading) {
-  //   return (
-  //     <div className="h-full flex flex-col gap-4">
-  //       <div className="h-10 w-32 bg-muted animate-pulse rounded-md m-auto" />
-  //       <div className="flex flex-col gap-4">
-  //         <div className="h-80 bg-muted animate-pulse rounded-xl" />
-  //         <div className="flex flex-col gap-3">
-  //           <div className="h-12 bg-muted animate-pulse rounded-lg" />
-  //           <div className="h-12 bg-muted animate-pulse rounded-lg" />
-  //           <div className="h-12 bg-muted animate-pulse rounded-lg" />
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <TransactionsProvider

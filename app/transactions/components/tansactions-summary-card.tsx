@@ -1,23 +1,11 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "../../../components/ui/card";
-import {
-  Eye,
-  ArrowUpRight,
-  ArrowDownRight,
-  DollarSign,
-  Receipt,
-  ArrowDownLeft,
-  Currency,
-  CurrencyIcon,
-} from "lucide-react";
+import { ArrowUpRight, DollarSign, ArrowDownLeft } from "lucide-react";
 import { TransactionsMetricCard } from "./transactions-metric-card";
 import { cn } from "@/lib/utils";
 import { useTransactionStore } from "@/lib/store/transaction-store";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface FinancialSummaryCardProps {
-  // summary: Database
   formatCurrency: (amount: number) => string;
 }
 
@@ -28,32 +16,13 @@ export function TransactionsSummaryCard({
 
   const isLoading = useTransactionStore((state) => state.isLoading);
 
-  if (!summary) return;
-
-  const {
-    monthly_balance,
-    total_balance,
-    total_expense_month,
-    total_income_month,
-  } = summary;
-
   return (
     <>
-      {/* <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Receipt className="w-6 h-6 text-muted-foreground" />
-          <h2 className="text-xl font-semibold">Saldo total</h2>
-        </div>
-        <Button variant="ghost" size="sm" className="p-2">
-          <Eye className="w-4 h-4" />
-        </Button>
-      </div> */}
-
       <div className="text-center mb-8">
         <div className="text-4xl font-bold text-primary mb-2 flex items-center justify-center">
           <DollarSign className="w-6 h-6 text-muted-foreground" />
           {isLoading && <Skeleton className="h-10 w-32" />}
-          {!isLoading && total_balance}
+          {!isLoading && summary?.total_balance}
         </div>
         <p className="text-sm text-muted-foreground">
           Balance total de todas las cuentas
@@ -63,8 +32,7 @@ export function TransactionsSummaryCard({
       <div className="grid grid-cols-3 gap-4 mb-6">
         <TransactionsMetricCard
           title="Ingresos"
-          value={formatCurrency(total_income_month)}
-          // value={total_income_month.toString()}
+          value={formatCurrency(summary?.total_income_month || 0)}
           icon={<ArrowDownLeft className="w-4 h-4" />}
           variant="income"
           isLoading={isLoading}
@@ -72,8 +40,7 @@ export function TransactionsSummaryCard({
 
         <TransactionsMetricCard
           title="Gastos"
-          value={formatCurrency(total_expense_month)}
-          // value={total_expense_month.toString()}
+          value={formatCurrency(summary?.total_expense_month || 0)}
           icon={<ArrowUpRight className="w-4 h-4" />}
           variant="expense"
           isLoading={isLoading}
@@ -89,11 +56,13 @@ export function TransactionsSummaryCard({
           <div
             className={cn(
               "text font-bold",
-              monthly_balance >= 0 ? "text-green-600" : "text-red-600",
+              summary?.monthly_balance || 0 >= 0
+                ? "text-green-600"
+                : "text-red-600",
             )}
           >
             {isLoading && <Skeleton className="h-5 w-15" />}
-            {!isLoading && formatCurrency(monthly_balance)}
+            {!isLoading && formatCurrency(summary?.monthly_balance || 0)}
           </div>
         </div>
       </div>
