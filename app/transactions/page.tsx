@@ -1,22 +1,37 @@
-import { getAccountBalances } from "../accounts/accounts.service";
+"use client";
+
 import TransactionForm from "./components/transactions-form";
 import { TransactionsProvider } from "./components/transactions-provider";
 import { TransactionList } from "./components/transactions-list";
 import { TransactionSummary } from "./components/transactions-summary";
-import {
-  getDailySummaryByMonth,
-  getMonthlyFinancialSummary,
-  getUserAccounts,
-  getUserCategories,
-} from "./services/transactions.service";
 import TransactionsMonthPicker from "./components/transactions-month-picker";
+import { useTransactionStore } from "@/lib/store/transaction-store";
 
-export default async function TransactionsPage() {
-  const summary = await getMonthlyFinancialSummary();
-  const dailySummaryCurrentMonth = await getDailySummaryByMonth();
-  const accountBalances = await getAccountBalances();
-  const userAccounts = await getUserAccounts();
-  const userCategories = await getUserCategories();
+function TransactionsContent() {
+  const {
+    summary,
+    dailySummaryCurrentMonth,
+    accountBalances,
+    userAccounts,
+    userCategories,
+    // isLoading,
+  } = useTransactionStore();
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="h-full flex flex-col gap-4">
+  //       <div className="h-10 w-32 bg-muted animate-pulse rounded-md m-auto" />
+  //       <div className="flex flex-col gap-4">
+  //         <div className="h-80 bg-muted animate-pulse rounded-xl" />
+  //         <div className="flex flex-col gap-3">
+  //           <div className="h-12 bg-muted animate-pulse rounded-lg" />
+  //           <div className="h-12 bg-muted animate-pulse rounded-lg" />
+  //           <div className="h-12 bg-muted animate-pulse rounded-lg" />
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <TransactionsProvider
@@ -42,4 +57,8 @@ export default async function TransactionsPage() {
       </div>
     </TransactionsProvider>
   );
+}
+
+export default function TransactionsPage() {
+  return <TransactionsContent />;
 }

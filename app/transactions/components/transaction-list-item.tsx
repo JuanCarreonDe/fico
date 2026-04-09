@@ -24,7 +24,10 @@ export default function TransactionListItem({ item, date }: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startPosRef = useRef<{ x: number; y: number } | null>(null);
-  const removeTransaction = useTransactionStore((state) => state.removeTransaction);
+  const removeTransaction = useTransactionStore(
+    (state) => state.removeTransaction,
+  );
+  const refreshData = useTransactionStore((state) => state.refreshData);
 
   const cancelTimer = useCallback(() => {
     if (timerRef.current) {
@@ -63,6 +66,7 @@ export default function TransactionListItem({ item, date }: Props) {
       removeTransaction(date, item.id);
       setIsDeleteDialogOpen(false);
       toast.success("Transacción eliminada");
+      await refreshData();
     } catch {
       toast.error("Error al eliminar la transacción");
     } finally {
@@ -77,10 +81,11 @@ export default function TransactionListItem({ item, date }: Props) {
   return (
     <>
       <div
-        className="flex flex-col gap-2 p-4 bg-card rounded-md select-none"
+        className="flex flex-col gap-2 p-4 bg-card rounded-md select-none cursor-pointer hover:bg-card/60 transition-colors active:bg-muted/80"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onClick={() => setIsDeleteDialogOpen(true)}
       >
         <div className="flex gap-2 items-center justify-between">
           <div className="flex gap-2 items-center">

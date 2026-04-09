@@ -8,7 +8,7 @@ interface MetricCardProps {
   value: string;
   icon: ReactNode;
   variant: "income" | "expense" | "balance";
-  isLoadingDailySummary: boolean;
+  isLoading: boolean;
 }
 
 export function TransactionsMetricCard({
@@ -16,7 +16,7 @@ export function TransactionsMetricCard({
   value,
   icon,
   variant,
-  isLoadingDailySummary,
+  isLoading,
 }: MetricCardProps) {
   const getVariantStyles = () => {
     switch (variant) {
@@ -43,8 +43,8 @@ export function TransactionsMetricCard({
         <span className="text-sm font-medium">{title}</span>
       </div>
       <div className="text font-bold flex">
-        {isLoadingDailySummary && <Skeleton className="h-5 w-15" />}
-        {!isLoadingDailySummary && value}
+        {isLoading && <Skeleton className="h-5 w-15" />}
+        {!isLoading && value}
       </div>
     </div>
   );

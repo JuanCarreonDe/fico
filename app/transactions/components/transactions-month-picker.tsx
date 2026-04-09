@@ -7,8 +7,7 @@ import { useTransactionStore } from "@/lib/store/transaction-store";
 export default function TransactionsMonthPicker() {
   const currentMonth = new Date().toISOString().slice(0, 7);
 
-  const { setDailySummaryCurrentMonth, setIsLoadingDailySummary } =
-    useTransactionStore();
+  const { setDailySummaryCurrentMonth, setIsLoading } = useTransactionStore();
 
   const handleClick = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -16,14 +15,14 @@ export default function TransactionsMonthPicker() {
     const monthValue = e.target.value; // Format: "YYYY-MM"
     const monthFullDate = `${monthValue}-01`;
 
-    setIsLoadingDailySummary(true);
+    setIsLoading(true);
 
     const res = await getDailySummaryByMonth({
       p_month: monthFullDate,
     });
 
     setDailySummaryCurrentMonth(res);
-    setIsLoadingDailySummary(false);
+    setIsLoading(false);
   };
 
   return (

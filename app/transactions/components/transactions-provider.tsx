@@ -7,27 +7,33 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
   children: React.ReactNode;
-  initialData: {
-    summary: Database["public"]["Functions"]["get_monthly_financial_summary"]["Returns"];
-    dailySummaryCurrentMonth: Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
-    accountBalances: Database["public"]["Functions"]["get_account_balances"]["Returns"];
-    userAccounts: Database["public"]["Functions"]["get_user_accounts"]["Returns"];
-    userCategories: Database["public"]["Functions"]["get_user_categories"]["Returns"];
+  initialData?: {
+    summary: Database["public"]["Functions"]["get_monthly_financial_summary"]["Returns"] | null;
+    dailySummaryCurrentMonth: Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"] | null;
+    accountBalances: Database["public"]["Functions"]["get_account_balances"]["Returns"] | null;
+    userAccounts: Database["public"]["Functions"]["get_user_accounts"]["Returns"] | null;
+    userCategories: Database["public"]["Functions"]["get_user_categories"]["Returns"] | null;
   };
 }
 
 export function TransactionsProvider({ children, initialData }: Props) {
-  const initializeData = useTransactionStore((state) => state.initializeData);
-  const [isInitialized, setIsInitialized] = React.useState(false);
+  const storeInitialized = useTransactionStore((state) => state.isInitialized);
+  const [isClientInitialized, setIsClientInitialized] = React.useState(false);
 
   React.useEffect(() => {
-    // Initialize store with server data
-    initializeData(initialData);
-    setIsInitialized(true);
-  }, [initialData, initializeData]);
+    if (!storeInitialized && initialData?.summary) {
+      useTransactionStore.getState().initializeData({
+        summary: initialData.summary,
+        dailySummaryCurrentMonth: initialData.dailySummaryCurrentMonth ?? null,
+        accountBalances: initialData.accountBalances ?? null,
+        userAccounts: initialData.userAccounts ?? null,
+        userCategories: initialData.userCategories ?? null,
+      });
+    }
+    setIsClientInitialized(true);
+  }, [storeInitialized, initialData]);
 
-  // Don't render children until store is initialized
-  if (!isInitialized) {
+  if (!isClientInitialized) {
     return <Skeleton className="" />;
   }
 

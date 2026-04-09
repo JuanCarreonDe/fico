@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { NavigationWrapper } from "@/components/navigation-wrapper";
 import { AuthProvider } from "@/components/auth-provider";
 import { AuthSync } from "@/components/auth-sync";
+import { AppDataProvider } from "@/components/app-data-provider";
 import PageTransition from "@/components/page-transition";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
@@ -42,17 +43,19 @@ export default function RootLayout({
         >
           <AuthProvider>
             <AuthSync />
-            <div className="h-dvh bg-background overflow-hidden p-4 flex flex-col gap-4">
-              <main className="overflow-auto border flex-1 bg-card rounded-2xl relative">
-                <div className="h-full p-4">
-                  <PageTransition>{children}</PageTransition>
+            <AppDataProvider>
+              <div className="h-dvh bg-background overflow-hidden p-2 flex flex-col gap-4">
+                <main className="overflow-auto border flex-1 bg-card rounded-2xl relative">
+                  <div className="min-h-full p-4">
+                    <PageTransition>{children}</PageTransition>
+                  </div>
+                </main>
+                <div className="h-fit">
+                  <NavigationWrapper />
                 </div>
-              </main>
-              <div className="h-fit">
-                <NavigationWrapper />
+                <Toaster position="top-center" />
               </div>
-              <Toaster position="top-center" />
-            </div>
+            </AppDataProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

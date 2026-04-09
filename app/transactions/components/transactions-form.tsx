@@ -48,9 +48,7 @@ type TransactionFormData = {
 export default function TransactionForm() {
   const userAccounts = useTransactionStore((state) => state.userAccounts);
   const userCategories = useTransactionStore((state) => state.userCategories);
-  const setIsLoadingDailySummary = useTransactionStore(
-    (state) => state.setIsLoadingDailySummary,
-  );
+  const refreshData = useTransactionStore((state) => state.refreshData);
   const [open, setOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",
@@ -72,33 +70,20 @@ export default function TransactionForm() {
     try {
       setOpen(false);
 
-      setIsLoadingDailySummary(true);
+      await createTransaction({ ...data, p_type: transactionType });
 
-      const promise = Promise.all([
-        createTransaction({ ...data, p_type: transactionType }),
-      ]);
+      toast.success("Transacción creada");
 
-      toast.promise(promise, {
-        loading: "Creando transacción...",
-        success: () => {
-          reset({
-            p_amount: undefined,
-            p_description: undefined,
-            p_account_id: undefined,
-            p_category_id: undefined,
-          });
-          return "Transacción creada";
-        },
-        error: () => {
-          setOpen(true);
-          return "Error al crear la transacción";
-        },
-        finally: () => {
-          setIsLoadingDailySummary(false);
-        },
+      reset({
+        p_amount: undefined,
+        p_description: undefined,
+        p_account_id: undefined,
+        p_category_id: undefined,
       });
+
+      await refreshData();
     } catch (error) {
-      toast.error("Failed to create transaction");
+      toast.error("Error al crear la transacción");
       console.error(error);
     }
   };

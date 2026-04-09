@@ -26,9 +26,7 @@ export function TransactionsSummaryCard({
 }: FinancialSummaryCardProps) {
   const summary = useTransactionStore((state) => state.summary)?.at(0);
 
-  const isLoadingDailySummary = useTransactionStore(
-    (state) => state.isLoadingDailySummary,
-  );
+  const isLoading = useTransactionStore((state) => state.isLoading);
 
   if (!summary) return;
 
@@ -54,8 +52,8 @@ export function TransactionsSummaryCard({
       <div className="text-center mb-8">
         <div className="text-4xl font-bold text-primary mb-2 flex items-center justify-center">
           <DollarSign className="w-6 h-6 text-muted-foreground" />
-          {isLoadingDailySummary && <Skeleton className="h-10 w-32" />}
-          {!isLoadingDailySummary && total_balance}
+          {isLoading && <Skeleton className="h-10 w-32" />}
+          {!isLoading && total_balance}
         </div>
         <p className="text-sm text-muted-foreground">
           Balance total de todas las cuentas
@@ -69,7 +67,7 @@ export function TransactionsSummaryCard({
           // value={total_income_month.toString()}
           icon={<ArrowDownLeft className="w-4 h-4" />}
           variant="income"
-          isLoadingDailySummary={isLoadingDailySummary}
+          isLoading={isLoading}
         />
 
         <TransactionsMetricCard
@@ -78,7 +76,7 @@ export function TransactionsSummaryCard({
           // value={total_expense_month.toString()}
           icon={<ArrowUpRight className="w-4 h-4" />}
           variant="expense"
-          isLoadingDailySummary={isLoadingDailySummary}
+          isLoading={isLoading}
         />
 
         <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20">
@@ -94,8 +92,8 @@ export function TransactionsSummaryCard({
               monthly_balance >= 0 ? "text-green-600" : "text-red-600",
             )}
           >
-            {isLoadingDailySummary && <Skeleton className="h-5 w-15" />}
-            {!isLoadingDailySummary && formatCurrency(monthly_balance)}
+            {isLoading && <Skeleton className="h-5 w-15" />}
+            {!isLoading && formatCurrency(monthly_balance)}
           </div>
         </div>
       </div>

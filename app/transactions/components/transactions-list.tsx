@@ -22,9 +22,7 @@ export function TransactionList() {
   const dailySummaryCurrentMonth = useTransactionStore(
     (state) => state.dailySummaryCurrentMonth,
   );
-  const isLoadingDailySummary = useTransactionStore(
-    (state) => state.isLoadingDailySummary,
-  );
+  const isLoading = useTransactionStore((state) => state.isLoading);
   const setTransactionsByDay = useTransactionStore(
     (state) => state.setTransactionsByDay,
   );
@@ -32,23 +30,23 @@ export function TransactionList() {
     (state) => state.transactionsByDay,
   );
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingDay, setIsLoadingDay] = useState(false);
 
   const handleLoadDay = async (
     params: Database["public"]["Functions"]["get_transactions_by_day"]["Args"],
   ) => {
-    setIsLoading(true);
+    setIsLoadingDay(true);
 
     const data = await getTransactionsByDay(params);
 
     setTransactionsByDay(params.p_date, data);
 
-    setIsLoading(false);
+    setIsLoadingDay(false);
   };
 
   return (
     <>
-      {isLoadingDailySummary && (
+      {isLoading && (
         <div className="space-y-4">
           {[...Array(5)].map((_, i) => (
             <Card className="mx-auto w-full min-h-fit" key={i}>
@@ -60,9 +58,12 @@ export function TransactionList() {
         </div>
       )}
 
-      {!isLoadingDailySummary &&
+      {!isLoading &&
         dailySummaryCurrentMonth?.map((i) => (
-          <Card className="mx-auto w-full min-h-fit" key={i.day_date}>
+          <Card
+            className="mx-auto w-full min-h-fit"
+            key={`${i.day_date}${i.total_expense}`}
+          >
             <CardContent>
               <Collapsible
                 className="rounded-md data-[state=open]:bg-muted border"
@@ -114,10 +115,14 @@ export function TransactionList() {
                 </CollapsibleTrigger>
                 <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
                   <div className="w-full flex flex-col gap-2">
-                    {isLoading && <TransactionByDaySkeleton />}
+                    {isLoadingDay && <TransactionByDaySkeleton />}
 
                     {transactionsByDay[i.day_date]?.map((t) => (
-                      <TransactionListItem key={t.id} item={t} date={i.day_date} />
+                      <TransactionListItem
+                        key={t.id}
+                        item={t}
+                        date={i.day_date}
+                      />
                     ))}
                   </div>
                 </CollapsibleContent>
