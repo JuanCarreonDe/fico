@@ -21,56 +21,33 @@ interface Props {
 
 export default function TransactionListItem({ item, date }: Props) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const startPosRef = useRef<{ x: number; y: number } | null>(null);
   const removeTransaction = useTransactionStore(
     (state) => state.removeTransaction,
   );
   const refreshData = useTransactionStore((state) => state.refreshData);
 
-  const cancelTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    startPosRef.current = { x: touch.clientX, y: touch.clientY };
-    timerRef.current = setTimeout(() => {
-      setIsDeleteDialogOpen(true);
-    }, 500);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!startPosRef.current) return;
-    const touch = e.touches[0];
-    const dx = Math.abs(touch.clientX - startPosRef.current.x);
-    const dy = Math.abs(touch.clientY - startPosRef.current.y);
-    if (dx > 10 || dy > 10) {
-      cancelTimer();
-    }
-  };
-
-  const handleTouchEnd = () => {
-    cancelTimer();
-    startPosRef.current = null;
-  };
-
   const handleDelete = async () => {
-    setIsDeleting(true);
     try {
-      await deleteTransaction({ p_transaction_id: item.id });
-      removeTransaction(date, item.id);
+      const promise = deleteTransaction({ p_transaction_id: item.id });
+
       setIsDeleteDialogOpen(false);
-      toast.success("Transacción eliminada");
-      await refreshData();
+
+      toast.promise(promise, {
+        loading: "Eliminando transacción...",
+        success: () => {
+          removeTransaction(date, item.id);
+          return "Transacción eliminada";
+        },
+        error: (error) => {
+          return `Error al eliminar la transacción: ${error}`;
+        },
+        async finally() {
+          await refreshData();
+        },
+      });
     } catch {
       toast.error("Error al eliminar la transacción");
     } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -82,9 +59,6 @@ export default function TransactionListItem({ item, date }: Props) {
     <>
       <div
         className="flex flex-col gap-2 p-4 bg-card rounded-md select-none cursor-pointer hover:bg-card/60 transition-colors active:bg-muted/80"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         onClick={() => setIsDeleteDialogOpen(true)}
       >
         <div className="flex gap-2 items-center justify-between">

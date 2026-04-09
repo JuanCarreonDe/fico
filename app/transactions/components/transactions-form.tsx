@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { createTransaction } from "../actions";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useTransactionStore } from "@/lib/store/transaction-store";
+import { useDashboardStore } from "@/lib/store/dashboard-store";
 
 const transactionSchema = z.object({
   p_account_id: z.string().min(1, "Account is required"),
@@ -49,6 +50,9 @@ export default function TransactionForm() {
   const userAccounts = useTransactionStore((state) => state.userAccounts);
   const userCategories = useTransactionStore((state) => state.userCategories);
   const refreshData = useTransactionStore((state) => state.refreshData);
+  const refreshDashboardData = useDashboardStore(
+    (state) => state.refreshDashboardData,
+  );
   const [open, setOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",
@@ -82,6 +86,7 @@ export default function TransactionForm() {
       });
 
       await refreshData();
+      await refreshDashboardData();
     } catch (error) {
       toast.error("Error al crear la transacción");
       console.error(error);
@@ -105,22 +110,22 @@ export default function TransactionForm() {
       }}
     >
       <DialogTrigger asChild>
-        <div className="flex flex-col gap-4">
+        <div className="flex gap-2">
           <Button
+            variant="default"
+            className="shadow-2xl"
             size={"xl"}
-            className="ml-5"
-            variant={"accent"}
-            onClick={() => setTransactionType("expense")}
-          >
-            <ArrowUpRight />
-          </Button>
-          <Button
-            variant="outline"
-            size={"xl"}
-            className="mr-5"
             onClick={() => setTransactionType("income")}
           >
             <ArrowDownLeft />
+          </Button>
+          <Button
+            size={"xl"}
+            variant={"accent"}
+            className="shadow-2xl"
+            onClick={() => setTransactionType("expense")}
+          >
+            <ArrowUpRight />
           </Button>
         </div>
       </DialogTrigger>

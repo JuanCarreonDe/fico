@@ -3,11 +3,14 @@
 import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { useTransactionStore } from "@/lib/store/transaction-store";
+import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { createClient } from "@/lib/db/client";
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((state) => state.user);
   const { isInitialized, initializeData, resetStore } = useTransactionStore();
+  const { isInitialized: dashboardInitialized, loadDashboardData, resetStore: resetDashboardStore } =
+    useDashboardStore();
   const loadingRef = useRef(false);
 
   useEffect(() => {
@@ -40,6 +43,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           userAccounts,
           userCategories,
         });
+
+        await loadDashboardData();
       } catch (error) {
         console.error("Error loading app data:", error);
         useTransactionStore.setState({ isLoading: false });
@@ -49,13 +54,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadData();
-  }, [user, isInitialized, initializeData]);
+  }, [user, isInitialized, initializeData, loadDashboardData]);
 
   useEffect(() => {
     if (!user) {
       resetStore();
+      resetDashboardStore();
     }
-  }, [user, resetStore]);
+  }, [user, resetStore, resetDashboardStore]);
 
   return <>{children}</>;
 }
