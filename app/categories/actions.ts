@@ -11,6 +11,7 @@ export async function createCategory(
   const { error } = await db.rpc("create_category", params);
 
   if (error) throw new Error(error.message);
+  revalidatePath("/transactions", "page");
 }
 
 export async function updateCategory(
@@ -43,7 +44,7 @@ export async function archiveCategory(
 
   if (error) throw new Error(error.message);
 
-  // revalidatePath("/transactions", "page");
+  revalidatePath("/transactions", "page");
 }
 
 export async function getCategoryBudgetSummary(

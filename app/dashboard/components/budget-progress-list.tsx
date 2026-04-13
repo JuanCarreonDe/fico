@@ -3,8 +3,6 @@
 import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const ACCENT_COLOR = "rgb(255, 115, 1)";
-
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("es-MX", {
     style: "currency",
@@ -15,9 +13,9 @@ function formatCurrency(amount: number) {
 }
 
 function getProgressColor(percentage: number): string {
-  if (percentage > 100) return "bg-red-500";
-  if (percentage >= 80) return "bg-amber-500";
-  return ACCENT_COLOR;
+  // if (percentage > 100) return "bg-destructive";
+  // if (percentage >= 80) return "bg-accent";
+  return "bg-accent";
 }
 
 function BudgetProgressItem({
@@ -44,21 +42,25 @@ function BudgetProgressItem({
           <span className="mx-1">|</span>
           <span
             className={
-              isOverBudget
-                ? "text-red-500 font-medium"
-                : category.percentage_used >= 80
-                ? "text-amber-500 font-medium"
-                : "text-accent font-medium"
+              // isOverBudget
+              //   ? "text-destructive font-medium"
+              //   : category.percentage_used >= 70
+              //     ? "text-accent font-medium"
+              //     : "text-success font-medium"
+              "text-accent"
             }
           >
             {Math.round(category.percentage_used)}%
           </span>
         </div>
       </div>
-      <div className="h-2 bg-muted rounded-full overflow-hidden">
+      <div className="h-2 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${getProgressColor(category.percentage_used)}`}
-          style={{ width: `${percentage}%` }}
+          style={{
+            width: `${percentage}%`,
+            minWidth: `${percentage}%`,
+          }}
         />
       </div>
     </div>
@@ -82,7 +84,10 @@ export function BudgetProgressList() {
       <CardContent>
         <div className="space-y-1">
           {budgetProgressData.map((category) => (
-            <BudgetProgressItem key={category.category_id} category={category} />
+            <BudgetProgressItem
+              key={category.category_id}
+              category={category}
+            />
           ))}
         </div>
       </CardContent>
