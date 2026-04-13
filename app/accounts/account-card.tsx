@@ -65,7 +65,7 @@ export function AccountCard({
                 Tipo de cuenta
               </span>
               <span className="text-sm font-medium capitalize">
-                {account.account_type}
+                {account.account_type === "bank" ? "Banco" : account.account_type === "cash" ? "Efectivo" : account.account_type === "credit" ? "Crédito" : "Ahorros"}
               </span>
             </div>
           )}

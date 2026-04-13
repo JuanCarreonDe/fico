@@ -13,6 +13,18 @@ export async function createCategory(
   if (error) throw new Error(error.message);
 }
 
+export async function updateCategory(
+  params: Database["public"]["Functions"]["update_category"]["Args"],
+) {
+  const db = await createClient();
+
+  const { error } = await db.rpc("update_category", params);
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/transactions", "page");
+}
+
 export async function getCategories() {
   const db = await createClient();
 
@@ -32,4 +44,16 @@ export async function archiveCategory(
   if (error) throw new Error(error.message);
 
   // revalidatePath("/transactions", "page");
+}
+
+export async function getCategoryBudgetSummary(
+  params: Database["public"]["Functions"]["get_category_budget_summary"]["Args"],
+) {
+  const db = await createClient();
+
+  const { data, error } = await db.rpc("get_category_budget_summary", params);
+
+  if (error) throw new Error(error.message);
+
+  return data;
 }

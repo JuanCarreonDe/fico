@@ -1,5 +1,5 @@
 "use client";
-import { ArrowUpRight, DollarSign, ArrowDownLeft } from "lucide-react";
+import { ArrowUpRight, DollarSign, ArrowDownLeft, Scale } from "lucide-react";
 import { TransactionsMetricCard } from "./transactions-metric-card";
 import { cn } from "@/lib/utils";
 import { useTransactionStore } from "@/lib/store/transaction-store";
@@ -20,9 +20,8 @@ export function TransactionsSummaryCard({
     <>
       <div className="text-center mb-8">
         <div className="text-4xl font-bold text-primary mb-2 flex items-center justify-center">
-          <DollarSign className="w-6 h-6 text-muted-foreground" />
           {isLoading && <Skeleton className="h-10 w-32" />}
-          {!isLoading && summary?.total_balance}
+          {!isLoading && formatCurrency(summary?.total_balance || 0)}
         </div>
         <p className="text-sm text-muted-foreground">
           Balance total de todas las cuentas
@@ -39,32 +38,20 @@ export function TransactionsSummaryCard({
         />
 
         <TransactionsMetricCard
+          title="Balance"
+          value={formatCurrency(summary?.monthly_balance || 0)}
+          icon={<Scale className="w-4 h-4 text-accent" />}
+          variant="balance"
+          isLoading={isLoading}
+        />
+
+        <TransactionsMetricCard
           title="Gastos"
           value={formatCurrency(summary?.total_expense_month || 0)}
           icon={<ArrowUpRight className="w-4 h-4" />}
           variant="expense"
           isLoading={isLoading}
         />
-
-        <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <DollarSign className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
-              Balance
-            </span>
-          </div>
-          <div
-            className={cn(
-              "text font-bold",
-              summary?.monthly_balance || 0 >= 0
-                ? "text-green-600"
-                : "text-red-600",
-            )}
-          >
-            {isLoading && <Skeleton className="h-5 w-15" />}
-            {!isLoading && formatCurrency(summary?.monthly_balance || 0)}
-          </div>
-        </div>
       </div>
     </>
   );

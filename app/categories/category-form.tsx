@@ -27,16 +27,47 @@ import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { createCategory } from "./actions";
 
+interface Props {
+  variant?:
+    | "default"
+    | "link"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "destructive"
+    | null
+    | undefined;
+  buttonClassName?: string;
+  buttonText?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
 const categorySchema = z.object({
   p_name: z.string().min(1, "Category name is required"),
   p_type: z.enum(["income", "expense"]),
+  p_budget: z.number().optional(),
 });
 
 type AccountFormData =
   Database["public"]["Functions"]["create_category"]["Args"];
 
-export default function CategoryForm() {
-  const [open, setOpen] = useState(false);
+export default function CategoryForm({
+  buttonText = "",
+  buttonClassName,
+  variant,
+  open: externalOpen,
+  onOpenChange,
+}: Props) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+  const setOpen = (value: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(value);
+    } else {
+      setInternalOpen(value);
+    }
+  };
 
   const {
     register,
@@ -76,8 +107,9 @@ export default function CategoryForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => {}}>
+        <Button className={buttonClassName}>
           <Plus />
+          {buttonText}
         </Button>
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
@@ -91,7 +123,7 @@ export default function CategoryForm() {
                 <Field>
                   <Input
                     id="name"
-                    placeholder="nombre de categoría"
+                    placeholder="Nombre de la categoría"
                     {...register("p_name")}
                   />
                   {errors.p_name && (
@@ -124,6 +156,23 @@ export default function CategoryForm() {
                 </Field>
               ))}
             </RadioGroup>
+
+            {selectedType === "expense" && (
+              <FieldSet>
+                <FieldLabel className="text-muted-foreground">
+                  Presupuesto mensual
+                </FieldLabel>
+                <Input
+                  id="budget"
+                  type="number"
+                  placeholder="0.00"
+                  {...register("p_budget", {
+                    setValueAs: (value) =>
+                      value ? parseFloat(value) : undefined,
+                  })}
+                />
+              </FieldSet>
+            )}
             <FieldSeparator />
 
             <Field orientation="horizontal" className="flex justify-end">
@@ -132,10 +181,10 @@ export default function CategoryForm() {
                 type="button"
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" variant={"accent"}>
-                Submit
+                Guardar
               </Button>
             </Field>
           </FieldGroup>

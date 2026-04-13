@@ -4,20 +4,12 @@ import { createClient } from "@/lib/db/client";
 interface DashboardState {
   isInitialized: boolean;
   isLoading: boolean;
-  selectedMonth: string;
-  categoryExpenseData:
-    | { category_name: string; total_amount: number }[]
-    | null;
+  categoryExpenseData: { category_name: string; total_amount: number }[] | null;
   dailySummaryData:
-    | {
-        day_date: string;
-        total_income: number;
-        total_expense: number;
-      }[]
+    | { day_date: string; total_expense: number; total_income: number }[]
     | null;
 
-  setSelectedMonth: (month: string) => void;
-  loadDashboardData: () => Promise<void>;
+  loadDashboardData: (month?: string) => Promise<void>;
   refreshDashboardData: () => Promise<void>;
   resetStore: () => void;
 }
@@ -29,22 +21,24 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   categoryExpenseData: null,
   dailySummaryData: null,
 
-  setSelectedMonth: (month) => {
-    set({ selectedMonth: month });
-    get().loadDashboardData();
-  },
-
-  loadDashboardData: async () => {
-    const { selectedMonth, isLoading } = get();
+  loadDashboardData: async (month?: string) => {
+    const { isLoading } = get();
     if (isLoading) return;
 
     set({ isLoading: true });
     try {
       const supabase = createClient();
-      const monthParam =
-        selectedMonth.length <= 7 ? `${selectedMonth}-01` : selectedMonth;
 
-      const [categoryResponse, dailyResponse] = await Promise.all([
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const currentMonthFullDate = `${currentMonth}-01`;
+
+      const monthParam = month
+        ? month.length <= 7
+          ? `${month}-01`
+          : month
+        : currentMonthFullDate;
+
+      const [categoryResponse, dailySummaryResponse] = await Promise.all([
         supabase.rpc("get_category_summary", {
           p_type: "expense",
           p_period: "month",
@@ -59,7 +53,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
         isInitialized: true,
         isLoading: false,
         categoryExpenseData: categoryResponse.data ?? [],
-        dailySummaryData: dailyResponse.data ?? [],
+        dailySummaryData: dailySummaryResponse.data ?? [],
       });
     } catch (error) {
       console.error("Error loading dashboard data:", error);
@@ -75,7 +69,6 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     set({
       isInitialized: false,
       isLoading: false,
-      selectedMonth: new Date().toISOString().slice(0, 7),
       categoryExpenseData: null,
       dailySummaryData: null,
     }),

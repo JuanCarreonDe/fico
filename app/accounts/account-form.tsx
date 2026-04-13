@@ -40,6 +40,8 @@ interface Props {
   buttonClassName?: string;
   buttonText?: string;
   setOpenFahterDialog?: (value: SetStateAction<boolean>) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const accountSchema = z.object({
@@ -56,8 +58,18 @@ export default function AccountForm({
   buttonClassName,
   variant,
   setOpenFahterDialog,
+  open: externalOpen,
+  onOpenChange,
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen ?? internalOpen;
+  const setOpen = (value: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(value);
+    } else {
+      setInternalOpen(value);
+    }
+  };
 
   const {
     register,
@@ -122,7 +134,7 @@ export default function AccountForm({
                 <Field>
                   <Input
                     id="name"
-                    placeholder="account name"
+                    placeholder="Nombre de la cuenta"
                     {...register("p_name")}
                   />
                   {errors.p_name && (
@@ -135,7 +147,7 @@ export default function AccountForm({
                 <Field>
                   <Input
                     id="initial_balance"
-                    placeholder="balance"
+                    placeholder="Balance inicial"
                     type="number"
                     {...register("p_initial_balance", { valueAsNumber: true })}
                   />
@@ -160,14 +172,14 @@ export default function AccountForm({
               className="grid grid-cols-2 md:grid-cols-1"
               defaultValue={"bank"}
             >
-              {Constants.public.Enums.account_type.map((i) => (
+            {Constants.public.Enums.account_type.map((i) => (
                 <Field orientation="horizontal" key={i}>
                   <RadioGroupItem value={i} id={`${i}-account`} />
                   <FieldLabel
                     htmlFor={`${i}-account`}
                     className="font-normal capitalize"
                   >
-                    {i}
+                    {i === "bank" ? "Banco" : i === "cash" ? "Efectivo" : i === "credit" ? "Crédito" : "Ahorros"}
                   </FieldLabel>
                 </Field>
               ))}
@@ -180,10 +192,10 @@ export default function AccountForm({
                 type="button"
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" variant={"accent"}>
-                Submit
+                Guardar
               </Button>
             </Field>
           </FieldGroup>

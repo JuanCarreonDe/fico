@@ -9,11 +9,16 @@ export async function createTransaction(
 ) {
   const db = await createClient();
 
-  const { error } = await db.rpc("create_transaction", params);
+  const { data, error } = await db.rpc("create_transaction", params);
 
   revalidatePath("/transactions", "page");
 
-  if (error) throw error;
+  if (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
+
+  return data;
 }
 
 export async function getTransactionsByDay(
@@ -23,7 +28,10 @@ export async function getTransactionsByDay(
 
   const { data, error } = await db.rpc("get_transactions_by_day", params);
 
-  if (error) throw error;
+  if (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
 
   return data;
 }
@@ -36,8 +44,8 @@ export async function getDailySummaryByMonth(
   const { data, error } = await db.rpc("get_daily_summary_by_month", params);
 
   if (error) {
-    console.error(error);
-    throw error;
+    console.error(error.message);
+    throw new Error(error.message);
   }
 
   return data;
@@ -52,5 +60,8 @@ export async function deleteTransaction(
 
   revalidatePath("/transactions", "page");
 
-  if (error) throw error;
+  if (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
 }

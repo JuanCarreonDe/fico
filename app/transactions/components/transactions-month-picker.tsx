@@ -1,5 +1,4 @@
 "use client";
-import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { getDailySummaryByMonth } from "../actions";
 import { useTransactionStore } from "@/lib/store/transaction-store";
@@ -26,15 +25,13 @@ export default function TransactionsMonthPicker() {
   };
 
   return (
-    <Field className="">
-      <Input
-        id="transaction_date"
-        type="month"
-        onChange={handleClick}
-        defaultValue={currentMonth}
-        className="max-w-40 m-auto"
-        max={currentMonth}
-      />
-    </Field>
+    <Input
+      id="transaction_date"
+      type="month"
+      onChange={handleClick}
+      defaultValue={currentMonth}
+      className="max-w-40 m-auto"
+      max={currentMonth}
+    />
   );
 }

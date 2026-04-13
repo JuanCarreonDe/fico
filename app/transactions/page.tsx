@@ -34,7 +34,7 @@ function TransactionsContent() {
             <TransactionList />
           </div>
         </div>
-        <div className="fixed bottom-30 right-0 left-0 mx-auto w-full h-fit flex items-center justify-center">
+        <div className="fixed bottom-30 right-0 left-0 h-fit items-center mx-auto w-fit">
           <TransactionForm />
         </div>
       </div>

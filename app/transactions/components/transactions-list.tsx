@@ -18,6 +18,13 @@ import { es } from "date-fns/locale";
 import TransactionListItem from "./transaction-list-item";
 import { useTransactionStore } from "@/lib/store/transaction-store";
 
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+  }).format(amount);
+};
+
 export function TransactionList() {
   const dailySummaryCurrentMonth = useTransactionStore(
     (state) => state.dailySummaryCurrentMonth,
@@ -66,7 +73,7 @@ export function TransactionList() {
           >
             <CardContent>
               <Collapsible
-                className="rounded-md data-[state=open]:bg-muted border"
+                className="rounded-md data-[state=open]:bg-muted"
                 onOpenChange={(open) => {
                   if (open) {
                     if (open && !transactionsByDay[i.day_date]) {
@@ -78,7 +85,7 @@ export function TransactionList() {
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="group w-full justify-between min-h-fit p-2 border ring-0 outline-none"
+                    className="group w-full justify-between min-h-fit p-2 ring-0 outline-none border-none"
                     disabled={i.total_expense === 0 && i.total_income === 0}
                   >
                     <div className="flex gap-2 items-center justify-start">
@@ -103,10 +110,12 @@ export function TransactionList() {
                     <div className="flex gap-2 items-center">
                       <div className="flex flex-col gap-1">
                         <span className="flex gap-1 items-center text-destructive">
-                          <ArrowUpRight />${i.total_expense}
+                          <ArrowUpRight />
+                          {formatCurrency(i.total_expense)}
                         </span>
                         <span className="flex gap-1 items-center text-success">
-                          <ArrowDownLeft />${i.total_income}
+                          <ArrowDownLeft />
+                          {formatCurrency(i.total_income)}
                         </span>
                       </div>
                       <ChevronDown className="group-data-[state=open]:rotate-180" />

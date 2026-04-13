@@ -74,9 +74,41 @@ export default function TransactionForm() {
     try {
       setOpen(false);
 
-      await createTransaction({ ...data, p_type: transactionType });
+      const result = await createTransaction({
+        ...data,
+        p_type: transactionType,
+      });
 
-      toast.success("Transacción creada");
+      const transaction = Array.isArray(result) ? result[0] : result;
+
+      if (transactionType === "expense" && transaction) {
+        const {
+          budget_amount,
+          // spent_amount,
+          remaining_amount,
+          remaining_percentage,
+        } = transaction;
+        if (budget_amount !== null) {
+          const remainingFormatted = new Intl.NumberFormat("es-MX", {
+            style: "currency",
+            currency: "MXN",
+          }).format(remaining_amount || 0);
+
+          const budgetFormatted = new Intl.NumberFormat("es-MX", {
+            style: "currency",
+            currency: "MXN",
+          }).format(budget_amount || 0);
+
+          const percentage = Math.round(remaining_percentage || 0);
+          toast.success(
+            `Transacción creada. Presupuesto restante: ${remainingFormatted} de ${budgetFormatted} (${percentage}%)`,
+          );
+        } else {
+          toast.success("Transacción creada");
+        }
+      } else {
+        toast.success("Transacción creada");
+      }
 
       reset({
         p_amount: undefined,
@@ -134,7 +166,7 @@ export default function TransactionForm() {
         // onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>Add {transactionType}</DialogTitle>
+          <DialogTitle>Agregar {transactionType === "income" ? "ingreso" : "gasto"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
@@ -147,7 +179,7 @@ export default function TransactionForm() {
                     render={({ field }) => (
                       <Input
                         id="amount"
-                        placeholder="amount"
+                        placeholder="0.00"
                         type="number"
                         value={field.value || ""}
                         onChange={(e) =>
@@ -172,7 +204,7 @@ export default function TransactionForm() {
                     render={({ field }) => (
                       <Input
                         id="description"
-                        placeholder="description"
+                        placeholder="Descripción (opcional)"
                         value={field.value || ""}
                         onChange={field.onChange}
                       />
@@ -301,10 +333,10 @@ export default function TransactionForm() {
                   setOpen(false);
                 }}
               >
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" variant={"accent"}>
-                Submit
+                Guardar
               </Button>
             </Field>
           </FieldGroup>

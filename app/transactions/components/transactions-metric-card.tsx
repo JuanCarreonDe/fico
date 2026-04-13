@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface MetricCardProps {
-  title: string;
+  title?: string;
   value: string;
   icon: ReactNode;
   variant: "income" | "expense" | "balance";
@@ -25,7 +25,7 @@ export function TransactionsMetricCard({
       case "expense":
         return "bg-red-50 dark:bg-red-950/20 text-red-600";
       case "balance":
-        return "bg-blue-50 dark:bg-blue-950/20 text-blue-600";
+        return "bg-accent/20 dark:bg-accent/20 text-accent";
       default:
         return "bg-gray-50 dark:bg-gray-950/20 text-gray-600";
     }

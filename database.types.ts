@@ -52,6 +52,7 @@ export type Database = {
       }
       categories: {
         Row: {
+          budget: number | null
           created_at: string
           id: string
           is_archived: boolean | null
@@ -61,6 +62,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          budget?: number | null
           created_at?: string
           id?: string
           is_archived?: boolean | null
@@ -70,6 +72,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          budget?: number | null
           created_at?: string
           id?: string
           is_archived?: boolean | null
@@ -208,10 +211,12 @@ export type Database = {
       }
       create_category: {
         Args: {
+          p_budget?: number
           p_name: string
           p_type: Database["public"]["Enums"]["transaction_type"]
         }
         Returns: {
+          budget: number | null
           created_at: string
           id: string
           is_archived: boolean | null
@@ -239,12 +244,16 @@ export type Database = {
         Returns: {
           account_id: string
           amount: number
+          budget_amount: number | null
+          budget_remaining_percentage: number | null
+          budget_remaining_amount: number | null
           category_id: string | null
           created_at: string
           deleted_at: string | null
           description: string | null
           id: string
           is_archived: boolean | null
+          spent_amount: number | null
           transaction_date: string
           transfer_id: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -277,6 +286,15 @@ export type Database = {
         Returns: {
           category_name: string
           total_amount: number
+        }[]
+      }
+      get_category_budget_summary: {
+        Args: { p_category_id: string }
+        Returns: {
+          budget_amount: number | null
+          spent_amount: number | null
+          remaining_amount: number | null
+          remaining_percentage: number | null
         }[]
       }
       get_daily_summary_by_month: {
@@ -346,6 +364,7 @@ export type Database = {
           id: string
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
+          budget: number | null
         }[]
       }
       update_account: {
@@ -376,11 +395,13 @@ export type Database = {
       }
       update_category: {
         Args: {
+          p_budget?: number
           p_category_id: string
           p_name: string
           p_type: Database["public"]["Enums"]["transaction_type"]
         }
         Returns: {
+          budget: number | null
           created_at: string
           id: string
           is_archived: boolean | null

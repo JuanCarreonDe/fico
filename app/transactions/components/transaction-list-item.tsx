@@ -6,6 +6,13 @@ import { deleteTransaction } from "../actions";
 import { toast } from "sonner";
 import { useTransactionStore } from "@/lib/store/transaction-store";
 
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+  }).format(amount);
+};
+
 interface Props {
   item: {
     account_name: string;
@@ -66,12 +73,14 @@ export default function TransactionListItem({ item, date }: Props) {
             <span className="px-2 py-1 bg-secondary rounded-2xl">
               {item.category_name}
             </span>
-            <span className="capitalize">{item.type}</span>
+            <span className="capitalize">
+              {item.type === "income" ? "Ingreso" : "Gasto"}
+            </span>
           </div>
           <span
             className={`justify-end ${item.type === "income" ? "text-success" : "text-destructive"}`}
           >
-            ${item.amount}
+            {formatCurrency(item.amount)}
           </span>
         </div>
         {item.description && (
@@ -84,7 +93,7 @@ export default function TransactionListItem({ item, date }: Props) {
         onDelete={handleDelete}
         onCancel={handleCancel}
         title="Eliminar transacción"
-        description={`¿Estás seguro de que quieres eliminar la transacción de $${item.amount}?`}
+        description={`¿Estás seguro de que quieres eliminar la transacción de ${formatCurrency(item.amount)}?`}
       />
     </>
   );

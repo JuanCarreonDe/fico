@@ -1,6 +1,6 @@
 "use client";
 import { TransactionsSummaryCard } from "./tansactions-summary-card";
-import { AccountDetailsCarousel } from "../../accounts/account-details-carousel";
+import AccountManage from "../../accounts/account-manage";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTransactionStore } from "@/lib/store/transaction-store";
 
@@ -21,10 +21,12 @@ export function TransactionSummary() {
       <Card className="w-full md:w-[70%] mx-auto">
         <CardContent className="p-6">
           <TransactionsSummaryCard formatCurrency={formatCurrency} />
-          <AccountDetailsCarousel
-            accountBalances={accountBalances || []}
-            formatCurrency={formatCurrency}
-          />
+          {accountBalances && (
+            <AccountManage
+              accountBalances={accountBalances}
+              formatCurrency={formatCurrency}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

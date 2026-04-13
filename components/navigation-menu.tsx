@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const navigationItems = [
-  { name: "Transactions", href: "/transactions" },
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Settings", href: "/settings" },
+  { name: "Transacciones", href: "/transactions" },
+  { name: "Resumen", href: "/dashboard" },
+  { name: "Configuración", href: "/settings" },
 ];
 
 function isActiveRoute(pathname: string, href: string) {
