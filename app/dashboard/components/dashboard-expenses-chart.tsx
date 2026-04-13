@@ -36,7 +36,6 @@ export function DashboardExpensesChart() {
   const dailySummaryData = useDashboardStore((state) => state.dailySummaryData);
 
   const chartData = (dailySummaryData ?? [])
-    .filter((day) => day.total_expense > 0)
     .map((day) => ({
       day: format(new Date(day.day_date + "T00:00:00"), "d", { locale: es }),
       expenses: day.total_expense,
