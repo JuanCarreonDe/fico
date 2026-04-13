@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useDashboardStore } from "@/lib/store/dashboard-store";
-import { DashboardCharts } from "./components/dashboard-charts";
 import { DashboardExpensesChart } from "./components/dashboard-expenses-chart";
+import { DashboardPieChart } from "./components/dashboard-pie-chart";
+import { BudgetProgressList } from "./components/budget-progress-list";
 import { Input } from "@/components/ui/input";
 
 function DashboardContent() {
@@ -36,12 +37,16 @@ function DashboardContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="h-64 bg-muted animate-pulse rounded-xl" />
             <div className="h-64 bg-muted animate-pulse rounded-xl" />
+            <div className="h-64 bg-muted animate-pulse rounded-xl" />
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DashboardExpensesChart />
-          <DashboardCharts categoryData={categoryExpenseData ?? []} />
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <DashboardExpensesChart />
+            <BudgetProgressList />
+            <DashboardPieChart categoryData={categoryExpenseData ?? []} />
+          </div>
         </div>
       )}
     </div>

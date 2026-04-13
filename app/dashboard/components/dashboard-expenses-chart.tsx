@@ -46,27 +46,11 @@ export function DashboardExpensesChart() {
     return null;
   }
 
-  const totalExpenses = chartData.reduce((sum, day) => sum + day.expenses, 0);
-  const lastDayExpenses = chartData[chartData.length - 1]?.expenses || 0;
-  const previousDayExpenses = chartData[chartData.length - 2]?.expenses || 0;
-  const percentChange =
-    previousDayExpenses > 0
-      ? ((lastDayExpenses - previousDayExpenses) / previousDayExpenses) * 100
-      : 0;
-  const isTrendingUp = percentChange >= 0;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency: "MXN",
-    }).format(amount);
-  };
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>Gastos diarios</CardTitle>
-        <CardDescription>Mostrando gastos del mes</CardDescription>
+        <CardDescription>Mostrando gastos mesuales</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -87,11 +71,14 @@ export function DashboardExpensesChart() {
               className="text-xs fill-muted-foreground"
             />
             <YAxis
+              allowDecimals={false}
+              domain={[0, "auto"]}
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => `$${value}`}
               className="text-xs fill-muted-foreground"
+              padding={{ top: 10 }}
             />
             <ChartTooltip
               cursor={false}
@@ -107,30 +94,6 @@ export function DashboardExpensesChart() {
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Total: {formatCurrency(totalExpenses)}
-              <span className="text-muted-foreground">•</span>
-              {isTrendingUp ? (
-                <span className="text-destructive flex items-center gap-1">
-                  +{percentChange.toFixed(1)}%{" "}
-                  <TrendingUp className="h-4 w-4" />
-                </span>
-              ) : (
-                <span className="text-success flex items-center gap-1">
-                  {percentChange.toFixed(1)}%{" "}
-                  <TrendingUp className="h-4 w-4 rotate-180" />
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              Comparado con ayer
-            </div>
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   );
 }
