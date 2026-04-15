@@ -26,6 +26,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { createCategory } from "./actions";
+import { useRouter } from "next/navigation";
 
 interface Props {
   variant?:
@@ -55,10 +56,10 @@ type AccountFormData =
 export default function CategoryForm({
   buttonText = "",
   buttonClassName,
-  variant,
   open: externalOpen,
   onOpenChange,
 }: Props) {
+  const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const setOpen = (value: boolean) => {
@@ -86,23 +87,17 @@ export default function CategoryForm({
   const selectedType = watch("p_type");
 
   const onSubmit = async (data: AccountFormData) => {
-    try {
-      const promise = createCategory(data);
+    await toast.promise(createCategory(data), {
+      loading: "Creando categoría...",
+      success: "Categoría creada",
+      error: (err) => `Error al crear la categoría: ${err}`,
+    });
 
-      toast.promise(promise, {
-        loading: "Creando categoría...",
-        success: "Categoría creada",
-        error: (error) => `Error al crear la categoría ${error}`,
-      });
-
-      setOpen(false);
-      reset({
-        p_type: "expense",
-      });
-    } catch (error) {
-      toast.error("Failed to create category");
-      console.error(error);
-    }
+    setOpen(false);
+    reset({
+      p_type: "expense",
+    });
+    router.refresh();
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -135,7 +130,6 @@ export default function CategoryForm({
               </FieldGroup>
             </FieldSet>
 
-            {/* category type */}
             <RadioGroup
               value={selectedType}
               onValueChange={(value) =>

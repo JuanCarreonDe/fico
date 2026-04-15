@@ -12,19 +12,15 @@ import {
 import { Database } from "@/database.types";
 import { Trash2, Wallet, ListX } from "lucide-react";
 import { useState } from "react";
-import { archiveAccount } from "./actions";
+import { archiveAccount, getAccountBalances } from "./actions";
 import { toast } from "sonner";
 import AccountForm from "./account-form";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+import { id } from "date-fns/locale";
 
-interface Props {
-  accountBalances: Database["public"]["Functions"]["get_account_balances"]["Returns"];
-  formatCurrency: (amount: number) => string;
-}
-
-export default function AccountManage({
-  accountBalances,
-  formatCurrency,
-}: Props) {
+export default function AccountManage() {
+  const router = useRouter();
   const [listOpen, setListOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addAccountOpen, setAddAccountOpen] = useState(false);
@@ -32,6 +28,19 @@ export default function AccountManage({
     | Database["public"]["Functions"]["get_account_balances"]["Returns"][number]
     | null
   >(null);
+  const [accountBalances, setAccountBalances] = useState<
+    Database["public"]["Functions"]["get_account_balances"]["Returns"] | null
+  >(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("es-MX", {
+      style: "currency",
+      currency: "MXN",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   const getAccountIcon = (type: string | null) => {
     return <Wallet className="h-4 w-4" />;
@@ -60,30 +69,38 @@ export default function AccountManage({
     setListOpen(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedAccount) return;
-
-    const promise = archiveAccount({
-      p_account_id: selectedAccount.account_id,
-    });
-
-    toast.promise(promise, {
-      loading: "Eliminando cuenta...",
-      success: "Cuenta eliminada",
-      error: (error) => {
-        return `Error al eliminar la cuenta: ${error}`;
+    setIsLoading(true);
+    toast.promise(
+      archiveAccount({ p_account_id: selectedAccount.account_id }),
+      {
+        loading: "Eliminando cuenta...",
+        success: "Cuenta eliminada",
+        error: (err) => `Error al eliminar la cuenta: ${err}`,
+        finally() {
+          // setIsLoading(false);
+        },
       },
-    });
+    );
 
     setDeleteDialogOpen(false);
     setSelectedAccount(null);
+    router.refresh();
+  };
+
+  const handleClick = async () => {
+    if (accountBalances) return;
+    setIsLoading(true);
+    setAccountBalances(await getAccountBalances());
+    setIsLoading(false);
   };
 
   return (
     <>
       <Dialog open={listOpen} onOpenChange={setListOpen}>
         <DialogTrigger asChild>
-          <Button variant={"outline"} className="w-full">
+          <Button variant={"outline"} className="w-full" onClick={handleClick}>
             <ListX />
           </Button>
         </DialogTrigger>
@@ -93,7 +110,13 @@ export default function AccountManage({
           </DialogHeader>
 
           <div className="space-y-2 max-h-100 overflow-y-auto">
-            {accountBalances.map((account) => (
+            {isLoading && (
+              <>
+                <Skeleton className="h-15" />
+                <Skeleton className="h-15" />
+              </>
+            )}
+            {accountBalances?.map((account) => (
               <Card
                 key={account.account_id}
                 className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors"

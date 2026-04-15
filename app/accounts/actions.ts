@@ -8,10 +8,14 @@ export async function createAccount(
 ) {
   const db = await createClient();
 
-  const { error } = await db.rpc("create_account", params);
+  const { data, error } = await db.rpc("create_account", params);
 
   if (error) throw new Error(error.message);
-  revalidatePath("/transactions", "page");
+
+  revalidatePath("/transactions");
+  revalidatePath("/settings");
+
+  return data;
 }
 
 export async function archiveAccount(
@@ -23,7 +27,10 @@ export async function archiveAccount(
 
   if (error) throw new Error(error.message);
 
-  revalidatePath("/transactions", "page");
+  revalidatePath("/transactions");
+  revalidatePath("/settings");
+
+  return { accountId: params.p_account_id };
 }
 
 export async function getAccountBalances() {
@@ -33,6 +40,5 @@ export async function getAccountBalances() {
 
   if (error) throw new Error(error.message);
 
-  // revalidatePath("/transactions", "page");
   return data;
 }

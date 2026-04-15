@@ -19,6 +19,7 @@ import {
 import { useState } from "react";
 import { archiveCategory, updateCategory } from "./actions";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import CategoryForm from "./category-form";
 
 interface Props {
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export default function CategoryManage({ categories }: Props) {
+  const router = useRouter();
   const [listOpen, setListOpen] = useState(false);
   const [budgetDialogOpen, setBudgetDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -66,40 +68,38 @@ export default function CategoryManage({ categories }: Props) {
 
     const budget = budgetValue ? parseFloat(budgetValue) : null;
 
-    const promise = updateCategory({
-      p_category_id: selectedCategory.id,
-      p_name: selectedCategory.name,
-      p_type: selectedCategory.type,
-      p_budget: budget ?? undefined,
-    });
-
-    toast.promise(promise, {
-      loading: "Actualizando presupuesto...",
-      success: "Presupuesto actualizado",
-      error: (error) => {
-        return `Error al actualizar el presupuesto: ${error}`;
-      },
-    });
+    try {
+      await updateCategory({
+        p_category_id: selectedCategory.id,
+        p_name: selectedCategory.name,
+        p_type: selectedCategory.type,
+        p_budget: budget ?? undefined,
+      });
+      toast.success("Presupuesto actualizado");
+      router.refresh();
+    } catch (error) {
+      toast.error(`Error al actualizar el presupuesto: ${error}`);
+    }
 
     setBudgetDialogOpen(false);
     setSelectedCategory(null);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedCategory) return;
 
-    const promise = archiveCategory({ p_category_id: selectedCategory.id });
-
-    toast.promise(promise, {
-      loading: "Eliminando categoria...",
-      success: "Categoria eliminada",
-      error: (error) => {
-        return `Error al eliminar la categoria: ${error}`;
-      },
-    });
+    await toast.promise(
+      archiveCategory({ p_category_id: selectedCategory.id }),
+      {
+        loading: "Eliminando categoría...",
+        success: "Categoría eliminada",
+        error: (err) => `Error al eliminar la categoría: ${err}`,
+      }
+    );
 
     setDeleteDialogOpen(false);
     setSelectedCategory(null);
+    router.refresh();
   };
 
   return (

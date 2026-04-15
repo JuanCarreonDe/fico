@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
 import { deleteTransaction } from "../actions";
 import { toast } from "sonner";
-import { useTransactionStore } from "@/lib/store/transaction-store";
+import { useRouter } from "next/navigation";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("es-MX", {
@@ -27,35 +27,20 @@ interface Props {
 }
 
 export default function TransactionListItem({ item, date }: Props) {
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const removeTransaction = useTransactionStore(
-    (state) => state.removeTransaction,
-  );
-  const refreshData = useTransactionStore((state) => state.refreshData);
 
   const handleDelete = async () => {
-    try {
-      const promise = deleteTransaction({ p_transaction_id: item.id });
-
-      setIsDeleteDialogOpen(false);
-
-      toast.promise(promise, {
+    await toast.promise(
+      deleteTransaction({ p_transaction_id: item.id }),
+      {
         loading: "Eliminando transacción...",
-        success: () => {
-          removeTransaction(date, item.id);
-          return "Transacción eliminada";
-        },
-        error: (error) => {
-          return `Error al eliminar la transacción: ${error}`;
-        },
-        async finally() {
-          await refreshData();
-        },
-      });
-    } catch {
-      toast.error("Error al eliminar la transacción");
-    } finally {
-    }
+        success: "Transacción eliminada",
+        error: (err) => `Error al eliminar la transacción: ${err}`,
+      }
+    );
+    router.refresh();
+    setIsDeleteDialogOpen(false);
   };
 
   const handleCancel = () => {

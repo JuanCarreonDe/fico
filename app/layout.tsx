@@ -43,19 +43,19 @@ export default function RootLayout({
         >
           <AuthProvider>
             <AuthSync />
-            <AppDataProvider>
-              <div className="h-dvh bg-background overflow-hidden p-2 flex flex-col gap-4">
-                <main className="overflow-auto border flex-1 bg-card rounded-2xl relative">
-                  <div className="min-h-full p-4">
-                    <PageTransition>{children}</PageTransition>
-                  </div>
-                </main>
-                <div className="h-fit">
-                  <NavigationWrapper />
+            {/* <AppDataProvider> */}
+            <div className="h-dvh bg-background overflow-hidden p-2 flex flex-col gap-4">
+              <main className="overflow-auto border flex-1 bg-card rounded-2xl relative">
+                <div className="min-h-full p-4">
+                  <PageTransition>{children}</PageTransition>
                 </div>
-                <Toaster position="top-center" />
+              </main>
+              <div className="h-fit">
+                <NavigationWrapper />
               </div>
-            </AppDataProvider>
+              <Toaster position="top-center" />
+            </div>
+            {/* </AppDataProvider> */}
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -26,6 +26,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { createAccount } from "./actions";
+import { useRouter } from "next/navigation";
 
 interface Props {
   variant?:
@@ -61,6 +62,7 @@ export default function AccountForm({
   open: externalOpen,
   onOpenChange,
 }: Props) {
+  const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = externalOpen ?? internalOpen;
   const setOpen = (value: boolean) => {
@@ -88,32 +90,21 @@ export default function AccountForm({
   const selectedType = watch("p_type");
 
   const onSubmit = async (data: AccountFormData) => {
-    try {
-      const promise = createAccount(data);
+    await toast.promise(createAccount(data), {
+      loading: "Creando cuenta...",
+      success: "Cuenta creada",
+      error: (err) => `Error al crear la cuenta: ${err}`,
+    });
 
-      toast.promise(promise, {
-        loading: "Creando cuenta...",
-        success: () => {
-          return "Cuenta creada";
-        },
-        error: (error) => {
-          return `Error al crear la cuenta: ${error}`;
-        },
-        finally() {
-          setOpen(false);
-          if (setOpenFahterDialog) setOpenFahterDialog(false);
-        },
-      });
+    setOpen(false);
+    if (setOpenFahterDialog) setOpenFahterDialog(false);
 
-      reset({
-        p_name: "",
-        p_currency: "bank",
-        p_initial_balance: undefined,
-      });
-    } catch (error) {
-      toast.error("Failed to create account");
-      console.error(error);
-    }
+    reset({
+      p_name: "",
+      p_currency: "bank",
+      p_initial_balance: undefined,
+    });
+    router.refresh();
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -160,7 +151,6 @@ export default function AccountForm({
               </FieldGroup>
             </FieldSet>
 
-            {/* account type */}
             <RadioGroup
               value={selectedType}
               onValueChange={(value) =>

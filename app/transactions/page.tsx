@@ -1,47 +1,33 @@
-"use client";
-
-import TransactionForm from "./components/transactions-form";
-import { TransactionsProvider } from "./components/transactions-provider";
-import { TransactionList } from "./components/transactions-list";
-import { TransactionSummary } from "./components/transactions-summary";
+import { Suspense } from "react";
 import TransactionsMonthPicker from "./components/transactions-month-picker";
-import { useTransactionStore } from "@/lib/store/transaction-store";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
+import { TransactionsSummaryCard } from "./components/tansactions-summary-card";
+import AccountManage from "../accounts/account-manage";
+// import { TransactionForm } from "./components/transaction-form";
+// import { TransactionList } from "./components/transactions-list";
 
-function TransactionsContent() {
-  const {
-    summary,
-    dailySummaryCurrentMonth,
-    accountBalances,
-    userAccounts,
-    userCategories,
-  } = useTransactionStore();
-
+export default async function TransactionsPage() {
   return (
-    <TransactionsProvider
-      initialData={{
-        summary,
-        dailySummaryCurrentMonth,
-        accountBalances,
-        userAccounts,
-        userCategories,
-      }}
-    >
-      <div className="h-full flex flex-col gap-4">
-        <TransactionsMonthPicker />
-        <div className="flex flex-col gap-4">
-          <TransactionSummary />
-          <div className="flex flex-col gap-4">
-            <TransactionList />
-          </div>
+    <div className="h-full flex flex-col gap-4">
+      <TransactionsMonthPicker />
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
+          <Card className="w-full md:w-[70%] mx-auto">
+            <CardContent className="p-6">
+              <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+                <TransactionsSummaryCard />
+                <AccountManage />
+              </Suspense>
+            </CardContent>
+          </Card>
         </div>
-        <div className="fixed bottom-30 right-0 left-0 h-fit items-center mx-auto w-fit">
-          <TransactionForm />
-        </div>
-      </div>
-    </TransactionsProvider>
-  );
-}
 
-export default function TransactionsPage() {
-  return <TransactionsContent />;
+        <div className="flex flex-col gap-4">{/* <TransactionList /> */}</div>
+      </div>
+      <div className="fixed bottom-30 right-0 left-0 h-fit items-center mx-auto w-fit">
+        {/* <TransactionForm /> */}
+      </div>
+    </div>
+  );
 }

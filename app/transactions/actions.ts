@@ -7,16 +7,18 @@ import { revalidatePath } from "next/cache";
 export async function createTransaction(
   params: Database["public"]["Functions"]["create_transaction"]["Args"],
 ) {
+  console.log("getDailySummaryByMonth");
+
   const db = await createClient();
 
   const { data, error } = await db.rpc("create_transaction", params);
-
-  revalidatePath("/transactions", "page");
 
   if (error) {
     console.error(error.message);
     throw new Error(error.message);
   }
+
+  revalidatePath("/transactions", "page");
 
   return data;
 }
@@ -39,6 +41,8 @@ export async function getTransactionsByDay(
 export async function getDailySummaryByMonth(
   params: Database["public"]["Functions"]["get_daily_summary_by_month"]["Args"],
 ) {
+  console.log("getDailySummaryByMonth");
+
   const db = await createClient();
 
   const { data, error } = await db.rpc("get_daily_summary_by_month", params);
@@ -56,12 +60,14 @@ export async function deleteTransaction(
 ) {
   const db = await createClient();
 
-  const { error } = await db.rpc("archive_transaction", params);
-
-  revalidatePath("/transactions", "page");
+  const { data, error } = await db.rpc("archive_transaction", params);
 
   if (error) {
     console.error(error.message);
     throw new Error(error.message);
   }
+
+  revalidatePath("/transactions");
+
+  return data;
 }

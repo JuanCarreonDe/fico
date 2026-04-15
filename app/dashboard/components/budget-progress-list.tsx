@@ -13,9 +13,9 @@ function formatCurrency(amount: number) {
 }
 
 function getProgressColor(percentage: number): string {
-  // if (percentage > 100) return "bg-destructive";
-  // if (percentage >= 80) return "bg-accent";
-  return "bg-accent";
+  if (percentage > 100) return "bg-accent";
+  if (percentage >= 80) return "bg-accent/80";
+  return "bg-accent/40";
 }
 
 function BudgetProgressItem({
@@ -40,23 +40,14 @@ function BudgetProgressItem({
           <span className="mx-1">|</span>
           <span>{formatCurrency(category.budget_amount)}</span>
           <span className="mx-1">|</span>
-          <span
-            className={
-              // isOverBudget
-              //   ? "text-destructive font-medium"
-              //   : category.percentage_used >= 70
-              //     ? "text-accent font-medium"
-              //     : "text-success font-medium"
-              "text-accent"
-            }
-          >
+          <span className={"text-accent"}>
             {Math.round(category.percentage_used)}%
           </span>
         </div>
       </div>
       <div className="h-2 rounded-full overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all ${getProgressColor(category.percentage_used)}`}
+          className={`h-full rounded-full transition-all border border-accent ${getProgressColor(category.percentage_used)}`}
           style={{
             width: `${percentage}%`,
             minWidth: `${percentage}%`,

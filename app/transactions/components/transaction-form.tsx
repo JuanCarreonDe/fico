@@ -24,8 +24,13 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { createTransaction } from "../actions";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import { useTransactionStore } from "@/lib/store/transaction-store";
-import { useDashboardStore } from "@/lib/store/dashboard-store";
+import { useRouter } from "next/navigation";
+import { Database } from "@/database.types";
+
+type UserAccountsData =
+  Database["public"]["Functions"]["get_user_accounts"]["Returns"];
+type UserCategoriesData =
+  Database["public"]["Functions"]["get_user_categories"]["Returns"];
 
 const transactionSchema = z.object({
   p_account_id: z.string().min(1, "Account is required"),
@@ -33,7 +38,6 @@ const transactionSchema = z.object({
   p_category_id: z.string().min(1, "Category is required"),
   p_description: z.string().optional(),
   p_transaction_date: z.string().min(1, "Date is required"),
-  // p_type: z.enum(["income", "expense"]),
 });
 
 type TransactionFormData = {
@@ -42,17 +46,16 @@ type TransactionFormData = {
   p_category_id: string;
   p_description?: string;
   p_transaction_date: string;
-  // p_type: "income" | "expense";
 };
-// Database["public"]["Functions"]["create_transaction"]["Args"];
 
-export default function TransactionForm() {
-  const userAccounts = useTransactionStore((state) => state.userAccounts);
-  const userCategories = useTransactionStore((state) => state.userCategories);
-  const refreshData = useTransactionStore((state) => state.refreshData);
-  const refreshDashboardData = useDashboardStore(
-    (state) => state.refreshDashboardData,
-  );
+export function TransactionForm({
+  userAccounts,
+  userCategories,
+}: {
+  userAccounts: UserAccountsData;
+  userCategories: UserCategoriesData;
+}) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
     "expense",
@@ -71,58 +74,48 @@ export default function TransactionForm() {
   });
 
   const onSubmit = async (data: TransactionFormData) => {
-    try {
-      setOpen(false);
-
-      const result = await createTransaction({
+    await toast.promise(
+      createTransaction({
         ...data,
         p_type: transactionType,
-      });
+      }),
+      {
+        loading: "Creando transacción...",
+        success: (res) => {
+          const transaction = Array.isArray(res) ? res[0] : res;
+          if (transactionType === "expense" && transaction) {
+            const { budget_amount, remaining_amount, remaining_percentage } =
+              transaction;
+            if (budget_amount !== null) {
+              const remainingFormatted = new Intl.NumberFormat("es-MX", {
+                style: "currency",
+                currency: "MXN",
+              }).format(remaining_amount || 0);
 
-      const transaction = Array.isArray(result) ? result[0] : result;
+              const budgetFormatted = new Intl.NumberFormat("es-MX", {
+                style: "currency",
+                currency: "MXN",
+              }).format(budget_amount || 0);
 
-      if (transactionType === "expense" && transaction) {
-        const {
-          budget_amount,
-          // spent_amount,
-          remaining_amount,
-          remaining_percentage,
-        } = transaction;
-        if (budget_amount !== null) {
-          const remainingFormatted = new Intl.NumberFormat("es-MX", {
-            style: "currency",
-            currency: "MXN",
-          }).format(remaining_amount || 0);
+              const percentage = Math.round(remaining_percentage || 0);
+              return `Transacción creada. Presupuesto restante: ${remainingFormatted} de ${budgetFormatted} (${percentage}%)`;
+            }
+            return "Transacción creada";
+          }
+          return "Transacción creada";
+        },
+        error: "Error al crear la transacción",
+      },
+    );
 
-          const budgetFormatted = new Intl.NumberFormat("es-MX", {
-            style: "currency",
-            currency: "MXN",
-          }).format(budget_amount || 0);
-
-          const percentage = Math.round(remaining_percentage || 0);
-          toast.success(
-            `Transacción creada. Presupuesto restante: ${remainingFormatted} de ${budgetFormatted} (${percentage}%)`,
-          );
-        } else {
-          toast.success("Transacción creada");
-        }
-      } else {
-        toast.success("Transacción creada");
-      }
-
-      reset({
-        p_amount: undefined,
-        p_description: undefined,
-        p_account_id: undefined,
-        p_category_id: undefined,
-      });
-
-      await refreshData();
-      await refreshDashboardData();
-    } catch (error) {
-      toast.error("Error al crear la transacción");
-      console.error(error);
-    }
+    setOpen(false);
+    reset({
+      p_amount: undefined,
+      p_description: undefined,
+      p_account_id: undefined,
+      p_category_id: undefined,
+    });
+    router.refresh();
   };
 
   return (
@@ -161,12 +154,11 @@ export default function TransactionForm() {
           </Button>
         </div>
       </DialogTrigger>
-      <DialogContent
-        showCloseButton={false}
-        // onInteractOutside={(e) => e.preventDefault()}
-      >
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>Agregar {transactionType === "income" ? "ingreso" : "gasto"}</DialogTitle>
+          <DialogTitle>
+            Agregar {transactionType === "income" ? "ingreso" : "gasto"}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
@@ -217,7 +209,6 @@ export default function TransactionForm() {
                   )}
                 </Field>
 
-                {/* Account Buttons */}
                 <Field>
                   <FieldLabel className="text-muted-foreground">
                     Cuenta
@@ -253,7 +244,6 @@ export default function TransactionForm() {
                   )}
                 </Field>
 
-                {/* Category Buttons */}
                 <Field>
                   <FieldLabel className="text-muted-foreground">
                     Categoría

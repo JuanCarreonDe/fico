@@ -1,9 +1,13 @@
 import { createClient } from "@/lib/db/server";
 
 export const getMonthlyFinancialSummary = async () => {
+  console.log("executeed");
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   const db = await createClient();
   const { data, error } = await db.rpc("get_monthly_financial_summary");
   if (error) throw error;
+  console.log("end");
 
   return data;
 };

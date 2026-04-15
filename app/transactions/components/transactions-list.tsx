@@ -10,13 +10,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Database } from "@/database.types";
 import { ArrowDownLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { getTransactionsByDay } from "@/app/transactions/actions";
 import { TransactionByDaySkeleton } from "./transactions-by-day-skeleton";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import TransactionListItem from "./transaction-list-item";
-import { useTransactionStore } from "@/lib/store/transaction-store";
+
+type DailySummary =
+  Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
+type TransactionsByDay =
+  Database["public"]["Functions"]["get_transactions_by_day"]["Returns"];
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("es-MX", {
@@ -25,120 +29,111 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-export function TransactionList() {
-  const dailySummaryCurrentMonth = useTransactionStore(
-    (state) => state.dailySummaryCurrentMonth,
-  );
-  const isLoading = useTransactionStore((state) => state.isLoading);
-  const setTransactionsByDay = useTransactionStore(
-    (state) => state.setTransactionsByDay,
-  );
-  const transactionsByDay = useTransactionStore(
-    (state) => state.transactionsByDay,
-  );
-
+export function TransactionList({
+  dataPromise,
+}: {
+  dataPromise: Promise<DailySummary>;
+}) {
+  const dailySummary = use(dataPromise);
+  const [transactionsByDay, setTransactionsByDay] = useState<
+    Record<string, TransactionsByDay>
+  >({});
   const [isLoadingDay, setIsLoadingDay] = useState(false);
 
-  const handleLoadDay = async (
-    params: Database["public"]["Functions"]["get_transactions_by_day"]["Args"],
-  ) => {
+  const handleLoadDay = async (date: string) => {
     setIsLoadingDay(true);
-
-    const data = await getTransactionsByDay(params);
-
-    setTransactionsByDay(params.p_date, data);
-
+    const data = await getTransactionsByDay({ p_date: date });
+    setTransactionsByDay((prev) => ({ ...prev, [date]: data }));
     setIsLoadingDay(false);
   };
 
-  return (
-    <>
-      {isLoading && (
-        <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <Card className="mx-auto w-full min-h-fit" key={i}>
-              <CardContent className="p-4">
-                <Skeleton className="h-12 w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {!isLoading &&
-        dailySummaryCurrentMonth?.map((i) => (
-          <Card
-            className="mx-auto w-full min-h-fit"
-            key={`${i.day_date}${i.total_expense}`}
-          >
-            <CardContent>
-              <Collapsible
-                className="rounded-md data-[state=open]:bg-muted"
-                onOpenChange={(open) => {
-                  if (open) {
-                    if (open && !transactionsByDay[i.day_date]) {
-                      handleLoadDay({ p_date: i.day_date });
-                    }
-                  }
-                }}
-              >
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="group w-full justify-between min-h-fit p-2 ring-0 outline-none border-none"
-                    disabled={i.total_expense === 0 && i.total_income === 0}
-                  >
-                    <div className="flex gap-2 items-center justify-start">
-                      <b>{format(new Date(i.day_date + "T00:00:00"), "d")}</b>
-                      <div className="flex flex-col gap-2 justify-start items-start capitalize text-xs">
-                        <span>
-                          {format(new Date(i.day_date + "T00:00:00"), "EEEE", {
-                            locale: es,
-                          })}
-                        </span>
-                        <span>
-                          {format(
-                            new Date(i.day_date + "T00:00:00"),
-                            "MMM. yyyy",
-                            {
-                              locale: es,
-                            },
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <div className="flex flex-col gap-1">
-                        <span className="flex gap-1 items-center text-destructive">
-                          <ArrowUpRight />
-                          {formatCurrency(i.total_expense)}
-                        </span>
-                        <span className="flex gap-1 items-center text-success">
-                          <ArrowDownLeft />
-                          {formatCurrency(i.total_income)}
-                        </span>
-                      </div>
-                      <ChevronDown className="group-data-[state=open]:rotate-180" />
-                    </div>
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
-                  <div className="w-full flex flex-col gap-2">
-                    {isLoadingDay && <TransactionByDaySkeleton />}
-
-                    {transactionsByDay[i.day_date]?.map((t) => (
-                      <TransactionListItem
-                        key={t.id}
-                        item={t}
-                        date={i.day_date}
-                      />
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
+  if (!dailySummary) {
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <Card className="mx-auto w-full min-h-fit" key={i}>
+            <CardContent className="p-4">
+              <Skeleton className="h-12 w-full" />
             </CardContent>
           </Card>
         ))}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {dailySummary.map((i) => (
+        <Card
+          className="mx-auto w-full min-h-fit"
+          key={`${i.day_date}${i.total_expense}`}
+        >
+          <CardContent>
+            <Collapsible
+              className="rounded-md data-[state=open]:bg-muted"
+              onOpenChange={(open) => {
+                if (open && !transactionsByDay[i.day_date]) {
+                  handleLoadDay(i.day_date);
+                }
+              }}
+            >
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="group w-full justify-between min-h-fit p-2 ring-0 outline-none border-none"
+                  disabled={i.total_expense === 0 && i.total_income === 0}
+                >
+                  <div className="flex gap-2 items-center justify-start">
+                    <b>{format(new Date(i.day_date + "T00:00:00"), "d")}</b>
+                    <div className="flex flex-col gap-2 justify-start items-start capitalize text-xs">
+                      <span>
+                        {format(new Date(i.day_date + "T00:00:00"), "EEEE", {
+                          locale: es,
+                        })}
+                      </span>
+                      <span>
+                        {format(
+                          new Date(i.day_date + "T00:00:00"),
+                          "MMM. yyyy",
+                          {
+                            locale: es,
+                          },
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <div className="flex flex-col gap-1">
+                      <span className="flex gap-1 items-center text-destructive">
+                        <ArrowUpRight />
+                        {formatCurrency(i.total_expense)}
+                      </span>
+                      <span className="flex gap-1 items-center text-success">
+                        <ArrowDownLeft />
+                        {formatCurrency(i.total_income)}
+                      </span>
+                    </div>
+                    <ChevronDown className="group-data-[state=open]:rotate-180" />
+                  </div>
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
+                <div className="w-full flex flex-col gap-2">
+                  {isLoadingDay && <TransactionByDaySkeleton />}
+
+                  {transactionsByDay[i.day_date]?.map((t) => (
+                    <TransactionListItem
+                      key={t.id}
+                      item={t}
+                      date={i.day_date}
+                    />
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </CardContent>
+        </Card>
+      ))}
     </>
   );
 }

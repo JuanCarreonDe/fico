@@ -8,10 +8,14 @@ export async function createCategory(
 ) {
   const db = await createClient();
 
-  const { error } = await db.rpc("create_category", params);
+  const { data, error } = await db.rpc("create_category", params);
 
   if (error) throw new Error(error.message);
-  revalidatePath("/transactions", "page");
+
+  revalidatePath("/transactions");
+  revalidatePath("/settings");
+
+  return data;
 }
 
 export async function updateCategory(
@@ -23,7 +27,8 @@ export async function updateCategory(
 
   if (error) throw new Error(error.message);
 
-  revalidatePath("/transactions", "page");
+  revalidatePath("/transactions");
+  revalidatePath("/settings");
 }
 
 export async function getCategories() {
@@ -44,7 +49,8 @@ export async function archiveCategory(
 
   if (error) throw new Error(error.message);
 
-  revalidatePath("/transactions", "page");
+  revalidatePath("/transactions");
+  revalidatePath("/settings");
 }
 
 export async function getCategoryBudgetSummary(
