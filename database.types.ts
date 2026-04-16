@@ -347,7 +347,11 @@ export type Database = {
           description: string
           id: string
           transaction_date: string
-          type: Database["public"]["Enums"]["transaction_type"]
+          type: Database["public"]["Enums"]["transaction_type"] | "transfer"
+          is_transfer: boolean
+          from_account_name: string | null
+          to_account_name: string | null
+          transfer_id: string | null
         }[]
       }
       get_user_accounts: {
@@ -448,6 +452,15 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      create_transfer: {
+        Args: {
+          p_from_account_id: string
+          p_to_account_id: string
+          p_amount: number
+          p_transaction_date: string
+        }
+        Returns: string
       }
     }
     Enums: {

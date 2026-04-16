@@ -5,6 +5,7 @@ import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialo
 import { deleteTransaction } from "../actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ArrowLeftRight } from "lucide-react";
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("es-MX", {
@@ -18,10 +19,14 @@ interface Props {
     account_name: string;
     amount: number;
     category_name: string;
-    description: string;
+    description: string | null;
     id: string;
     transaction_date: string;
-    type: "income" | "expense";
+    type: "income" | "expense" | "transfer";
+    is_transfer?: boolean;
+    from_account_name?: string | null;
+    to_account_name?: string | null;
+    transfer_id?: string | null;
   };
   date: string;
 }
@@ -47,6 +52,8 @@ export default function TransactionListItem({ item, date }: Props) {
     setIsDeleteDialogOpen(false);
   };
 
+  const isTransfer = item.is_transfer;
+
   return (
     <>
       <div
@@ -55,21 +62,53 @@ export default function TransactionListItem({ item, date }: Props) {
       >
         <div className="flex gap-2 items-center justify-between">
           <div className="flex gap-2 items-center">
-            <span className="px-2 py-1 bg-secondary rounded-2xl">
-              {item.category_name}
-            </span>
-            <span className="capitalize">
-              {item.type === "income" ? "Ingreso" : "Gasto"}
-            </span>
+            {isTransfer ? (
+              <>
+                <span className="px-2 py-1 bg-secondary rounded-2xl flex items-center gap-1">
+                  <ArrowLeftRight className="w-3 h-3" />
+                  Transferencia
+                </span>
+                <span className="text-muted-foreground text-xs">
+                  {item.from_account_name} → {item.to_account_name}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="px-2 py-1 bg-secondary rounded-2xl">
+                  {item.category_name}
+                </span>
+                <span className="capitalize">
+                  {item.type === "income" ? "Ingreso" : "Gasto"}
+                </span>
+              </>
+            )}
           </div>
           <span
-            className={`justify-end ${item.type === "income" ? "text-success" : "text-destructive"}`}
+            className={`justify-end ${
+              isTransfer
+                ? "text-primary"
+                : item.type === "income"
+                  ? "text-success"
+                  : "text-destructive"
+            }`}
           >
-            {formatCurrency(item.amount)}
+            {isTransfer ? (
+              <span className="flex items-center gap-1">
+                <ArrowLeftRight className="w-3 h-3" />
+                {formatCurrency(item.amount)}
+              </span>
+            ) : (
+              formatCurrency(item.amount)
+            )}
           </span>
         </div>
-        {item.description && (
-          <p className="text-muted-foreground capitalize">{item.description}</p>
+        {!isTransfer && (
+          <div className="flex gap-4 text-xs text-muted-foreground">
+            <span>{item.account_name}</span>
+            {item.description && (
+              <span className="capitalize">{item.description}</span>
+            )}
+          </div>
         )}
       </div>
       <DeleteConfirmationDialog

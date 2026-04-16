@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -9,8 +10,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Database } from "@/database.types";
 import { ArrowDownLeft, ArrowUpRight, ChevronDown } from "lucide-react";
-
-import { use, useState } from "react";
+import * as React from "react";
 import { getTransactionsByDay } from "@/app/transactions/actions";
 import { TransactionByDaySkeleton } from "./transactions-by-day-skeleton";
 import { format } from "date-fns";
@@ -29,25 +29,33 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
-export function TransactionList({
-  dataPromise,
-}: {
-  dataPromise: Promise<DailySummary>;
-}) {
-  const dailySummary = use(dataPromise);
-  const [transactionsByDay, setTransactionsByDay] = useState<
+interface TransactionListClientProps {
+  initialDailySummary: DailySummary | null;
+}
+
+export default function TransactionListClient({
+  initialDailySummary,
+}: TransactionListClientProps) {
+  const [transactionsByDay, setTransactionsByDay] = React.useState<
     Record<string, TransactionsByDay>
   >({});
-  const [isLoadingDay, setIsLoadingDay] = useState(false);
+  const [loadingDay, setLoadingDay] = React.useState<string>();
+  // const [isOpen, setIsOpen] = React.useState(false);
 
   const handleLoadDay = async (date: string) => {
-    setIsLoadingDay(true);
+    setLoadingDay(date);
     const data = await getTransactionsByDay({ p_date: date });
     setTransactionsByDay((prev) => ({ ...prev, [date]: data }));
-    setIsLoadingDay(false);
+    setLoadingDay(undefined);
   };
 
-  if (!dailySummary) {
+  // React.useEffect(() => {
+  //   if (!loadingDay) return;
+  //   handleLoadDay(loadingDay);
+  //   // setIsOpen(false);
+  // }, [initialDailySummary]);
+
+  if (!initialDailySummary) {
     return (
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
@@ -63,7 +71,7 @@ export function TransactionList({
 
   return (
     <>
-      {dailySummary.map((i) => (
+      {initialDailySummary.map((i) => (
         <Card
           className="mx-auto w-full min-h-fit"
           key={`${i.day_date}${i.total_expense}`}
@@ -72,10 +80,12 @@ export function TransactionList({
             <Collapsible
               className="rounded-md data-[state=open]:bg-muted"
               onOpenChange={(open) => {
+                // setIsOpen(open);
                 if (open && !transactionsByDay[i.day_date]) {
                   handleLoadDay(i.day_date);
                 }
               }}
+              // open={isOpen}
             >
               <CollapsibleTrigger asChild>
                 <Button
@@ -119,7 +129,7 @@ export function TransactionList({
               </CollapsibleTrigger>
               <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
                 <div className="w-full flex flex-col gap-2">
-                  {isLoadingDay && <TransactionByDaySkeleton />}
+                  {i.day_date === loadingDay && <TransactionByDaySkeleton />}
 
                   {transactionsByDay[i.day_date]?.map((t) => (
                     <TransactionListItem

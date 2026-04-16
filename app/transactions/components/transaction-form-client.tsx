@@ -27,10 +27,10 @@ import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Database } from "@/database.types";
 
-type UserAccountsData =
-  Database["public"]["Functions"]["get_user_accounts"]["Returns"];
-type UserCategoriesData =
-  Database["public"]["Functions"]["get_user_categories"]["Returns"];
+type UserAccountsData = Database["public"]["Functions"]["get_user_accounts"]["Returns"];
+type UserCategoriesData = Database["public"]["Functions"]["get_user_categories"]["Returns"];
+
+const getLocalDateString = () => new Date().toLocaleDateString("en-CA");
 
 const transactionSchema = z.object({
   p_account_id: z.string().min(1, "Account is required"),
@@ -48,13 +48,15 @@ type TransactionFormData = {
   p_transaction_date: string;
 };
 
-export function TransactionForm({
-  userAccounts,
-  userCategories,
-}: {
+interface TransactionFormClientProps {
   userAccounts: UserAccountsData;
   userCategories: UserCategoriesData;
-}) {
+}
+
+export default function TransactionFormClient({
+  userAccounts,
+  userCategories,
+}: TransactionFormClientProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
@@ -69,7 +71,7 @@ export function TransactionForm({
   } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
-      p_transaction_date: new Date().toISOString().split("T")[0],
+      p_transaction_date: getLocalDateString(),
     },
   });
 
@@ -128,7 +130,7 @@ export function TransactionForm({
             p_description: undefined,
             p_account_id: undefined,
             p_category_id: undefined,
-            p_transaction_date: new Date().toISOString().split("T")[0],
+            p_transaction_date: getLocalDateString(),
           });
         }
         setOpen(newOpen);
@@ -294,7 +296,7 @@ export function TransactionForm({
                       type="date"
                       value={field.value || ""}
                       onChange={field.onChange}
-                      max={new Date().toISOString().split("T")[0]}
+                      max={getLocalDateString()}
                     />
                   )}
                 />
@@ -318,7 +320,7 @@ export function TransactionForm({
                     p_description: undefined,
                     p_account_id: undefined,
                     p_category_id: undefined,
-                    p_transaction_date: new Date().toISOString().split("T")[0],
+                    p_transaction_date: getLocalDateString(),
                   });
                   setOpen(false);
                 }}

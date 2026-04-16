@@ -1,7 +1,6 @@
 import { ArrowUpRight, ArrowDownLeft, Scale } from "lucide-react";
 import { TransactionsMetricCard } from "./transactions-metric-card";
 import { getMonthlyFinancialSummary } from "../services/transactions.service";
-import { Suspense } from "react";
 
 export async function TransactionsSummaryCard() {
   const summaryData = (await getMonthlyFinancialSummary()).at(0);

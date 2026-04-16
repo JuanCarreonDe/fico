@@ -67,7 +67,7 @@ export async function deleteTransaction(
     throw new Error(error.message);
   }
 
-  revalidatePath("/transactions");
+  revalidatePath("/transactions", "page");
 
   return data;
 }
