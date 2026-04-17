@@ -4,11 +4,14 @@ import { Database } from "@/database.types";
 import { createClient } from "@/lib/db/server";
 import { revalidatePath } from "next/cache";
 
-export async function createTransaction(
-  params: Database["public"]["Functions"]["create_transaction"]["Args"],
-) {
-  console.log("getDailySummaryByMonth");
+export type CreateTransactionParams = Database["public"]["Functions"]["create_transaction"]["Args"];
+export type TransactionByDay = Database["public"]["Functions"]["get_transactions_by_day"]["Returns"];
+export type DailySummary = Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
+export type ArchiveTransactionParams = Database["public"]["Functions"]["archive_transaction"]["Args"];
 
+export async function createTransaction(
+  params: CreateTransactionParams,
+) {
   const db = await createClient();
 
   const { data, error } = await db.rpc("create_transaction", params);
@@ -35,7 +38,7 @@ export async function getTransactionsByDay(
     throw new Error(error.message);
   }
 
-  return data;
+  return data as TransactionByDay | null;
 }
 
 export async function getDailySummaryByMonth(
@@ -52,11 +55,11 @@ export async function getDailySummaryByMonth(
     throw new Error(error.message);
   }
 
-  return data;
+  return data as DailySummary | null;
 }
 
 export async function deleteTransaction(
-  params: Database["public"]["Functions"]["archive_transaction"]["Args"],
+  params: ArchiveTransactionParams,
 ) {
   const db = await createClient();
 

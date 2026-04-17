@@ -1,11 +1,18 @@
 import { createClient } from "@/lib/db/server";
+import { Database } from "@/database.types";
+
+export type MonthlyFinancialSummary = Database["public"]["Functions"]["get_monthly_financial_summary"]["Returns"];
+export type UserAccount = Database["public"]["Functions"]["get_user_accounts"]["Returns"][number];
+export type UserCategory = Database["public"]["Functions"]["get_user_categories"]["Returns"][number];
+export type DailySummary = Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
+export type CategorySummary = Database["public"]["Functions"]["get_category_summary"]["Returns"];
 
 export const getMonthlyFinancialSummary = async () => {
   const db = await createClient();
   const { data, error } = await db.rpc("get_monthly_financial_summary");
   if (error) throw error;
 
-  return data;
+  return data as MonthlyFinancialSummary | null;
 };
 
 export const getUserAccounts = async () => {
@@ -13,7 +20,7 @@ export const getUserAccounts = async () => {
   const { data, error } = await db.rpc("get_user_accounts");
   if (error) throw error;
 
-  return data;
+  return data as UserAccount[] | null;
 };
 
 export const getUserCategories = async () => {
@@ -21,7 +28,7 @@ export const getUserCategories = async () => {
   const { data, error } = await db.rpc("get_user_categories");
   if (error) throw error;
 
-  return data;
+  return data as UserCategory[] | null;
 };
 
 export const getDailySummaryByMonth = async (params?: { p_month?: string }) => {
@@ -36,7 +43,7 @@ export const getDailySummaryByMonth = async (params?: { p_month?: string }) => {
   });
   if (error) throw error;
 
-  return data;
+  return data as DailySummary | null;
 };
 
 export const getCategorySummary = async (
@@ -56,5 +63,5 @@ export const getCategorySummary = async (
   });
   if (error) throw error;
 
-  return data;
+  return data as CategorySummary | null;
 };

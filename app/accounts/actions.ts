@@ -3,8 +3,12 @@ import { Database } from "@/database.types";
 import { createClient } from "@/lib/db/server";
 import { revalidatePath } from "next/cache";
 
+export type CreateAccountParams = Database["public"]["Functions"]["create_account"]["Args"];
+export type ArchiveAccountParams = Database["public"]["Functions"]["archive_account"]["Args"];
+export type AccountBalance = Database["public"]["Functions"]["get_account_balances"]["Returns"][number];
+
 export async function createAccount(
-  params: Database["public"]["Functions"]["create_account"]["Args"],
+  params: CreateAccountParams,
 ) {
   const db = await createClient();
 
@@ -19,7 +23,7 @@ export async function createAccount(
 }
 
 export async function archiveAccount(
-  params: Database["public"]["Functions"]["archive_account"]["Args"],
+  params: ArchiveAccountParams,
 ) {
   const db = await createClient();
 
@@ -40,5 +44,5 @@ export async function getAccountBalances() {
 
   if (error) throw new Error(error.message);
 
-  return data;
+  return data as AccountBalance[] | null;
 }

@@ -8,5 +8,5 @@ export const createTransfer = async (params: CreateTransferParams) => {
   const { data, error } = await db.rpc("create_transfer", params);
   if (error) throw error;
 
-  return data;
+  return data as CreateTransferParams | null;
 };

@@ -1,11 +1,9 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -16,7 +14,6 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -31,10 +28,15 @@ const chartColors = {
   fill: "rgba(255, 115, 1, 0.4)",
   stroke: "rgb(255, 115, 1)",
 };
+interface Props {
+  dailySummaryData: {
+    day_date: string;
+    total_expense: number;
+    total_income: number;
+  }[];
+}
 
-export function DashboardExpensesChart() {
-  const dailySummaryData = useDashboardStore((state) => state.dailySummaryData);
-
+export default function DashboardExpensesChart({ dailySummaryData }: Props) {
   const chartData = (dailySummaryData ?? [])
     .map((day) => ({
       day: format(new Date(day.day_date + "T00:00:00"), "d", { locale: es }),

@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Constants, Database } from "@/database.types";
+
 import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { createAccount } from "./actions";
 import { useRouter } from "next/navigation";
+import { Constants, Database } from "@/database.types";
 
 interface Props {
   variant?:
@@ -53,6 +54,7 @@ const accountSchema = z.object({
 
 type AccountFormData =
   Database["public"]["Functions"]["create_account"]["Args"];
+const accountTypes = Constants.public.Enums.account_type;
 
 export default function AccountForm({
   buttonText = "",
@@ -162,14 +164,20 @@ export default function AccountForm({
               className="grid grid-cols-2 md:grid-cols-1"
               defaultValue={"bank"}
             >
-            {Constants.public.Enums.account_type.map((i) => (
+              {accountTypes.map((i) => (
                 <Field orientation="horizontal" key={i}>
                   <RadioGroupItem value={i} id={`${i}-account`} />
                   <FieldLabel
                     htmlFor={`${i}-account`}
                     className="font-normal capitalize"
                   >
-                    {i === "bank" ? "Banco" : i === "cash" ? "Efectivo" : i === "credit" ? "Crédito" : "Ahorros"}
+                    {i === "bank"
+                      ? "Banco"
+                      : i === "cash"
+                        ? "Efectivo"
+                        : i === "credit"
+                          ? "Crédito"
+                          : "Ahorros"}
                   </FieldLabel>
                 </Field>
               ))}

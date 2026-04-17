@@ -1,7 +1,18 @@
 "use client";
 
-import { useDashboardStore } from "@/lib/store/dashboard-store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+type BudgetCategory = {
+  category_id: string;
+  category_name: string;
+  budget_amount: number;
+  spent_amount: number;
+  percentage_used: number;
+};
+
+interface DashboardBudgetListProps {
+  data: BudgetCategory[] | null;
+}
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("es-MX", {
@@ -58,12 +69,8 @@ function BudgetProgressItem({
   );
 }
 
-export function BudgetProgressList() {
-  const budgetProgressData = useDashboardStore(
-    (state) => state.budgetProgressData,
-  );
-
-  if (!budgetProgressData || budgetProgressData.length === 0) {
+export default function DashboardBudgetList({ data }: DashboardBudgetListProps) {
+  if (!data || data.length === 0) {
     return null;
   }
 
@@ -74,7 +81,7 @@ export function BudgetProgressList() {
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
-          {budgetProgressData.map((category) => (
+          {data.map((category) => (
             <BudgetProgressItem
               key={category.category_id}
               category={category}

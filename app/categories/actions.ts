@@ -3,8 +3,14 @@ import { Database } from "@/database.types";
 import { createClient } from "@/lib/db/server";
 import { revalidatePath } from "next/cache";
 
+export type CreateCategoryParams = Database["public"]["Functions"]["create_category"]["Args"];
+export type UpdateCategoryParams = Database["public"]["Functions"]["update_category"]["Args"];
+export type ArchiveCategoryParams = Database["public"]["Functions"]["archive_category"]["Args"];
+export type CategoryBudgetSummary = Database["public"]["Functions"]["get_category_budget_summary"]["Returns"];
+export type UserCategory = Database["public"]["Functions"]["get_user_categories"]["Returns"][number];
+
 export async function createCategory(
-  params: Database["public"]["Functions"]["create_category"]["Args"],
+  params: CreateCategoryParams,
 ) {
   const db = await createClient();
 
@@ -19,7 +25,7 @@ export async function createCategory(
 }
 
 export async function updateCategory(
-  params: Database["public"]["Functions"]["update_category"]["Args"],
+  params: UpdateCategoryParams,
 ) {
   const db = await createClient();
 
@@ -37,11 +43,11 @@ export async function getCategories() {
   const { error, data } = await db.rpc("get_user_categories");
 
   if (error) throw new Error(error.message);
-  return data;
+  return data as UserCategory[] | null;
 }
 
 export async function archiveCategory(
-  params: Database["public"]["Functions"]["archive_category"]["Args"],
+  params: ArchiveCategoryParams,
 ) {
   const db = await createClient();
 
@@ -62,5 +68,5 @@ export async function getCategoryBudgetSummary(
 
   if (error) throw new Error(error.message);
 
-  return data;
+  return data as CategoryBudgetSummary | null;
 }

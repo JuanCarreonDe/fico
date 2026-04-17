@@ -32,19 +32,14 @@ interface Props {
 }
 
 export default function TransactionListItem({ item, date }: Props) {
-  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDelete = async () => {
-    await toast.promise(
-      deleteTransaction({ p_transaction_id: item.id }),
-      {
-        loading: "Eliminando transacción...",
-        success: "Transacción eliminada",
-        error: (err) => `Error al eliminar la transacción: ${err}`,
-      }
-    );
-    router.refresh();
+    await toast.promise(deleteTransaction({ p_transaction_id: item.id }), {
+      loading: "Eliminando transacción...",
+      success: "Transacción eliminada",
+      error: (err) => `Error al eliminar la transacción: ${err}`,
+    });
     setIsDeleteDialogOpen(false);
   };
 

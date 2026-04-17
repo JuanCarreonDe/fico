@@ -55,6 +55,12 @@ export default function TransactionListClient({
   //   // setIsOpen(false);
   // }, [initialDailySummary]);
 
+  // useEffect para sincronizar cuando los datos del server cambian
+  React.useEffect(() => {
+    // Opcional: resetear transactionsByDay si necesitás recargar los detalles
+    setTransactionsByDay({});
+  }, [initialDailySummary]);
+
   if (!initialDailySummary) {
     return (
       <div className="space-y-4">
