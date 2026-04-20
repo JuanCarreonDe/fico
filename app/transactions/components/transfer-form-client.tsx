@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,20 +25,24 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTransactionStore } from "@/lib/store/transaction-store";
 
-type UserAccountsData = Database["public"]["Functions"]["get_user_accounts"]["Returns"];
+type UserAccountsData =
+  Database["public"]["Functions"]["get_user_accounts"]["Returns"];
 
 const getLocalDateString = () => new Date().toLocaleDateString("en-CA");
 
-const transferSchema = z.object({
-  p_from_account_id: z.string().min(1, "Selecciona cuenta origen"),
-  p_to_account_id: z.string().min(1, "Selecciona cuenta destino"),
-  p_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
-  p_transaction_date: z.string().min(1, "La fecha es requerida"),
-}).refine((data) => data.p_from_account_id !== data.p_to_account_id, {
-  message: "Las cuentas deben ser diferentes",
-  path: ["p_to_account_id"],
-});
+const transferSchema = z
+  .object({
+    p_from_account_id: z.string().min(1, "Selecciona cuenta origen"),
+    p_to_account_id: z.string().min(1, "Selecciona cuenta destino"),
+    p_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
+    p_transaction_date: z.string().min(1, "La fecha es requerida"),
+  })
+  .refine((data) => data.p_from_account_id !== data.p_to_account_id, {
+    message: "Las cuentas deben ser diferentes",
+    path: ["p_to_account_id"],
+  });
 
 type TransferFormData = {
   p_from_account_id: string;
@@ -49,11 +53,18 @@ type TransferFormData = {
 
 interface TransferFormClientProps {
   userAccounts: UserAccountsData;
+  label?: string;
+  setIsFatherOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function TransferFormClient({ userAccounts }: TransferFormClientProps) {
-  const router = useRouter();
+export default function TransferFormClient({
+  userAccounts,
+  label,
+  setIsFatherOpen,
+}: TransferFormClientProps) {
+  // const router = useRouter();
   const [open, setOpen] = useState(false);
+  const { setIsLoading } = useTransactionStore();
 
   const {
     handleSubmit,
@@ -68,10 +79,14 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
   });
 
   const onSubmit = async (data: TransferFormData) => {
-    await toast.promise(createTransferAction(data), {
+    setIsLoading(true);
+    toast.promise(createTransferAction(data), {
       loading: "Creando transferencia...",
       success: "Transferencia creada",
       error: (err) => `Error: ${err}`,
+      finally() {
+        setIsLoading(true);
+      },
     });
 
     setOpen(false);
@@ -81,7 +96,8 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
       p_amount: undefined,
       p_transaction_date: getLocalDateString(),
     });
-    router.refresh();
+    // router.refresh();
+    if (setIsFatherOpen) setIsFatherOpen(false);
   };
 
   return (
@@ -100,9 +116,16 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="rounded-full">
-          <ArrowLeftRight className="h-4 w-4" />
-        </Button>
+        {label ? (
+          <Button className="shadow-2xl" size="xl">
+            <ArrowLeftRight className="h-4 w-4" />
+            <span className="ml-2">{label}</span>
+          </Button>
+        ) : (
+          <Button variant="outline" size="icon" className="rounded-full">
+            <ArrowLeftRight className="h-4 w-4" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
         <DialogHeader>
@@ -130,7 +153,9 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
                   )}
                 />
                 {errors.p_amount && (
-                  <p className="text-red-500 text-sm">{errors.p_amount.message}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.p_amount.message}
+                  </p>
                 )}
               </Field>
 
@@ -145,7 +170,9 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
                         <Button
                           key={account.id}
                           type="button"
-                          variant={field.value === account.id ? "default" : "outline"}
+                          variant={
+                            field.value === account.id ? "default" : "outline"
+                          }
                           onClick={(e) => {
                             e.preventDefault();
                             field.onChange(account.id);
@@ -158,7 +185,9 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
                   )}
                 />
                 {errors.p_from_account_id && (
-                  <p className="text-red-500 text-sm">{errors.p_from_account_id.message}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.p_from_account_id.message}
+                  </p>
                 )}
               </Field>
 
@@ -173,7 +202,9 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
                         <Button
                           key={account.id}
                           type="button"
-                          variant={field.value === account.id ? "default" : "outline"}
+                          variant={
+                            field.value === account.id ? "default" : "outline"
+                          }
                           onClick={(e) => {
                             e.preventDefault();
                             field.onChange(account.id);
@@ -186,7 +217,9 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
                   )}
                 />
                 {errors.p_to_account_id && (
-                  <p className="text-red-500 text-sm">{errors.p_to_account_id.message}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.p_to_account_id.message}
+                  </p>
                 )}
               </Field>
 
@@ -205,7 +238,9 @@ export default function TransferFormClient({ userAccounts }: TransferFormClientP
                   )}
                 />
                 {errors.p_transaction_date && (
-                  <p className="text-red-500 text-sm">{errors.p_transaction_date.message}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.p_transaction_date.message}
+                  </p>
                 )}
               </Field>
             </FieldSet>

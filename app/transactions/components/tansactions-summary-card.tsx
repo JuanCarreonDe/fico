@@ -1,6 +1,7 @@
 import { ArrowUpRight, ArrowDownLeft, Scale } from "lucide-react";
 import { TransactionsMetricCard } from "./transactions-metric-card";
 import { getMonthlyFinancialSummary } from "../services/transactions.service";
+import TransactionSummaryTotal from "./transaction-summary-total";
 
 export async function TransactionsSummaryCard() {
   const summaryData = (await getMonthlyFinancialSummary())?.at(0);
@@ -17,12 +18,9 @@ export async function TransactionsSummaryCard() {
   return (
     <>
       <div className="text-center mb-8">
-        <div className="text-4xl font-bold text-primary mb-2 flex items-center justify-center">
-          {formatCurrency(summaryData?.total_balance || 0)}
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Balance total de todas las cuentas
-        </p>
+        <TransactionSummaryTotal
+          total_balance={formatCurrency(summaryData?.total_balance || 0)}
+        />
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
