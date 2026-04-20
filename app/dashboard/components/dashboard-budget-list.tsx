@@ -40,7 +40,6 @@ function BudgetProgressItem({
   };
 }) {
   const percentage = Math.min(category.percentage_used, 100);
-  const isOverBudget = category.percentage_used > 100;
 
   return (
     <div className="space-y-2 py-2">
@@ -69,7 +68,9 @@ function BudgetProgressItem({
   );
 }
 
-export default function DashboardBudgetList({ data }: DashboardBudgetListProps) {
+export default function DashboardBudgetList({
+  data,
+}: DashboardBudgetListProps) {
   if (!data || data.length === 0) {
     return null;
   }

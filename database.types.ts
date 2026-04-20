@@ -244,28 +244,31 @@ export type Database = {
         Returns: {
           account_id: string
           amount: number
-          budget_amount: number | null
-          budget_remaining_percentage: number | null
-          budget_remaining_amount: number | null
-          category_id: string | null
+          budget_amount: number
+          category_id: string
           created_at: string
-          deleted_at: string | null
-          description: string | null
+          deleted_at: string
+          description: string
           id: string
-          is_archived: boolean | null
-          spent_amount: number | null
+          is_archived: boolean
+          remaining_amount: number
+          remaining_percentage: number
+          spent_amount: number
           transaction_date: string
-          transfer_id: string | null
+          transfer_id: string
           type: Database["public"]["Enums"]["transaction_type"]
           updated_at: string
           user_id: string
+        }[]
+      }
+      create_transfer: {
+        Args: {
+          p_amount: number
+          p_from_account_id: string
+          p_to_account_id: string
+          p_transaction_date: string
         }
-        SetofOptions: {
-          from: "*"
-          to: "transactions"
-          isOneToOne: true
-          isSetofReturn: false
-        }
+        Returns: string
       }
       get_account_balances: {
         Args: never
@@ -278,23 +281,34 @@ export type Database = {
           balance: number
         }[]
       }
+      get_all_categories_budget_summary: {
+        Args: { p_month?: string }
+        Returns: {
+          budget_amount: number
+          category_id: string
+          category_name: string
+          percentage_used: number
+          spent_amount: number
+        }[]
+      }
+      get_category_budget_summary: {
+        Args: { p_category_id: string }
+        Returns: {
+          budget_amount: number
+          remaining_amount: number
+          remaining_percentage: number
+          spent_amount: number
+        }[]
+      }
       get_category_summary: {
         Args: {
+          p_month?: string
           p_period: string
           p_type: Database["public"]["Enums"]["transaction_type"]
         }
         Returns: {
           category_name: string
           total_amount: number
-        }[]
-      }
-      get_category_budget_summary: {
-        Args: { p_category_id: string }
-        Returns: {
-          budget_amount: number | null
-          spent_amount: number | null
-          remaining_amount: number | null
-          remaining_percentage: number | null
         }[]
       }
       get_daily_summary_by_month: {
@@ -345,13 +359,13 @@ export type Database = {
           amount: number
           category_name: string
           description: string
+          from_account_name: string
           id: string
-          transaction_date: string
-          type: Database["public"]["Enums"]["transaction_type"] | "transfer"
           is_transfer: boolean
-          from_account_name: string | null
-          to_account_name: string | null
-          transfer_id: string | null
+          to_account_name: string
+          transaction_date: string
+          transfer_id: string
+          type: string
         }[]
       }
       get_user_accounts: {
@@ -365,10 +379,10 @@ export type Database = {
       get_user_categories: {
         Args: never
         Returns: {
+          budget: number
           id: string
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
-          budget: number | null
         }[]
       }
       update_account: {
@@ -453,19 +467,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      create_transfer: {
-        Args: {
-          p_from_account_id: string
-          p_to_account_id: string
-          p_amount: number
-          p_transaction_date: string
-        }
-        Returns: string
-      }
     }
     Enums: {
       account_type: "bank" | "cash" | "credit" | "savings"
-      transaction_type: "income" | "expense"
+      transaction_type: "income" | "expense" | "transfer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -594,7 +599,7 @@ export const Constants = {
   public: {
     Enums: {
       account_type: ["bank", "cash", "credit", "savings"],
-      transaction_type: ["income", "expense"],
+      transaction_type: ["income", "expense", "transfer"],
     },
   },
 } as const

@@ -22,7 +22,7 @@ interface Props {
     description: string | null;
     id: string;
     transaction_date: string;
-    type: "income" | "expense" | "transfer";
+    type: string;
     is_transfer?: boolean;
     from_account_name?: string | null;
     to_account_name?: string | null;

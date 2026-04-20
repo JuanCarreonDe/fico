@@ -46,7 +46,7 @@ interface Props {
 
 const categorySchema = z.object({
   p_name: z.string().min(1, "Category name is required"),
-  p_type: z.enum(["income", "expense"]),
+  p_type: z.enum(["income", "expense", "transfer"]),
   p_budget: z.number().optional(),
 });
 

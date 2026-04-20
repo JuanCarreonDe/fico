@@ -45,7 +45,7 @@ export default function TransactionListClient({
   const handleLoadDay = async (date: string) => {
     setLoadingDay(date);
     const data = await getTransactionsByDay({ p_date: date });
-    setTransactionsByDay((prev) => ({ ...prev, [date]: data }));
+    setTransactionsByDay((prev) => ({ ...prev, [date]: data || [] }));
     setLoadingDay(undefined);
   };
 
