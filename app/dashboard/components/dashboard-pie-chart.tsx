@@ -54,9 +54,6 @@ export function DashboardPieChart({ categoryData }: DashboardPieChartProps) {
               nameKey="category"
               outerRadius={70}
             >
-              {/* {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))} */}
               <LabelList
                 dataKey="category"
                 position="outside"

@@ -34,8 +34,8 @@ export default function SettingsPage() {
               <div className="w-fit">
                 {accountBalances && (
                   <AccountManage
-                    accountBalances={accountBalances}
-                    formatCurrency={formatCurrency}
+                  // accountBalances={accountBalances}
+                  // formatCurrency={formatCurrency}
                   />
                 )}
               </div>

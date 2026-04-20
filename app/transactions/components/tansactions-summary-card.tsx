@@ -3,7 +3,7 @@ import { TransactionsMetricCard } from "./transactions-metric-card";
 import { getMonthlyFinancialSummary } from "../services/transactions.service";
 
 export async function TransactionsSummaryCard() {
-  const summaryData = (await getMonthlyFinancialSummary()).at(0);
+  const summaryData = (await getMonthlyFinancialSummary())?.at(0);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-MX", {

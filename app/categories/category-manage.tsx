@@ -50,7 +50,7 @@ export default function CategoryManage({ categories }: Props) {
     category: Database["public"]["Functions"]["get_user_categories"]["Returns"][number],
   ) => {
     setSelectedCategory(category);
-    setBudgetValue(category.budget?.toString() || "");
+    setBudgetValue(category.budget.toString() || "");
     setBudgetDialogOpen(true);
     setListOpen(false);
   };
@@ -94,7 +94,7 @@ export default function CategoryManage({ categories }: Props) {
         loading: "Eliminando categoría...",
         success: "Categoría eliminada",
         error: (err) => `Error al eliminar la categoría: ${err}`,
-      }
+      },
     );
 
     setDeleteDialogOpen(false);
@@ -115,7 +115,7 @@ export default function CategoryManage({ categories }: Props) {
             <DialogTitle className="text-lg">Categorías</DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+          <div className="space-y-2 max-h-100 overflow-y-auto">
             {categories.map((i) => (
               <Card
                 key={i.id}

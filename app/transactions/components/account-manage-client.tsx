@@ -18,14 +18,15 @@ import AccountForm from "@/app/accounts/account-form";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
-type AccountBalance = Database["public"]["Functions"]["get_account_balances"]["Returns"][number];
+type AccountBalance =
+  Database["public"]["Functions"]["get_account_balances"]["Returns"][number];
 
 interface AccountManageClientProps {
-  initialBalances: AccountBalance[] | null;
+  accountBalances: AccountBalance[] | null;
 }
 
 export default function AccountManageClient({
-  initialBalances,
+  accountBalances,
 }: AccountManageClientProps) {
   const router = useRouter();
   const [listOpen, setListOpen] = useState(false);
@@ -34,7 +35,6 @@ export default function AccountManageClient({
   const [selectedAccount, setSelectedAccount] = useState<AccountBalance | null>(
     null,
   );
-  const [accountBalances] = useState<AccountBalance[] | null>(initialBalances);
   const [isLoading, setIsLoading] = useState(false);
 
   const formatCurrency = (amount: number) => {
@@ -74,11 +74,14 @@ export default function AccountManageClient({
   const handleDelete = async () => {
     if (!selectedAccount) return;
     setIsLoading(true);
-    toast.promise(archiveAccount({ p_account_id: selectedAccount.account_id }), {
-      loading: "Eliminando cuenta...",
-      success: "Cuenta eliminada",
-      error: (err) => `Error al eliminar la cuenta: ${err}`,
-    });
+    toast.promise(
+      archiveAccount({ p_account_id: selectedAccount.account_id }),
+      {
+        loading: "Eliminando cuenta...",
+        success: "Cuenta eliminada",
+        error: (err) => `Error al eliminar la cuenta: ${err}`,
+      },
+    );
 
     setDeleteDialogOpen(false);
     setSelectedAccount(null);

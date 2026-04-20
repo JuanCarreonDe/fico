@@ -45,7 +45,7 @@ export default function TransactionListClient({
   const handleLoadDay = async (date: string) => {
     setLoadingDay(date);
     const data = await getTransactionsByDay({ p_date: date });
-    setTransactionsByDay((prev) => ({ ...prev, [date]: data }));
+    setTransactionsByDay((prev) => ({ ...prev, [date]: data || [] }));
     setLoadingDay(undefined);
   };
 
@@ -54,6 +54,12 @@ export default function TransactionListClient({
   //   handleLoadDay(loadingDay);
   //   // setIsOpen(false);
   // }, [initialDailySummary]);
+
+  // useEffect para sincronizar cuando los datos del server cambian
+  React.useEffect(() => {
+    // Opcional: resetear transactionsByDay si necesitás recargar los detalles
+    setTransactionsByDay({});
+  }, [initialDailySummary]);
 
   if (!initialDailySummary) {
     return (

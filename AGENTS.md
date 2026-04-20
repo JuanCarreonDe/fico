@@ -13,6 +13,20 @@ bun lint     # Run ESLint
 
 No test suite exists. No typecheck script (TS runs via `next build`).
 
+## Supabase RPC TypeScript Pattern
+
+Always use the typed parameters and return types from Supabase:
+
+```ts
+import { Database } from "@/database.types";
+
+// Args (input parameters)
+export type CreateTransactionParams = Database["public"]["Functions"]["create_transaction"]["Args"];
+
+// Returns (output data)
+export type TransactionByDay = Database["public"]["Functions"]["get_transactions_by_day"]["Returns"];
+```
+
 ## Architecture
 
 ### Route Protection
