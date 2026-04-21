@@ -93,7 +93,10 @@ export default function AccountManageClient({
     <>
       <Dialog open={listOpen} onOpenChange={setListOpen}>
         <DialogTrigger asChild>
-          <Button variant={"outline"} className="w-full">
+          <Button
+            variant={"outline"}
+            className="w-full transition-opacity duration-300 animate-in fade-in"
+          >
             <ListX />
           </Button>
         </DialogTrigger>

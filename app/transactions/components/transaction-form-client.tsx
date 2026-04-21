@@ -17,18 +17,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { createTransaction } from "../actions";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Database } from "@/database.types";
+import { useTransactionStore } from "@/lib/store/transaction-store";
 
-type UserAccountsData = Database["public"]["Functions"]["get_user_accounts"]["Returns"];
-type UserCategoriesData = Database["public"]["Functions"]["get_user_categories"]["Returns"];
+type UserAccountsData =
+  Database["public"]["Functions"]["get_user_accounts"]["Returns"];
+type UserCategoriesData =
+  Database["public"]["Functions"]["get_user_categories"]["Returns"];
 
 const getLocalDateString = () => new Date().toLocaleDateString("en-CA");
 
@@ -51,17 +53,24 @@ type TransactionFormData = {
 interface TransactionFormClientProps {
   userAccounts: UserAccountsData;
   userCategories: UserCategoriesData;
+  label?: string;
+  defaultType?: "income" | "expense";
+  setIsFatherOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function TransactionFormClient({
   userAccounts,
   userCategories,
+  label = "Agregar",
+  defaultType = "expense",
+  setIsFatherOpen,
 }: TransactionFormClientProps) {
-  const router = useRouter();
+  // const router = useRouter();
   const [open, setOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
-    "expense",
+    defaultType,
   );
+  const { setIsLoading } = useTransactionStore();
 
   const {
     handleSubmit,
@@ -76,7 +85,8 @@ export default function TransactionFormClient({
   });
 
   const onSubmit = async (data: TransactionFormData) => {
-    await toast.promise(
+    setIsLoading(true);
+    toast.promise(
       createTransaction({
         ...data,
         p_type: transactionType,
@@ -107,9 +117,11 @@ export default function TransactionFormClient({
           return "Transacción creada";
         },
         error: "Error al crear la transacción",
+        finally() {
+          setIsLoading(false);
+        },
       },
     );
-
     setOpen(false);
     reset({
       p_amount: undefined,
@@ -117,7 +129,9 @@ export default function TransactionFormClient({
       p_account_id: undefined,
       p_category_id: undefined,
     });
-    router.refresh();
+    if (setIsFatherOpen) setIsFatherOpen(false);
+
+    // router.refresh();
   };
 
   return (
@@ -137,24 +151,35 @@ export default function TransactionFormClient({
       }}
     >
       <DialogTrigger asChild>
-        <div className="flex gap-2">
-          <Button
-            variant="default"
-            className="shadow-2xl"
-            size={"xl"}
-            onClick={() => setTransactionType("income")}
-          >
-            <ArrowDownLeft />
+        {label ? (
+          <Button className="shadow-2xl" size="xl">
+            {transactionType === "income" ? (
+              <ArrowDownLeft />
+            ) : (
+              <ArrowUpRight />
+            )}
+            <span className="ml-2">{label}</span>
           </Button>
-          <Button
-            size={"xl"}
-            variant={"accent"}
-            className="shadow-2xl"
-            onClick={() => setTransactionType("expense")}
-          >
-            <ArrowUpRight />
-          </Button>
-        </div>
+        ) : (
+          <div className="flex gap-2">
+            <Button
+              variant="default"
+              className="shadow-2xl"
+              size={"xl"}
+              onClick={() => setTransactionType("income")}
+            >
+              <ArrowDownLeft />
+            </Button>
+            <Button
+              size={"xl"}
+              variant={"accent"}
+              className="shadow-2xl"
+              onClick={() => setTransactionType("expense")}
+            >
+              <ArrowUpRight />
+            </Button>
+          </div>
+        )}
       </DialogTrigger>
       <DialogContent showCloseButton={false}>
         <DialogHeader>

@@ -49,7 +49,7 @@ export default function DashboardExpensesChart({ dailySummaryData }: Props) {
   }
 
   return (
-    <Card>
+    <Card className="transition-opacity duration-300 animate-in fade-in">
       <CardHeader>
         <CardTitle>Gastos diarios</CardTitle>
         <CardDescription>Mostrando gastos mesuales</CardDescription>

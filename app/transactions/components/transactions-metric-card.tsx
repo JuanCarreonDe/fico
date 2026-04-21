@@ -2,6 +2,7 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTransactionStore } from "@/lib/store/transaction-store";
 
 interface MetricCardProps {
   title?: string;
@@ -16,6 +17,8 @@ export function TransactionsMetricCard({
   icon,
   variant,
 }: MetricCardProps) {
+  const { isLoading } = useTransactionStore();
+
   const getVariantStyles = () => {
     switch (variant) {
       case "income":
@@ -32,7 +35,7 @@ export function TransactionsMetricCard({
   return (
     <div
       className={cn(
-        "text-center p-4 rounded-lg flex flex-col items-center justify-center",
+        "text-center p-4 rounded-lg flex flex-col items-center justify-center transition-opacity duration-300 animate-in fade-in",
         getVariantStyles(),
       )}
     >
@@ -40,7 +43,12 @@ export function TransactionsMetricCard({
         {icon}
         <span className="text-sm font-medium">{title}</span>
       </div>
-      <div className="text font-bold">{value}</div>
+
+      {isLoading ? (
+        <Skeleton className="h-6 w-full" />
+      ) : (
+        <div className="text font-bold">{value}</div>
+      )}
     </div>
   );
 }

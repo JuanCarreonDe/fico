@@ -4,14 +4,16 @@ import { Database } from "@/database.types";
 import { createClient } from "@/lib/db/server";
 import { revalidatePath } from "next/cache";
 
-export type CreateTransactionParams = Database["public"]["Functions"]["create_transaction"]["Args"];
-export type TransactionByDay = Database["public"]["Functions"]["get_transactions_by_day"]["Returns"];
-export type DailySummary = Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
-export type ArchiveTransactionParams = Database["public"]["Functions"]["archive_transaction"]["Args"];
+export type CreateTransactionParams =
+  Database["public"]["Functions"]["create_transaction"]["Args"];
+export type TransactionByDay =
+  Database["public"]["Functions"]["get_transactions_by_day"]["Returns"];
+export type DailySummary =
+  Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
+export type ArchiveTransactionParams =
+  Database["public"]["Functions"]["archive_transaction"]["Args"];
 
-export async function createTransaction(
-  params: CreateTransactionParams,
-) {
+export async function createTransaction(params: CreateTransactionParams) {
   const db = await createClient();
 
   const { data, error } = await db.rpc("create_transaction", params);
@@ -58,9 +60,7 @@ export async function getDailySummaryByMonth(
   return data as DailySummary | null;
 }
 
-export async function deleteTransaction(
-  params: ArchiveTransactionParams,
-) {
+export async function deleteTransaction(params: ArchiveTransactionParams) {
   const db = await createClient();
 
   const { data, error } = await db.rpc("archive_transaction", params);

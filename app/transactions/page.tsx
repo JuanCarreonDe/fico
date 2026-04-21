@@ -5,8 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TransactionsSummaryCard } from "./components/tansactions-summary-card";
 import AccountManageWrapper from "./components/account-manage-wrapper";
 import TransactionListWrapper from "./components/transaction-list-wrapper";
-import TransactionFormWrapper from "./components/transaction-form-wrapper";
-import TransferFormWrapper from "./components/transfer-form-wrapper";
+import FloatingActionsWrapper from "./components/floating-actions-wrapper";
 
 export default async function TransactionsPage() {
   return (
@@ -38,23 +37,9 @@ export default async function TransactionsPage() {
           </Suspense>
         </div>
       </div>
-      <div className="fixed bottom-30 right-0 left-0 h-fit items-center mx-auto w-fit">
-        <div className="flex gap-2 items-center">
-          <Suspense fallback={<Skeleton className="h-12 w-12 rounded-full" />}>
-            <TransferFormWrapper />
-          </Suspense>
-          <Suspense
-            fallback={
-              <div className="flex gap-2">
-                <Skeleton className="h-15 w-full" />
-                <Skeleton className="h-15 w-full" />
-              </div>
-            }
-          >
-            <TransactionFormWrapper />
-          </Suspense>
-        </div>
-      </div>
+      <Suspense>
+        <FloatingActionsWrapper />
+      </Suspense>
     </div>
   );
 }

@@ -1,23 +1,13 @@
-"use client";
 import { LogoutButton } from "@/components/logout-button";
 import { useAuth } from "@/components/auth-provider";
-import AccountManage from "../accounts/account-manage";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import CategoryManage from "../categories/category-manage";
-import { useTransactionStore } from "@/lib/store/transaction-store";
+import AccountManageWrapper from "../transactions/components/account-manage-wrapper";
+import CategoryManageWrapper from "../categories/category-manage-wrapper";
+import SettingsUserEmail from "./components/settings-user-email";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Suspense } from "react";
 
 export default function SettingsPage() {
-  const { user } = useAuth();
-  const userCategories = useTransactionStore((state) => state.userCategories);
-  const accountBalances = useTransactionStore((state) => state.accountBalances);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency: "MXN",
-    }).format(amount);
-  };
-
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Configuración</h1>
@@ -32,20 +22,17 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Cuentas</span>
               <div className="w-fit">
-                {accountBalances && (
-                  <AccountManage
-                  // accountBalances={accountBalances}
-                  // formatCurrency={formatCurrency}
-                  />
-                )}
+                <Suspense fallback={<Skeleton className="h-12 w-12" />}>
+                  <AccountManageWrapper />
+                </Suspense>
               </div>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Categorías</span>
               <div className="w-fit">
-                {userCategories && (
-                  <CategoryManage categories={userCategories} />
-                )}
+                <Suspense fallback={<Skeleton className="h-12 w-12" />}>
+                  <CategoryManageWrapper />
+                </Suspense>
               </div>
             </div>
           </div>
@@ -54,14 +41,13 @@ export default function SettingsPage() {
         <div className="p-4 border rounded-lg">
           <h3 className="font-semibold mb-2">Perfil</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Actualiza tu información personal
+            Cerrar sesión y cambiar tema
           </p>
           <div className="space-y-2">
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm">Correo</span>
-              <span className="text-sm text-muted-foreground">
-                {user?.email}
-              </span>
+            <div className="">
+              <Suspense fallback={<Skeleton className="h-6 w-45" />}>
+                <SettingsUserEmail />
+              </Suspense>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Tema</span>
