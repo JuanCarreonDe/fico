@@ -5,15 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TransactionsSummaryCard } from "./components/tansactions-summary-card";
 import AccountManageWrapper from "./components/account-manage-wrapper";
 import TransactionListWrapper from "./components/transaction-list-wrapper";
-import FloatingActions from "./components/floating-actions";
-import { getUserAccounts, getUserCategories } from "./services/transactions.service";
+import FloatingActionsWrapper from "./components/floating-actions-wrapper";
 
 export default async function TransactionsPage() {
-  const [userAccounts, userCategories] = await Promise.all([
-    getUserAccounts(),
-    getUserCategories(),
-  ]);
-
   return (
     <div className="h-full flex flex-col gap-4">
       <TransactionsMonthPicker />
@@ -43,7 +37,9 @@ export default async function TransactionsPage() {
           </Suspense>
         </div>
       </div>
-      <FloatingActions userAccounts={userAccounts} userCategories={userCategories} />
+      <Suspense>
+        <FloatingActionsWrapper />
+      </Suspense>
     </div>
   );
 }

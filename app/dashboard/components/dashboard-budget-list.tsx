@@ -76,7 +76,7 @@ export default function DashboardBudgetList({
   }
 
   return (
-    <Card>
+    <Card className="transition-opacity duration-300 animate-in fade-in">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg">Presupuestos del mes</CardTitle>
       </CardHeader>

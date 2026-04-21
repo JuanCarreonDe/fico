@@ -36,7 +36,7 @@ export function DashboardPieChart({ categoryData }: DashboardPieChartProps) {
   }
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col transition-opacity duration-300 animate-in fade-in">
       <CardHeader className="items-center pb-0">
         <CardTitle>Gastos por categoría</CardTitle>
         <CardDescription>Distribución del mes</CardDescription>

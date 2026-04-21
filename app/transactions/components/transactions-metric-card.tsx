@@ -35,7 +35,7 @@ export function TransactionsMetricCard({
   return (
     <div
       className={cn(
-        "text-center p-4 rounded-lg flex flex-col items-center justify-center",
+        "text-center p-4 rounded-lg flex flex-col items-center justify-center transition-opacity duration-300 animate-in fade-in",
         getVariantStyles(),
       )}
     >

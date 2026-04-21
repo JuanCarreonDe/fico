@@ -22,7 +22,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Cuentas</span>
               <div className="w-fit">
-                <Suspense fallback={<Skeleton className="h-15 w-15" />}>
+                <Suspense fallback={<Skeleton className="h-12 w-12" />}>
                   <AccountManageWrapper />
                 </Suspense>
               </div>
@@ -30,7 +30,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between py-2">
               <span className="text-sm">Categorías</span>
               <div className="w-fit">
-                <Suspense fallback={<Skeleton className="h-15 w-15" />}>
+                <Suspense fallback={<Skeleton className="h-12 w-12" />}>
                   <CategoryManageWrapper />
                 </Suspense>
               </div>
@@ -41,10 +41,10 @@ export default function SettingsPage() {
         <div className="p-4 border rounded-lg">
           <h3 className="font-semibold mb-2">Perfil</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Actualiza tu información personal
+            Cerrar sesión y cambiar tema
           </p>
           <div className="space-y-2">
-            <div className="flex items-center justify-between py-2">
+            <div className="">
               <Suspense fallback={<Skeleton className="h-6 w-45" />}>
                 <SettingsUserEmail />
               </Suspense>

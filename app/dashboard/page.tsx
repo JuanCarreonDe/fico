@@ -8,9 +8,9 @@ import DashboardBudgetListWrapper from "./components/dashboard-budget-list-wrapp
 export default function DashboardPage() {
   return (
     <div className="space-y-4">
-      <Suspense fallback={<Skeleton className="h-10 max-w-40 mx-auto" />}>
+      <div className="w-fit mx-auto">
         <DashboardMonthPicker />
-      </Suspense>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Suspense fallback={<Skeleton className="h-64 w-full" />}>

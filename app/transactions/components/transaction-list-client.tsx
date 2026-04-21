@@ -71,7 +71,7 @@ export default function TransactionListClient({
       ) : (
         initialDailySummary.map((i) => (
           <Card
-            className="mx-auto w-full min-h-fit"
+            className="mx-auto w-full min-h-fit transition-opacity duration-300 animate-in fade-in"
             key={`${i.day_date}${i.total_expense}`}
           >
             <CardContent>

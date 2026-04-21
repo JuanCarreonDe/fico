@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TransactionFormClient from "./transaction-form-client";
@@ -23,35 +23,61 @@ export default function FloatingActions({
   userCategories,
 }: FloatingActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
+
+  const handleClose = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setClosing(false);
+    }, 200);
+  };
 
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" />
+        <div
+          className={cn(
+            "fixed inset-0 z-40 bg-black/30 backdrop-blur-sm transition-opacity duration-200",
+            closing ? "opacity-0" : "opacity-100",
+          )}
+        />
       )}
 
-      <div className="fixed bottom-30 right-0 left-0 z-50 mx-auto flex flex-col justify-center items-end w-full px-12">
+      <div
+        className={cn(
+          "fixed bottom-30 right-0 left-0 z-50 mx-auto flex flex-col justify-center items-end w-full px-12 transition-opacity duration-300",
+          // isVisible ? "opacity-100" : "opacity-0",
+          closing && "opacity-0",
+        )}
+      >
         <div className="items-center flex flex-col">
-          {isOpen && (
-            <div className="flex flex-col gap-2 items-center mb-2 animate-in slide-in-from-bottom-4 duration-200 absolute bottom-15">
+          {(isOpen || closing) && (
+            <div
+              className={cn(
+                "flex flex-col gap-2 items-center mb-2 absolute bottom-15",
+                isOpen && "animate-in slide-in-from-bottom-4 duration-200",
+                closing && "animate-out slide-out-to-bottom-4 duration-200",
+              )}
+            >
               <TransactionFormClient
                 userAccounts={userAccounts}
                 userCategories={userCategories}
                 label="Gasto"
                 defaultType="expense"
-                setIsFatherOpen={setIsOpen}
+                setIsFatherOpen={handleClose}
               />
               <TransactionFormClient
                 userAccounts={userAccounts}
                 userCategories={userCategories}
                 label="Ingreso"
                 defaultType="income"
-                setIsFatherOpen={setIsOpen}
+                setIsFatherOpen={handleClose}
               />
               <TransferFormClient
                 userAccounts={userAccounts}
                 label="Transferencia"
-                setIsFatherOpen={setIsOpen}
+                setIsFatherOpen={handleClose}
               />
             </div>
           )}
@@ -59,8 +85,11 @@ export default function FloatingActions({
           <Button
             size="xl"
             variant={isOpen ? "destructive" : "accent"}
-            className={cn("w-fit rounded-full", isOpen && "rotate-90")}
-            onClick={() => setIsOpen(!isOpen)}
+            className={cn(
+              "w-fit rounded-full transition-transform duration-200",
+              isOpen && "rotate-90",
+            )}
+            onClick={() => (isOpen ? handleClose() : setIsOpen(true))}
           >
             {isOpen ? <X className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
           </Button>
