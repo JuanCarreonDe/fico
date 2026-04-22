@@ -1,6 +1,6 @@
 {
-  "name": "FICO - Finanzas Personales",
-  "short_name": "FICO",
+  "name": "Fico - Finanzas Personales",
+  "short_name": "Fico",
   "description": "Aplicación de finanzas personales",
   "start_url": "/",
   "display": "standalone",
