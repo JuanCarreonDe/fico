@@ -12,15 +12,17 @@ import PageTransition from "@/components/page-transition";
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "FICO",
+  title: "Fico",
   description: "Aplicación de finanzas personales",
   manifest: "/manifest.json",
   icons: {
-    icon: [
-      { url: "/FICOicon.svg", type: "image/svg+xml" },
-    ],
+    icon: [{ url: "/FICOicon.svg", type: "image/svg+xml" }],
     apple: [
-      { url: "/appstore-images/ios/180.png", sizes: "180x180", type: "image/png" },
+      {
+        url: "/appstore-images/ios/180.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
     ],
   },
 };
