@@ -7,7 +7,15 @@ import AccountManageWrapper from "./components/account-manage-wrapper";
 import TransactionListWrapper from "./components/transaction-list-wrapper";
 import FloatingActionsWrapper from "./components/floating-actions-wrapper";
 
-export default async function TransactionsPage() {
+export default async function TransactionsPage({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ month?: string }>
+}) {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const params = await searchParams;
+  const month = params?.month || currentMonth;
+
   return (
     <div className="h-full flex flex-col gap-4">
       <TransactionsMonthPicker />
@@ -16,7 +24,7 @@ export default async function TransactionsPage() {
           <Card className="w-full md:w-[70%] mx-auto">
             <CardContent className="p-6">
               <Suspense fallback={<Skeleton className="h-64 w-full" />}>
-                <TransactionsSummaryCard />
+                <TransactionsSummaryCard month={month} />
                 <AccountManageWrapper />
               </Suspense>
             </CardContent>
@@ -33,7 +41,7 @@ export default async function TransactionsPage() {
               </div>
             }
           >
-            <TransactionListWrapper />
+            <TransactionListWrapper month={month} />
           </Suspense>
         </div>
       </div>

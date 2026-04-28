@@ -46,8 +46,6 @@ export async function getTransactionsByDay(
 export async function getDailySummaryByMonth(
   params: Database["public"]["Functions"]["get_daily_summary_by_month"]["Args"],
 ) {
-  console.log("getDailySummaryByMonth");
-
   const db = await createClient();
 
   const { data, error } = await db.rpc("get_daily_summary_by_month", params);

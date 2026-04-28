@@ -28,6 +28,7 @@ const chartColors = {
   fill: "rgba(255, 115, 1, 0.4)",
   stroke: "rgb(255, 115, 1)",
 };
+
 interface Props {
   dailySummaryData: {
     day_date: string;

@@ -320,7 +320,7 @@ export type Database = {
         }[]
       }
       get_monthly_financial_summary: {
-        Args: never
+        Args: { p_month?: string }
         Returns: {
           monthly_balance: number
           total_balance: number
