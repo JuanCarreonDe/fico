@@ -3,8 +3,12 @@ import { TransactionsMetricCard } from "./transactions-metric-card";
 import { getMonthlyFinancialSummary } from "../services/transactions.service";
 import TransactionSummaryTotal from "./transaction-summary-total";
 
-export async function TransactionsSummaryCard() {
-  const summaryData = (await getMonthlyFinancialSummary())?.at(0);
+export async function TransactionsSummaryCard({ month }: { month?: string }) {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const selectedMonth = month || currentMonth;
+  const summaryData = (
+    await getMonthlyFinancialSummary({ p_month: selectedMonth })
+  )?.at(0);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-MX", {

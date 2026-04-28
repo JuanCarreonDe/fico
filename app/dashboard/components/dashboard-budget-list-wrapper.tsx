@@ -1,8 +1,14 @@
 import { getAllCategoriesBudgetSummary } from "./dashboard.service";
 import DashboardBudgetList from "./dashboard-budget-list";
 
-export default async function DashboardBudgetListWrapper() {
-  const budgetData = await getAllCategoriesBudgetSummary();
+interface DashboardBudgetListWrapperProps {
+  month?: string;
+}
+
+export default async function DashboardBudgetListWrapper({
+  month,
+}: DashboardBudgetListWrapperProps) {
+  const budgetData = await getAllCategoriesBudgetSummary({ p_month: month });
 
   return <DashboardBudgetList data={budgetData} />;
 }

@@ -13,7 +13,6 @@ export function AuthSync() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        console.log("User signed in, refreshing page...");
         // Force a refresh to ensure all components get the updated user state
         router.refresh();
       }

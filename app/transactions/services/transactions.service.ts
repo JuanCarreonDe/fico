@@ -24,10 +24,17 @@ export type GetCategorySummaryParams =
   Database["public"]["Functions"]["get_category_summary"]["Args"];
 
 export const getMonthlyFinancialSummary = async (
-  _params?: GetMonthlyFinancialSummaryParams,
+  params?: GetMonthlyFinancialSummaryParams,
 ) => {
   const db = await createClient();
-  const { data, error } = await db.rpc("get_monthly_financial_summary");
+  let monthParam: string | undefined;
+  if (params?.p_month) {
+    monthParam =
+      params.p_month.length <= 7 ? `${params.p_month}-01` : params.p_month;
+  }
+  const { data, error } = await db.rpc("get_monthly_financial_summary", {
+    p_month: monthParam,
+  });
   if (error) throw error;
 
   return data;
