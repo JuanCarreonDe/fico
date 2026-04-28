@@ -3,7 +3,8 @@
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
+import { toast } from "sonner";
 
 export default function DashboardMonthPicker() {
   const router = useRouter();
@@ -20,6 +21,13 @@ export default function DashboardMonthPicker() {
     });
   };
 
+  useEffect(() => {
+    if (isPending) {
+      toast.loading("Cargando transacciones");
+    }
+    toast.dismiss();
+  }, [isPending]);
+
   return (
     <Field className="flex items-center gap-2">
       <Input
@@ -31,9 +39,6 @@ export default function DashboardMonthPicker() {
         max={currentMonth}
         disabled={isPending}
       />
-      {isPending && (
-        <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
-      )}
     </Field>
   );
 }
