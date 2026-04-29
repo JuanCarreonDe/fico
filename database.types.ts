@@ -366,6 +366,8 @@ export type Database = {
           transaction_date: string
           transfer_id: string
           type: string
+          account_id: string
+          category_id: string | null
         }[]
       }
       get_user_accounts: {

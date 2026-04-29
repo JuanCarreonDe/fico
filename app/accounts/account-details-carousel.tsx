@@ -75,7 +75,7 @@ export function AccountDetailsCarousel({
                   <AccountCard
                     account={account}
                     formatCurrency={formatCurrency}
-                    setOpenFahterDialog={setOpen}
+                    setOpenFatherDialog={setOpen}
                   />
                 </CarouselItem>
               ))}
@@ -92,7 +92,7 @@ export function AccountDetailsCarousel({
                       buttonClassName="w-full h-full"
                       buttonText="Agregar cuenta"
                       variant={"outline"}
-                      setOpenFahterDialog={setOpen}
+                      setOpenFatherDialog={setOpen}
                     />
                   </CardContent>
                 </Card>

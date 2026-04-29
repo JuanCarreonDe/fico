@@ -1,29 +1,25 @@
-import {
-  getUserAccounts,
-  getUserCategories,
-} from "@/app/transactions/services/transactions.service";
-import TransactionFormClient from "./transaction-form-client";
+"use client";
 
-interface TransactionFormWrapperProps {
-  label?: string;
-  defaultType?: "income" | "expense";
-}
+import TransactionFormClient, {
+  TransactionFormClientProps,
+} from "./transaction-form-client";
 
-export default async function TransactionFormWrapper({
-  label,
-  defaultType,
-}: TransactionFormWrapperProps) {
-  const [userAccounts, userCategories] = await Promise.all([
-    getUserAccounts(),
-    getUserCategories(),
-  ]);
-
+export default function TransactionFormWrapper({
+  transaction,
+  open,
+  onOpenChange,
+  userAccounts,
+  userCategories,
+  isUpdate,
+}: TransactionFormClientProps) {
   return (
     <TransactionFormClient
       userAccounts={userAccounts}
       userCategories={userCategories}
-      label={label}
-      defaultType={defaultType}
+      transaction={transaction}
+      isUpdate={isUpdate}
+      open={open}
+      onOpenChange={onOpenChange}
     />
   );
 }

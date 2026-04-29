@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/chart";
 
 function generateAccentColor(index: number): string {
-  const opacity = 1 - index * 0.25;
-  return `rgba(255, 115, 1, ${Math.max(opacity, 0.15)})`;
+  const opacity = 1 - (index + 1) * 0.15;
+  return `rgba(255, 115, 1, ${Math.max(opacity, 0.01)})`;
 }
 
 interface DashboardPieChartProps {
@@ -53,6 +53,7 @@ export function DashboardPieChart({ categoryData }: DashboardPieChartProps) {
               dataKey="amount"
               nameKey="category"
               outerRadius={70}
+              stroke="rgb(255, 115, 1)"
             >
               <LabelList
                 dataKey="category"

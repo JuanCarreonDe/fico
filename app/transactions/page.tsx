@@ -7,10 +7,10 @@ import AccountManageWrapper from "./components/account-manage-wrapper";
 import TransactionListWrapper from "./components/transaction-list-wrapper";
 import FloatingActionsWrapper from "./components/floating-actions-wrapper";
 
-export default async function TransactionsPage({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ month?: string }>
+export default async function TransactionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string }>;
 }) {
   const currentMonth = new Date().toISOString().slice(0, 7);
   const params = await searchParams;

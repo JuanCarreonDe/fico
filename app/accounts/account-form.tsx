@@ -41,7 +41,7 @@ interface Props {
     | undefined;
   buttonClassName?: string;
   buttonText?: string;
-  setOpenFahterDialog?: (value: SetStateAction<boolean>) => void;
+  setOpenFatherDialog?: (value: SetStateAction<boolean>) => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -51,7 +51,6 @@ const accountSchema = z.object({
   p_type: z.enum(["bank", "cash", "credit", "savings"]),
   p_initial_balance: z.number().optional(),
 });
-
 type AccountFormData =
   Database["public"]["Functions"]["create_account"]["Args"];
 const accountTypes = Constants.public.Enums.account_type;
@@ -60,7 +59,7 @@ export default function AccountForm({
   buttonText = "",
   buttonClassName,
   variant,
-  setOpenFahterDialog,
+  setOpenFatherDialog,
   open: externalOpen,
   onOpenChange,
 }: Props) {
@@ -99,7 +98,7 @@ export default function AccountForm({
     });
 
     setOpen(false);
-    if (setOpenFahterDialog) setOpenFahterDialog(false);
+    if (setOpenFatherDialog) setOpenFatherDialog(false);
 
     reset({
       p_name: "",

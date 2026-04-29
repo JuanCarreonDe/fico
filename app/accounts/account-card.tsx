@@ -11,13 +11,13 @@ import { toast } from "sonner";
 interface AccountCardProps {
   account: Database["public"]["Functions"]["get_account_balances"]["Returns"][0];
   formatCurrency: (amount: number) => string;
-  setOpenFahterDialog?: (value: SetStateAction<boolean>) => void;
+  setOpenFatherDialog?: (value: SetStateAction<boolean>) => void;
 }
 
 export function AccountCard({
   account,
   formatCurrency,
-  setOpenFahterDialog,
+  setOpenFatherDialog,
 }: AccountCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -34,7 +34,7 @@ export function AccountCard({
 
     setIsDeleteDialogOpen(false);
 
-    if (setOpenFahterDialog) return setOpenFahterDialog(false);
+    if (setOpenFatherDialog) return setOpenFatherDialog(false);
   };
 
   const handleCancel = () => {
