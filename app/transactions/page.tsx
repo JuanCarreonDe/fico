@@ -4,8 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { TransactionsSummaryCard } from "./components/tansactions-summary-card";
 import AccountManageWrapper from "./components/account-manage-wrapper";
-import TransactionListWrapper from "./components/transaction-list-wrapper";
-import FloatingActionsWrapper from "./components/floating-actions-wrapper";
+import TransactionsDataWrapper from "./components/transactions-data-wrapper";
 
 export default async function TransactionsPage({
   searchParams,
@@ -41,13 +40,10 @@ export default async function TransactionsPage({
               </div>
             }
           >
-            <TransactionListWrapper month={month} />
+            <TransactionsDataWrapper month={month} />
           </Suspense>
         </div>
       </div>
-      <Suspense>
-        <FloatingActionsWrapper />
-      </Suspense>
     </div>
   );
 }
