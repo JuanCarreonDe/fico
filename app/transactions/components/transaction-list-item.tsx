@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
 import { deleteTransaction } from "../actions";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { ArrowLeftRight } from "lucide-react";
 
 const formatCurrency = (amount: number) => {
@@ -14,25 +13,35 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
+import { Database } from "@/database.types";
+import TransactionFormWrapper from "./transaction-form-wrapper";
+
+type TransactionByDay =
+  Database["public"]["Functions"]["get_transactions_by_day"]["Returns"][number];
+type UserAccountsData =
+  Database["public"]["Functions"]["get_user_accounts"]["Returns"];
+type UserCategoriesData =
+  Database["public"]["Functions"]["get_user_categories"]["Returns"];
+
 interface Props {
-  item: {
-    account_name: string;
-    amount: number;
-    category_name: string;
-    description: string | null;
-    id: string;
-    transaction_date: string;
-    type: string;
-    is_transfer?: boolean;
-    from_account_name?: string | null;
-    to_account_name?: string | null;
-    transfer_id?: string | null;
-  };
+  item: TransactionByDay;
   date: string;
+  userAccounts: UserAccountsData;
+  userCategories: UserCategoriesData;
 }
 
-export default function TransactionListItem({ item, date }: Props) {
+const LONG_PRESS_DURATION = 500;
+
+export default function TransactionListItem({
+  item,
+  date,
+  userAccounts,
+  userCategories,
+}: Props) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPress = useRef(false);
 
   const handleDelete = async () => {
     await toast.promise(deleteTransaction({ p_transaction_id: item.id }), {
@@ -47,13 +56,40 @@ export default function TransactionListItem({ item, date }: Props) {
     setIsDeleteDialogOpen(false);
   };
 
+  const handlePointerDown = () => {
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      setIsDeleteDialogOpen(true);
+    }, LONG_PRESS_DURATION);
+  };
+
+  const handlePointerUp = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    if (!isLongPress.current && !item.is_transfer) {
+      setIsEditModalOpen(true);
+    }
+  };
+
+  const handlePointerLeave = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   const isTransfer = item.is_transfer;
 
   return (
     <>
       <div
         className="flex flex-col gap-2 p-4 bg-card rounded-md select-none cursor-pointer hover:bg-card/60 transition-colors active:bg-muted/80"
-        onClick={() => setIsDeleteDialogOpen(true)}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
       >
         <div className="flex gap-2 items-center justify-between">
           <div className="flex gap-2 items-center">
@@ -114,6 +150,16 @@ export default function TransactionListItem({ item, date }: Props) {
         title="Eliminar transacción"
         description={`¿Estás seguro de que quieres eliminar la transacción de ${formatCurrency(item.amount)}?`}
       />
+      {!isTransfer && (
+        <TransactionFormWrapper
+          transaction={item}
+          open={isEditModalOpen}
+          onOpenChange={setIsEditModalOpen}
+          userAccounts={userAccounts}
+          userCategories={userCategories}
+          isUpdate={true}
+        />
+      )}
     </>
   );
 }

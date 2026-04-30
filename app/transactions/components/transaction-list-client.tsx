@@ -22,6 +22,10 @@ type DailySummary =
   Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
 type TransactionsByDay =
   Database["public"]["Functions"]["get_transactions_by_day"]["Returns"];
+type UserAccountsData =
+  Database["public"]["Functions"]["get_user_accounts"]["Returns"];
+type UserCategoriesData =
+  Database["public"]["Functions"]["get_user_categories"]["Returns"];
 
 const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("es-MX", {
@@ -32,10 +36,14 @@ const formatCurrency = (amount: number) => {
 
 interface TransactionListClientProps {
   initialDailySummary: DailySummary;
+  userAccounts: UserAccountsData;
+  userCategories: UserCategoriesData;
 }
 
 export default function TransactionListClient({
   initialDailySummary,
+  userAccounts,
+  userCategories,
 }: TransactionListClientProps) {
   const [transactionsByDay, setTransactionsByDay] = React.useState<
     Record<string, TransactionsByDay>
@@ -134,6 +142,8 @@ export default function TransactionListClient({
                         key={t.id}
                         item={t}
                         date={i.day_date}
+                        userAccounts={userAccounts}
+                        userCategories={userCategories}
                       />
                     ))}
                   </div>

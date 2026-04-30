@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TransactionFormClient from "./transaction-form-client";
@@ -46,8 +46,7 @@ export default function FloatingActions({
 
       <div
         className={cn(
-          "fixed bottom-30 right-0 left-0 z-50 mx-auto flex flex-col justify-center items-end w-full px-12 transition-opacity duration-300",
-          // isVisible ? "opacity-100" : "opacity-0",
+          "fixed bottom-30 right-10 z-50 flex flex-col justify-center items-end w-fit transition-opacity duration-300",
           closing && "opacity-0",
         )}
       >
@@ -86,7 +85,7 @@ export default function FloatingActions({
             size="xl"
             variant={isOpen ? "destructive" : "accent"}
             className={cn(
-              "w-fit rounded-full transition-transform duration-200",
+              "rounded-full transition-transform duration-200",
               isOpen && "rotate-90",
             )}
             onClick={() => (isOpen ? handleClose() : setIsOpen(true))}

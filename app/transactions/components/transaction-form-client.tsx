@@ -22,7 +22,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { createTransaction } from "../actions";
+import { createTransaction, updateTransaction } from "../actions";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { Database } from "@/database.types";
 import { useTransactionStore } from "@/lib/store/transaction-store";
@@ -31,12 +31,15 @@ type UserAccountsData =
   Database["public"]["Functions"]["get_user_accounts"]["Returns"];
 type UserCategoriesData =
   Database["public"]["Functions"]["get_user_categories"]["Returns"];
+type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
+type TransactionByDay =
+  Database["public"]["Functions"]["get_transactions_by_day"]["Returns"][number];
 
 const getLocalDateString = () => new Date().toLocaleDateString("en-CA");
 
 const transactionSchema = z.object({
   p_account_id: z.string().min(1, "Account is required"),
-  p_amount: z.number().min(0.01, "Amount must be greater than 0"),
+  p_amount: z.number().min(0, "Amount must be greater than 0"),
   p_category_id: z.string().min(1, "Category is required"),
   p_description: z.string().optional(),
   p_transaction_date: z.string().min(1, "Date is required"),
@@ -50,12 +53,16 @@ type TransactionFormData = {
   p_transaction_date: string;
 };
 
-interface TransactionFormClientProps {
+export interface TransactionFormClientProps {
   userAccounts: UserAccountsData;
   userCategories: UserCategoriesData;
   label?: string;
   defaultType?: "income" | "expense";
   setIsFatherOpen?: Dispatch<SetStateAction<boolean>>;
+  transaction?: Transaction | TransactionByDay;
+  isUpdate?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function TransactionFormClient({
@@ -64,13 +71,46 @@ export default function TransactionFormClient({
   label = "Agregar",
   defaultType = "expense",
   setIsFatherOpen,
+  transaction,
+  isUpdate = false,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: TransactionFormClientProps) {
-  // const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
-    defaultType,
+    transaction?.type === "transfer" || transaction?.type === "transfer"
+      ? defaultType
+      : (transaction?.type as "income" | "expense") || defaultType,
   );
   const { setIsLoading } = useTransactionStore();
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled
+    ? (value: boolean) => controlledOnOpenChange?.(value)
+    : setInternalOpen;
+
+  const defaultValues =
+    isUpdate && transaction
+      ? {
+          p_account_id:
+            "account_id" in transaction
+              ? (transaction.account_id as string)
+              : "",
+          p_amount: transaction.amount,
+          p_description: transaction.description || "",
+          p_transaction_date:
+            "transaction_date" in transaction
+              ? (transaction.transaction_date as string)
+              : getLocalDateString(),
+          p_category_id:
+            "category_id" in transaction
+              ? (transaction.category_id as string) || ""
+              : "",
+        }
+      : {
+          p_transaction_date: getLocalDateString(),
+        };
 
   const {
     handleSubmit,
@@ -79,49 +119,66 @@ export default function TransactionFormClient({
     formState: { errors },
   } = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
-    defaultValues: {
-      p_transaction_date: getLocalDateString(),
-    },
+    defaultValues,
   });
 
   const onSubmit = async (data: TransactionFormData) => {
+    if (!data.p_amount || data.p_amount < 0.01) {
+      toast.error("El monto debe ser mayor a 0");
+      return;
+    }
     setIsLoading(true);
-    toast.promise(
-      createTransaction({
-        ...data,
-        p_type: transactionType,
-      }),
-      {
-        loading: "Creando transacción...",
-        success: (res) => {
-          const transaction = Array.isArray(res) ? res[0] : res;
-          if (transactionType === "expense" && transaction) {
-            const { budget_amount, remaining_amount, remaining_percentage } =
-              transaction;
-            if (budget_amount !== null) {
-              const remainingFormatted = new Intl.NumberFormat("es-MX", {
-                style: "currency",
-                currency: "MXN",
-              }).format(remaining_amount || 0);
+    const action = isUpdate
+      ? updateTransaction({
+          ...data,
+          p_amount: data.p_amount!,
+          p_description: data.p_description || "",
+          p_transaction_id: transaction!.id,
+          p_type: transactionType,
+        })
+      : createTransaction({
+          ...data,
+          p_amount: data.p_amount!,
+          p_type: transactionType,
+        });
 
-              const budgetFormatted = new Intl.NumberFormat("es-MX", {
-                style: "currency",
-                currency: "MXN",
-              }).format(budget_amount || 0);
+    toast.promise(action, {
+      loading: isUpdate
+        ? "Actualizando transacción..."
+        : "Creando transacción...",
+      success: (res) => {
+        if (isUpdate) {
+          return "Transacción actualizada";
+        }
+        const transaction = Array.isArray(res) ? res[0] : res;
+        if (transactionType === "expense" && transaction) {
+          const { budget_amount, remaining_amount, remaining_percentage } =
+            transaction;
+          if (budget_amount !== null) {
+            const remainingFormatted = new Intl.NumberFormat("es-MX", {
+              style: "currency",
+              currency: "MXN",
+            }).format(remaining_amount || 0);
 
-              const percentage = Math.round(remaining_percentage || 0);
-              return `Transacción creada. Presupuesto restante: ${remainingFormatted} de ${budgetFormatted} (${percentage}%)`;
-            }
-            return "Transacción creada";
+            const budgetFormatted = new Intl.NumberFormat("es-MX", {
+              style: "currency",
+              currency: "MXN",
+            }).format(budget_amount || 0);
+
+            const percentage = Math.round(remaining_percentage || 0);
+            return `Transacción creada. Presupuesto restante: ${remainingFormatted} de ${budgetFormatted} (${percentage}%)`;
           }
           return "Transacción creada";
-        },
-        error: "Error al crear la transacción",
-        finally() {
-          setIsLoading(false);
-        },
+        }
+        return "Transacción creada";
       },
-    );
+      error: isUpdate
+        ? "Error al actualizar la transacción"
+        : "Error al crear la transacción",
+      finally() {
+        setIsLoading(false);
+      },
+    });
     setOpen(false);
     reset({
       p_amount: undefined,
@@ -130,9 +187,11 @@ export default function TransactionFormClient({
       p_category_id: undefined,
     });
     if (setIsFatherOpen) setIsFatherOpen(false);
-
-    // router.refresh();
   };
+
+  const dialogTitle = isUpdate
+    ? `Editar ${transactionType === "income" ? "ingreso" : "gasto"}`
+    : `Agregar ${transactionType === "income" ? "ingreso" : "gasto"}`;
 
   return (
     <Dialog
@@ -150,42 +209,42 @@ export default function TransactionFormClient({
         setOpen(newOpen);
       }}
     >
-      <DialogTrigger asChild>
-        {label ? (
-          <Button className="shadow-2xl" size="xl">
-            {transactionType === "income" ? (
-              <ArrowDownLeft />
-            ) : (
-              <ArrowUpRight />
-            )}
-            <span className="ml-2">{label}</span>
-          </Button>
-        ) : (
-          <div className="flex gap-2">
-            <Button
-              variant="default"
-              className="shadow-2xl"
-              size={"xl"}
-              onClick={() => setTransactionType("income")}
-            >
-              <ArrowDownLeft />
+      {!isUpdate && (
+        <DialogTrigger asChild>
+          {label ? (
+            <Button className="shadow-2xl" size="xl">
+              {transactionType === "income" ? (
+                <ArrowDownLeft />
+              ) : (
+                <ArrowUpRight />
+              )}
+              <span className="ml-2">{label}</span>
             </Button>
-            <Button
-              size={"xl"}
-              variant={"accent"}
-              className="shadow-2xl"
-              onClick={() => setTransactionType("expense")}
-            >
-              <ArrowUpRight />
-            </Button>
-          </div>
-        )}
-      </DialogTrigger>
+          ) : (
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                className="shadow-2xl"
+                size={"xl"}
+                onClick={() => setTransactionType("income")}
+              >
+                <ArrowDownLeft />
+              </Button>
+              <Button
+                size={"xl"}
+                variant={"accent"}
+                className="shadow-2xl"
+                onClick={() => setTransactionType("expense")}
+              >
+                <ArrowUpRight />
+              </Button>
+            </div>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>
-            Agregar {transactionType === "income" ? "ingreso" : "gasto"}
-          </DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
@@ -201,11 +260,9 @@ export default function TransactionFormClient({
                         placeholder="0.00"
                         type="number"
                         value={field.value || ""}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value ? Number(e.target.value) : undefined,
-                          )
-                        }
+                        // onChange={field.onChange}
+
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     )}
                   />
@@ -353,7 +410,7 @@ export default function TransactionFormClient({
                 Cancelar
               </Button>
               <Button type="submit" variant={"accent"}>
-                Guardar
+                {isUpdate ? "Actualizar" : "Guardar"}
               </Button>
             </Field>
           </FieldGroup>

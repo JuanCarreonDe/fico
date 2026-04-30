@@ -12,6 +12,9 @@ export type DailySummary =
   Database["public"]["Functions"]["get_daily_summary_by_month"]["Returns"];
 export type ArchiveTransactionParams =
   Database["public"]["Functions"]["archive_transaction"]["Args"];
+export type UpdateTransactionParams =
+  Database["public"]["Functions"]["update_transaction"]["Args"];
+export type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 
 export async function createTransaction(params: CreateTransactionParams) {
   const db = await createClient();
@@ -71,4 +74,38 @@ export async function deleteTransaction(params: ArchiveTransactionParams) {
   revalidatePath("/transactions", "page");
 
   return data;
+}
+
+export async function getTransactionById(id: string) {
+  const db = await createClient();
+
+  const { data, error } = await db
+    .from("transactions")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
+
+  return data as Transaction;
+}
+
+export async function updateTransaction(params: UpdateTransactionParams) {
+  console.log(params);
+
+  const db = await createClient();
+
+  const { data, error } = await db.rpc("update_transaction", params);
+
+  if (error) {
+    console.error(error.message);
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/transactions", "page");
+
+  return Array.isArray(data) ? data : [data];
 }
