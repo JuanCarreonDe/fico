@@ -86,7 +86,7 @@ export default function TransactionListItem({
   return (
     <>
       <div
-        className="flex flex-col gap-2 p-4 bg-card rounded-md select-none cursor-pointer hover:bg-card/60 transition-colors active:bg-muted/80"
+        className="flex flex-col gap-2 p-4 bg-card rounded-md select-none cursor-pointer hover:bg-card/60 transition-colors ring-1 ring-foreground/10"
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerLeave}
@@ -95,7 +95,7 @@ export default function TransactionListItem({
           <div className="flex gap-2 items-center">
             {isTransfer ? (
               <>
-                <span className="px-2 py-1 bg-secondary rounded-2xl flex items-center gap-1">
+                <span className="px-2 py-1 bg-accent rounded-2xl flex items-center gap-1">
                   <ArrowLeftRight className="w-3 h-3" />
                   Transferencia
                 </span>
@@ -105,7 +105,7 @@ export default function TransactionListItem({
               </>
             ) : (
               <>
-                <span className="px-2 py-1 bg-secondary rounded-2xl">
+                <span className="px-2 py-1 bg-accent rounded-2xl">
                   {item.category_name}
                 </span>
                 <span className="capitalize">
