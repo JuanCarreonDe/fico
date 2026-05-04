@@ -85,6 +85,7 @@ export default function TransactionListClient({
             <CardContent>
               <Collapsible
                 className="rounded-md data-[state=open]:bg-muted"
+                // className="rounded-md data-[state=open]:bg-muted"
                 onOpenChange={(open) => {
                   // setIsOpen(open);
                   if (open && !transactionsByDay[i.day_date]) {
@@ -96,7 +97,7 @@ export default function TransactionListClient({
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="group w-full justify-between min-h-fit p-2 ring-0 outline-none border-none"
+                    className="group w-full justify-between min-h-fit p-2 ring-0 outline-none bg-transparent aria-expanded:bg-transparent"
                     disabled={i.total_expense === 0 && i.total_income === 0}
                   >
                     <div className="flex gap-2 items-center justify-start">
@@ -136,7 +137,6 @@ export default function TransactionListClient({
                 <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
                   <div className="w-full flex flex-col gap-2">
                     {i.day_date === loadingDay && <TransactionByDaySkeleton />}
-
                     {transactionsByDay[i.day_date]?.map((t) => (
                       <TransactionListItem
                         key={t.id}

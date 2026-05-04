@@ -50,11 +50,21 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          {/* Neon Glow Background - outside the clipped container */}
+          <div className="ne-bg">
+            <div className="ne-glow"></div>
+            <div className="ne-orb"></div>
+            {/* <div className="ne-particles"></div> */}
+            <div className="ne-ring ne-ring-1"></div>
+            <div className="ne-ring ne-ring-2"></div>
+            <div className="ne-ring ne-ring-3"></div>
+            <div className="ne-vignette"></div>
+          </div>
           <AuthProvider>
             <AuthSync />
-            <div className="h-dvh bg-background overflow-hidden p-2 flex flex-col gap-4">
-              {/* <div className="h-dvh bg-background overflow-hidden p-2 flex flex-col gap-4 bg-[radial-gradient(ellipse_at_top_right,var(--accent)_1%,transparent_50%)]"> */}
-              <main className="overflow-auto flex-1 rounded-2xl relative bg-card">
+            <div className="h-dvh bg-transparent overflow-hidden p-2 flex flex-col gap-4">
+              <main className="overflow-auto flex-1 rounded-2xl relative ">
+                {/* <main className="overflow-auto flex-1 rounded-2xl relative bg-black/40 backdrop-blur-md"> */}
                 <div className="min-h-full p-4">
                   <PageTransition>{children}</PageTransition>
                 </div>
