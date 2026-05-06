@@ -39,7 +39,30 @@ export function ColorPicker({
   };
 
   return (
-    <div className="space-y-2 max-w-25">
+    <div className="flex gap-2">
+      <div className="grid grid-cols-3 gap-1 gap-x-2 max-w-20">
+        {presets.map((color) => (
+          <button
+            key={color}
+            type="button"
+            onClick={() => {
+              setCurrentColor(color);
+              const event = {
+                target: { value: color },
+              } as React.ChangeEvent<HTMLInputElement>;
+              onChange?.(event);
+            }}
+            className={cn(
+              "h-5 w-5 rounded-md border-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+              currentColor === color
+                ? "border-foreground"
+                : "border-transparent",
+            )}
+            style={{ ["backgroundColor" as string]: color }}
+            aria-label={`Seleccionar color ${color}`}
+          />
+        ))}
+      </div>
       <div className="flex items-center justify-end gap-2">
         <div
           className="relative h-12 w-12 rounded-md overflow-hidden shrink-0"
@@ -53,29 +76,6 @@ export function ColorPicker({
             {...props}
           />
         </div>
-      </div>
-      <div className="flex flex-wrap justify-end gap-2 ">
-        {presets.map((color) => (
-          <button
-            key={color}
-            type="button"
-            onClick={() => {
-              setCurrentColor(color);
-              const event = {
-                target: { value: color },
-              } as React.ChangeEvent<HTMLInputElement>;
-              onChange?.(event);
-            }}
-            className={cn(
-              "h-6 w-6 rounded-md border-2 transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-              currentColor === color
-                ? "border-foreground"
-                : "border-transparent",
-            )}
-            style={{ ["backgroundColor" as string]: color }}
-            aria-label={`Seleccionar color ${color}`}
-          />
-        ))}
       </div>
     </div>
   );
