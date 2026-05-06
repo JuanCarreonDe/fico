@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -16,18 +17,10 @@ import {
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { getAccentColor, hexToRgb, hexToRgba } from "@/lib/get-accent-color";
 
-const chartConfig = {
-  expenses: {
-    label: "Gastos",
-    color: "rgb(255, 115, 1)",
-  },
-} satisfies ChartConfig;
-
-const chartColors = {
-  fill: "rgba(255, 115, 1, 0.4)",
-  stroke: "rgb(255, 115, 1)",
-};
+const DEFAULT_ACCENT = "#ff7301";
+const DEFAULT_ACCENT_RGB = "rgb(255, 115, 1)";
 
 interface Props {
   dailySummaryData: {
@@ -38,12 +31,43 @@ interface Props {
 }
 
 export default function DashboardExpensesChart({ dailySummaryData }: Props) {
-  const chartData = (dailySummaryData ?? [])
-    .map((day) => ({
-      day: format(new Date(day.day_date + "T00:00:00"), "d", { locale: es }),
-      expenses: day.total_expense,
-    }))
-    .reverse();
+  const [accentColor, setAccentColor] = useState(DEFAULT_ACCENT_RGB);
+
+  useEffect(() => {
+    const accent = getAccentColor();
+    const rgb = accent.startsWith("#") ? hexToRgb(accent) : accent;
+    setAccentColor(rgb);
+  }, []);
+
+  const chartConfig = useMemo(
+    () =>
+      ({
+        expenses: {
+          label: "Gastos",
+          color: accentColor,
+        },
+      } satisfies ChartConfig),
+    [accentColor]
+  );
+
+  const chartColors = useMemo(
+    () => ({
+      fill: accentColor.replace("rgb", "rgba").replace(")", ", 0.4)"),
+      stroke: accentColor,
+    }),
+    [accentColor]
+  );
+
+  const chartData = useMemo(
+    () =>
+      (dailySummaryData ?? [])
+        .map((day) => ({
+          day: format(new Date(day.day_date + "T00:00:00"), "d", { locale: es }),
+          expenses: day.total_expense,
+        }))
+        .reverse(),
+    [dailySummaryData]
+  );
 
   if (chartData.length === 0) {
     return null;

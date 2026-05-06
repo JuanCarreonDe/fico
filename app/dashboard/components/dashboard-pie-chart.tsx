@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Pie, PieChart, LabelList } from "recharts";
 
 import {
@@ -14,21 +15,34 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { getAccentColor, hexToRgba } from "@/lib/get-accent-color";
 
-function generateAccentColor(index: number): string {
-  const opacity = 1 - (index + 1) * 0.15;
-  return `rgba(255, 115, 1, ${Math.max(opacity, 0.01)})`;
-}
+const DEFAULT_ACCENT = "#ff7301";
 
 interface DashboardPieChartProps {
   categoryData: { category_name: string; total_amount: number }[];
 }
 
+function generateAccentColor(accentHex: string, index: number): string {
+  const opacity = 1 - (index + 1) * 0.15;
+  const r = parseInt(accentHex.slice(1, 3), 16);
+  const g = parseInt(accentHex.slice(3, 5), 16);
+  const b = parseInt(accentHex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${Math.max(opacity, 0.01)})`;
+}
+
 export function DashboardPieChart({ categoryData }: DashboardPieChartProps) {
+  const [accentColor, setAccentColor] = useState(DEFAULT_ACCENT);
+
+  useEffect(() => {
+    const accent = getAccentColor();
+    setAccentColor(accent);
+  }, []);
+
   const chartData = categoryData.map((item, index) => ({
     category: item.category_name,
     amount: Number(item.total_amount),
-    fill: generateAccentColor(index),
+    fill: generateAccentColor(accentColor, index),
   }));
 
   if (chartData.length === 0) {
@@ -53,7 +67,7 @@ export function DashboardPieChart({ categoryData }: DashboardPieChartProps) {
               dataKey="amount"
               nameKey="category"
               outerRadius={70}
-              stroke="rgb(255, 115, 1)"
+              stroke={accentColor}
             >
               <LabelList
                 dataKey="category"
