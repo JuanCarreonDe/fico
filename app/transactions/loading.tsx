@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -7,6 +6,7 @@ export default function Loading() {
     <div className="h-full flex flex-col gap-4">
       <div className="w-fit max-w-40 mx-auto">
         <Skeleton className="h-10 w-40" />
+        here
       </div>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-6">
