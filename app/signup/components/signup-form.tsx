@@ -11,11 +11,55 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
+import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { signup } from "../../login/actions";
+
+function SignupFormFields() {
+  const { pending } = useFormStatus();
+
+  return (
+    <>
+      <Field>
+        <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>
+        <Input
+          name="email"
+          id="email"
+          type="email"
+          placeholder="correo@ejemplo.com"
+          required
+          disabled={pending}
+        />
+      </Field>
+<Field>
+        <FieldLabel htmlFor="password">Contraseña</FieldLabel>
+        <PasswordInput
+          id="password"
+          name="password"
+          required
+          disabled={pending}
+          placeholder="••••••••"
+        />
+      </Field>
+      <Field>
+        <Button type="submit" variant="accent" disabled={pending}>
+          {pending ? (
+            <span className="flex items-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              Creando cuenta...
+            </span>
+          ) : (
+            "Crear cuenta"
+          )}
+        </Button>
+      </Field>
+    </>
+  );
+}
 
 function SignupFormInner() {
   const searchParamsHook = useSearchParams();
@@ -39,28 +83,10 @@ function SignupFormInner() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form method="POST">
+          <form action={signup}>
             <input type="hidden" name="redirectTo" value="/login" />
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>
-                <Input
-                  name="email"
-                  id="email"
-                  type="email"
-                  placeholder="correo@ejemplo.com"
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="password">Contraseña</FieldLabel>
-                <Input id="password" type="password" name="password" required />
-              </Field>
-              <Field>
-                <Button type="submit" variant="accent" formAction={signup}>
-                  Crear cuenta
-                </Button>
-              </Field>
+              <SignupFormFields />
             </FieldGroup>
           </form>
         </CardContent>
