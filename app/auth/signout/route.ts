@@ -5,7 +5,6 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const db = await createClient();
 
-  // Check if a user's logged in
   const {
     data: { user },
   } = await db.auth.getUser();
@@ -15,7 +14,9 @@ export async function POST(req: NextRequest) {
   }
 
   revalidatePath("/", "layout");
-  return NextResponse.redirect(new URL("/login", req.url), {
+
+  const origin = req.headers.get("origin") || req.nextUrl.origin;
+  return NextResponse.redirect(`${origin}/login`, {
     status: 302,
   });
 }

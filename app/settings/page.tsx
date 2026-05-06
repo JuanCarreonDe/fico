@@ -1,9 +1,9 @@
 import { LogoutButton } from "@/components/logout-button";
-import { useAuth } from "@/components/auth-provider";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import AccountManageWrapper from "../transactions/components/account-manage-wrapper";
 import CategoryManageWrapper from "../categories/category-manage-wrapper";
 import SettingsUserEmail from "./components/settings-user-email";
+import AccentColorPicker from "./components/accent-color-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 
@@ -55,7 +55,8 @@ export default function SettingsPage() {
                 <ThemeToggle />
               </span>
             </div>
-            <div className="flex w-full justify-center">
+            <AccentColorPicker />
+            <div className="flex w-full justify-center pt-2">
               <LogoutButton />
             </div>
           </div>

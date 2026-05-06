@@ -11,11 +11,55 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { login } from "../../login/actions";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
+import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
+
+function LoginFormFields() {
+  const { pending } = useFormStatus();
+
+  return (
+    <>
+      <Field>
+        <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>
+        <Input
+          name="email"
+          id="email"
+          type="email"
+          placeholder="correo@ejemplo.com"
+          required
+          disabled={pending}
+        />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="password">Contraseña</FieldLabel>
+        <PasswordInput
+          id="password"
+          name="password"
+          required
+          disabled={pending}
+          placeholder="••••••••"
+        />
+      </Field>
+      <Field>
+        <Button type="submit" variant={"accent"} disabled={pending}>
+          {pending ? (
+            <span className="flex items-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              Iniciando sesión...
+            </span>
+          ) : (
+            "Iniciar sesión"
+          )}
+        </Button>
+      </Field>
+    </>
+  );
+}
 
 function LoginFormInner() {
   const searchParamsHook = useSearchParams();
@@ -47,28 +91,10 @@ function LoginFormInner() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form method="POST">
+          <form action={login}>
             <input type="hidden" name="redirectTo" value="/transactions" />
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Correo electrónico</FieldLabel>
-                <Input
-                  name="email"
-                  id="email"
-                  type="email"
-                  placeholder="correo@ejemplo.com"
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="password">Contraseña</FieldLabel>
-                <Input id="password" type="password" name="password" required />
-              </Field>
-              <Field>
-                <Button type="submit" variant={"accent"} formAction={login}>
-                  Iniciar sesión
-                </Button>
-              </Field>
+              <LoginFormFields />
             </FieldGroup>
           </form>
         </CardContent>
