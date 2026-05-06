@@ -8,6 +8,7 @@ import { NavigationWrapper } from "@/components/navigation-wrapper";
 import { AuthProvider } from "@/components/auth-provider";
 import { AuthSync } from "@/components/auth-sync";
 import PageTransition from "@/components/page-transition";
+import { getUserAccentColor } from "@/lib/server/get-user-accent-color";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -32,17 +33,26 @@ export const viewport = {
   interactiveWidget: "resizes-content" as const,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const accentColor = await getUserAccentColor();
+
   return (
     <html
       className={cn(" font-sans", geist.variable)}
       lang="es"
       suppressHydrationWarning
     >
+      <head>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `:root { --accent: ${accentColor}; }`,
+          }}
+        />
+      </head>
       <body>
         <ThemeProvider
           attribute="class"
@@ -64,7 +74,6 @@ export default function RootLayout({
             <AuthSync />
             <div className="h-dvh bg-transparent overflow-hidden p-2 flex flex-col gap-4">
               <main className="overflow-auto flex-1 rounded-2xl relative ">
-                {/* <main className="overflow-auto flex-1 rounded-2xl relative bg-black/40 backdrop-blur-md"> */}
                 <div className="min-h-full p-4">
                   <PageTransition>{children}</PageTransition>
                 </div>
