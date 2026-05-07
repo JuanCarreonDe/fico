@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Pie, PieChart, LabelList } from "recharts";
 
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,7 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { getAccentColor, hexToRgba } from "@/lib/get-accent-color";
+import { getAccentColor } from "@/lib/get-accent-color";
 
 const DEFAULT_ACCENT = "#ff7301";
 
@@ -32,16 +32,17 @@ function generateAccentColor(accentHex: string, index: number): string {
 }
 
 export function DashboardPieChart({ categoryData }: DashboardPieChartProps) {
-  const [accentColor, setAccentColor] = useState(DEFAULT_ACCENT);
+  const accentColor = getAccentColor() || DEFAULT_ACCENT;
 
-  useEffect(() => {
-    const accent = getAccentColor();
-    setAccentColor(accent);
-  }, []);
+  const total = categoryData.reduce(
+    (sum, item) => sum + Number(item.total_amount),
+    0,
+  );
 
   const chartData = categoryData.map((item, index) => ({
     category: item.category_name,
     amount: Number(item.total_amount),
+    percentage: total > 0 ? (Number(item.total_amount) / total) * 100 : 0,
     fill: generateAccentColor(accentColor, index),
   }));
 
@@ -78,6 +79,37 @@ export function DashboardPieChart({ categoryData }: DashboardPieChartProps) {
           </PieChart>
         </ChartContainer>
       </CardContent>
+
+      <CardFooter className="flex flex-col">
+        <div className="w-full flex flex-col gap-2">
+          {chartData.map((i) => (
+            <div className="space-y-2 py-2" key={i.category}>
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium capitalize">{i.category}</span>
+                <div className="text-right text-xs text-muted-foreground flex gap-1">
+                  <span>${i.amount}</span>
+                  <span>|</span>
+                  <span className="text-accent">
+                    {i.percentage.toString().split(".")[0]}%
+                  </span>
+                </div>
+              </div>
+              <div className="h-2 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all border bg-accent`}
+                  style={{
+                    width: `${i.percentage}%`,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-2 justify-end w-full">
+          <CardTitle>Total de gastos:</CardTitle>
+          <CardDescription className="text-accent">${total}</CardDescription>
+        </div>
+      </CardFooter>
     </Card>
   );
 }
