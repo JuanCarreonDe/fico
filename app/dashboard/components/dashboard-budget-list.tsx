@@ -44,7 +44,7 @@ function BudgetProgressItem({
   return (
     <div className="space-y-2 py-2">
       <div className="flex justify-between items-center text-sm">
-        <span className="font-medium">{category.category_name}</span>
+        <span className="font-medium capitalize">{category.category_name}</span>
         <div className="text-right text-xs text-muted-foreground">
           <span>{formatCurrency(category.spent_amount)}</span>
           <span className="mx-1">|</span>
