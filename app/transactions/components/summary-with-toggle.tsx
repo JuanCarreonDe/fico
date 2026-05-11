@@ -35,8 +35,6 @@ export default function SummaryWithToggle({
     async (valueToSave: boolean) => {
       if (!user?.id) return;
 
-      const toastId = toast.loading("Guardando...");
-
       const { error } = await supabase
         .from("profiles")
         .upsert(
@@ -44,11 +42,6 @@ export default function SummaryWithToggle({
           { onConflict: "id" },
         );
 
-      if (error) {
-        toast.error("Error al guardar", { id: toastId });
-      } else {
-        toast.success("Guardado", { id: toastId });
-      }
     },
     [user, supabase],
   );
