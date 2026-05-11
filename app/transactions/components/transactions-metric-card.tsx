@@ -17,7 +17,7 @@ export function TransactionsMetricCard({
   icon,
   variant,
 }: MetricCardProps) {
-  const { isLoading } = useTransactionStore();
+  const { isLoading, showAmounts } = useTransactionStore();
 
   const getVariantStyles = () => {
     switch (variant) {
@@ -47,7 +47,9 @@ export function TransactionsMetricCard({
       {isLoading ? (
         <Skeleton className="h-6 w-full" />
       ) : (
-        <div className="text font-bold">{value}</div>
+<div className="text font-bold">
+          {showAmounts ? value : "******"}
+        </div>
       )}
     </div>
   );
