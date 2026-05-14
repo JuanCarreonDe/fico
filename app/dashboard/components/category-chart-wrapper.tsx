@@ -14,5 +14,7 @@ export default async function CategoryChartWrapper({
     p_type: "expense",
   });
 
-  return <DashboardPieChart categoryData={categoryData ?? []} />;
+  return (
+    <DashboardPieChart categoryData={categoryData ?? []} month={month} />
+  );
 }
