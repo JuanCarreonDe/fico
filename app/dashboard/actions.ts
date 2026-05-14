@@ -1,5 +1,8 @@
+"use server";
+
 import { Database } from "@/database.types";
 import { createClient } from "@/lib/db/server";
+import { getTransactionsByCategory } from "@/app/transactions/services/transactions.service";
 
 export async function getDailySummaryByMonth(
   params: Database["public"]["Functions"]["get_category_summary"]["Args"],
@@ -14,4 +17,10 @@ export async function getDailySummaryByMonth(
   }
 
   return data;
+}
+
+export async function getCategoryTransactions(
+  params: Database["public"]["Functions"]["get_transactions_by_category"]["Args"],
+) {
+  return getTransactionsByCategory(params);
 }

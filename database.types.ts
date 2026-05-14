@@ -313,6 +313,7 @@ export type Database = {
           p_type: Database["public"]["Enums"]["transaction_type"]
         }
         Returns: {
+          category_id: string
           category_name: string
           total_amount: number
         }[]
@@ -357,6 +358,21 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      get_transactions_by_category: {
+        Args: { p_category_id: string; p_month?: string }
+        Returns: {
+          account_id: string
+          account_name: string
+          amount: number
+          category_id: string
+          category_name: string
+          description: string | null
+          id: string
+          is_transfer: boolean
+          transaction_date: string
+          type: string
+        }[]
       }
       get_transactions_by_day: {
         Args: { p_date: string }
