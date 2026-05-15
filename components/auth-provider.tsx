@@ -13,6 +13,7 @@ async function applyUserAccentColor(supabase: ReturnType<typeof createClient>, u
 
   if (data?.accent_color) {
     document.documentElement.style.setProperty("--accent", data.accent_color);
+    localStorage.setItem("fico-accent", data.accent_color);
   }
 }
 
@@ -47,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (event === "SIGNED_OUT") {
         setUser(null);
         setLoading(false);
+        localStorage.removeItem("fico-accent");
       }
     });
 
