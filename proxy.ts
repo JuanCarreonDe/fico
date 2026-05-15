@@ -1,16 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "./lib/db/proxy";
-import { createClient } from "./lib/db/server";
 
 export default async function proxy(request: NextRequest) {
-  // Update user's auth session
-  const supabaseResponse = await updateSession(request);
-
-  // Get user for route protection
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { response: supabaseResponse, user } = await updateSession(request);
 
   // Rutas protegidas
   const protectedRoutes = [

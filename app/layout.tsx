@@ -8,7 +8,6 @@ import { NavigationWrapper } from "@/components/navigation-wrapper";
 import { AuthProvider } from "@/components/auth-provider";
 import { AuthSync } from "@/components/auth-sync";
 import PageTransition from "@/components/page-transition";
-import { getUserAccentColor } from "@/lib/server/get-user-accent-color";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -33,13 +32,11 @@ export const viewport = {
   interactiveWidget: "resizes-content" as const,
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const accentColor = await getUserAccentColor();
-
   return (
     <html
       className={cn(" font-sans", geist.variable)}
@@ -47,9 +44,14 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var c=localStorage.getItem('fico-accent');if(c)document.documentElement.style.setProperty('--accent',c)}catch(e){}})()`,
+          }}
+        />
         <style
           dangerouslySetInnerHTML={{
-            __html: `:root { --accent: ${accentColor}; }`,
+            __html: `:root { --accent: #ff7301; }`,
           }}
         />
       </head>
@@ -73,12 +75,12 @@ export default async function RootLayout({
           <AuthProvider>
             <AuthSync />
             <div className="h-dvh bg-transparent overflow-hidden p-2 flex flex-col gap-4">
-              <main className="overflow-auto flex-1 rounded-2xl relative ">
-                <div className="min-h-full p-4">
+              <main className="overflow-auto flex-1 rounded-2xl relative">
+                <div className="min-h-full p-4 max-w-4xl m-auto">
                   <PageTransition>{children}</PageTransition>
                 </div>
               </main>
-              <div className="h-fit">
+              <div className="h-fit max-w-4xl m-auto">
                 <NavigationWrapper />
               </div>
               <Toaster position="top-center" />
