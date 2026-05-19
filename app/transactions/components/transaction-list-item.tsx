@@ -1,17 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { formatCurrency } from "@/lib/format-currency";
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
 import { deleteTransaction } from "../actions";
 import { toast } from "sonner";
 import { ArrowLeftRight } from "lucide-react";
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-  }).format(amount);
-};
 
 import { Database } from "@/database.types";
 import TransactionFormWrapper from "./transaction-form-wrapper";

@@ -335,6 +335,17 @@ export type Database = {
           total_income_month: number
         }[]
       }
+      get_spending_projection: {
+        Args: never
+        Returns: {
+          avg_daily_expense: number
+          projected_end_balance: number
+          days_in_period: number
+          days_with_transactions: number
+          diff_vs_last_month: number
+          has_previous_month: boolean
+        }[]
+      }
       get_recent_transactions: {
         Args: { limit_count?: number }
         Returns: {

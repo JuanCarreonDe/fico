@@ -29,6 +29,7 @@ import { getAccentColor } from "@/lib/get-accent-color";
 import { getCategoryTransactions } from "../actions";
 import type { TransactionByCategory } from "@/app/transactions/services/transactions.service";
 import { es } from "date-fns/locale";
+import { formatCurrency } from "@/lib/format-currency";
 
 const DEFAULT_ACCENT = "#ff7301";
 
@@ -107,7 +108,10 @@ export function DashboardPieChart({
           <CardTitle>Gastos por categoría</CardTitle>
           <CardDescription>Distribución del mes</CardDescription>
         </div>
-        <CopyButton data={categoryData.map(({ category_id, ...rest }) => rest)} label="Gastos por categoría" />
+        <CopyButton
+          data={categoryData.map(({ category_id, ...rest }) => rest)}
+          label="Gastos por categoría"
+        />
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -158,7 +162,7 @@ export function DashboardPieChart({
                         {i.category}
                       </span>
                       <div className="text-right text-xs text-muted-foreground flex gap-1">
-                        <span>${i.amount}</span>
+                        <span>{formatCurrency(i.amount)}</span>
                         <span>|</span>
                         <span className="text-accent">
                           {i.percentage.toString().split(".")[0]}%
@@ -219,7 +223,7 @@ export function DashboardPieChart({
                           <span
                             className={`font-medium ${tx.type === "income" ? "text-green-500" : "text-red-500"}`}
                           >
-                            {tx.type === "income" ? "+" : "-"}${tx.amount}
+                            {formatCurrency(tx.amount)}
                           </span>
                         </div>
                       ))

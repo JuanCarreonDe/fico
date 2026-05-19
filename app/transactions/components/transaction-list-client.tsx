@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Database } from "@/database.types";
+import { formatCurrency } from "@/lib/format-currency";
 import { ArrowDownLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 import * as React from "react";
 import { getTransactionsByDay } from "@/app/transactions/actions";
@@ -26,13 +27,6 @@ type UserAccountsData =
   Database["public"]["Functions"]["get_user_accounts"]["Returns"];
 type UserCategoriesData =
   Database["public"]["Functions"]["get_user_categories"]["Returns"];
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-  }).format(amount);
-};
 
 interface TransactionListClientProps {
   initialDailySummary: DailySummary;

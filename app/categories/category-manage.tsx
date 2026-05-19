@@ -1,15 +1,17 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardFooter } from "@/components/ui/card";
 import {
   DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   Dialog,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Database } from "@/database.types";
+import { formatCurrency } from "@/lib/format-currency";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -39,19 +41,11 @@ export default function CategoryManage({ categories }: Props) {
   >(null);
   const [budgetValue, setBudgetValue] = useState("");
 
-  const formatCurrency = (amount: number | null) => {
-    if (amount === null) return "Sin asignar";
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency: "MXN",
-    }).format(amount);
-  };
-
   const openBudgetDialog = (
     category: Database["public"]["Functions"]["get_user_categories"]["Returns"][number],
   ) => {
     setSelectedCategory(category);
-    setBudgetValue(category.budget.toString() || "");
+    setBudgetValue(category.budget?.toString() ?? "");
     setBudgetDialogOpen(true);
     setListOpen(false);
   };
@@ -156,7 +150,7 @@ export default function CategoryManage({ categories }: Props) {
                   >
                     <HandCoins className="h-4 w-4 text-amber-500" />
                     <span className="text-amber-500 font-medium">
-                      {formatCurrency(i.budget)}
+                      {i.budget !== null ? formatCurrency(i.budget) : "Sin asignar"}
                     </span>
                   </div>
                 )}
@@ -180,6 +174,24 @@ export default function CategoryManage({ categories }: Props) {
               </div>
             </Card>
           </div>
+          <DialogFooter className="rounded-md flex flex-row p-3 justify-between items-center bg-amber-500/5 border-amber-500/20">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="p-2 rounded-full bg-amber-500/10">
+                <HandCoins className="h-4 w-4 text-amber-500" />
+              </div>
+              <span className="font-medium">Total presupuesto</span>
+            </div>
+            <span className="text-amber-500 font-semibold text-sm">
+              {formatCurrency(
+                categories.reduce<number>((acc, cat) => {
+                  if (cat.type === "expense" && cat.budget !== null) {
+                    return acc + cat.budget;
+                  }
+                  return acc;
+                }, 0),
+              )}
+            </span>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -222,7 +234,7 @@ export default function CategoryManage({ categories }: Props) {
             <div className="flex items-center justify-between text-sm bg-muted/30 p-2 rounded">
               <span className="text-muted-foreground">Actual:</span>
               <span className="font-medium">
-                {formatCurrency(selectedCategory?.budget ?? null)}
+                {selectedCategory?.budget != null ? formatCurrency(selectedCategory.budget) : "Sin asignar"}
               </span>
             </div>
           </div>

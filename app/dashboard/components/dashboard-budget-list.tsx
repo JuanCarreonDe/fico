@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/format-currency";
 import CopyButton from "@/components/copy-button";
 
 type BudgetCategory = {
@@ -13,15 +14,6 @@ type BudgetCategory = {
 
 interface DashboardBudgetListProps {
   data: BudgetCategory[] | null;
-}
-
-function formatCurrency(amount: number) {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
 }
 
 function getProgressColor(percentage: number): string {

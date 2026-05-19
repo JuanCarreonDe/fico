@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 import { Database } from "@/database.types";
+import { formatCurrency } from "@/lib/format-currency";
 import AccountForm from "@/app/accounts/account-form";
 import { CreditCard, ListX, Wallet } from "lucide-react";
 import { AccountCard } from "./account-card";
@@ -30,13 +31,11 @@ import { Button } from "@/components/ui/button";
 
 interface AccountDetailsCarouselProps {
   accountBalances: Database["public"]["Functions"]["get_account_balances"]["Returns"];
-  formatCurrency: (amount: number) => string;
   label?: string;
 }
 
 export function AccountDetailsCarousel({
   accountBalances,
-  formatCurrency,
   label = "Manage accounts",
 }: AccountDetailsCarouselProps) {
   const [open, setOpen] = React.useState(false);
@@ -74,7 +73,6 @@ export function AccountDetailsCarousel({
                 <CarouselItem key={index} className="">
                   <AccountCard
                     account={account}
-                    formatCurrency={formatCurrency}
                     setOpenFatherDialog={setOpen}
                   />
                 </CarouselItem>

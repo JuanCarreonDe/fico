@@ -22,7 +22,7 @@ export default async function TransactionsPage({
         <div className="flex flex-col gap-6">
           <Card className="w-full md:w-[70%] mx-auto">
             <CardContent className="p-6">
-              <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+              <Suspense fallback={<Skeleton className="h-80 w-full" />}>
                 <TransactionsSummaryCard month={month} />
                 <AccountManageWrapper />
               </Suspense>

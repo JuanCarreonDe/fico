@@ -1,11 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-  }).format(amount);
-};
+import { formatCurrency } from "@/lib/format-currency";
 
 function DashboardCharts({
   categoryData,

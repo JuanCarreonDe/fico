@@ -16,6 +16,9 @@ export type TransactionByCategory =
 
 export type GetMonthlyFinancialSummaryParams =
   Database["public"]["Functions"]["get_monthly_financial_summary"]["Args"];
+export type SpendingProjection =
+  Database["public"]["Functions"]["get_spending_projection"]["Returns"][number];
+
 export type GetUserAccountsParams =
   Database["public"]["Functions"]["get_user_accounts"]["Args"];
 export type GetUserCategoriesParams =
@@ -26,6 +29,13 @@ export type GetCategorySummaryParams =
   Database["public"]["Functions"]["get_category_summary"]["Args"];
 export type GetTransactionsByCategoryParams =
   Database["public"]["Functions"]["get_transactions_by_category"]["Args"];
+
+export const getSpendingProjection = async () => {
+  const db = await createClient();
+  const { data, error } = await db.rpc("get_spending_projection");
+  if (error) throw error;
+  return data?.at(0) ?? null;
+};
 
 export const getMonthlyFinancialSummary = async (
   params?: GetMonthlyFinancialSummaryParams,
