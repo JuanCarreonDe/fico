@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import CopyButton from "@/components/copy-button";
 import {
   ChartContainer,
   ChartTooltip,
@@ -101,9 +102,12 @@ export function DashboardPieChart({
 
   return (
     <Card className="flex flex-col transition-opacity duration-300 animate-in fade-in">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Gastos por categoría</CardTitle>
-        <CardDescription>Distribución del mes</CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between pb-0 gap-2">
+        <div>
+          <CardTitle>Gastos por categoría</CardTitle>
+          <CardDescription>Distribución del mes</CardDescription>
+        </div>
+        <CopyButton data={categoryData.map(({ category_id, ...rest }) => rest)} label="Gastos por categoría" />
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer

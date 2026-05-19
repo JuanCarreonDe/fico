@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import CopyButton from "@/components/copy-button";
 
 type BudgetCategory = {
   category_id: string;
@@ -77,8 +78,9 @@ export default function DashboardBudgetList({
 
   return (
     <Card className="transition-opacity duration-300 animate-in fade-in">
-      <CardHeader className="pb-2">
+      <CardHeader className="flex flex-row items-start justify-between pb-2">
         <CardTitle className="text-lg">Presupuestos del mes</CardTitle>
+        <CopyButton data={data.map(({ category_id, ...rest }) => rest)} label="Presupuestos del mes" />
       </CardHeader>
       <CardContent>
         <div className="space-y-1">

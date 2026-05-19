@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import CopyButton from "@/components/copy-button";
 import {
   ChartContainer,
   ChartTooltip,
@@ -75,9 +76,12 @@ export default function DashboardExpensesChart({ dailySummaryData }: Props) {
 
   return (
     <Card className="transition-opacity duration-300 animate-in fade-in">
-      <CardHeader>
-        <CardTitle>Gastos diarios</CardTitle>
-        <CardDescription>Mostrando gastos mesuales</CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between gap-2">
+        <div>
+          <CardTitle>Gastos diarios</CardTitle>
+          <CardDescription>Mostrando gastos mesuales</CardDescription>
+        </div>
+        <CopyButton data={dailySummaryData} label="Gastos diarios" />
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>

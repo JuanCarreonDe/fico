@@ -61,6 +61,12 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {process.env.NEXT_PUBLIC_DEMO === "true" && (
+          <div className="text-center text-xs text-muted-foreground py-4">
+            Versión demo — los datos son de ejemplo
+          </div>
+        )}
       </div>
     </div>
   );
