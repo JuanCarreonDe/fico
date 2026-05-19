@@ -10,6 +10,7 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import { Database } from "@/database.types";
+import { formatCurrency } from "@/lib/format-currency";
 import { Trash2, Wallet, ListX } from "lucide-react";
 import { useState } from "react";
 import { archiveAccount } from "@/app/accounts/actions";
@@ -36,15 +37,6 @@ export default function AccountManageClient({
     null,
   );
   const [isLoading, setIsLoading] = useState(false);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-MX", {
-      style: "currency",
-      currency: "MXN",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   const getAccountIcon = () => {
     return <Wallet className="h-4 w-4" />;

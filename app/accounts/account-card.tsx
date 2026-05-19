@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
 import { Database } from "@/database.types";
+import { formatCurrency } from "@/lib/format-currency";
 import { Trash, Wallet } from "lucide-react";
 import { SetStateAction, useState } from "react";
 import { archiveAccount } from "./actions";
@@ -10,13 +11,11 @@ import { toast } from "sonner";
 
 interface AccountCardProps {
   account: Database["public"]["Functions"]["get_account_balances"]["Returns"][0];
-  formatCurrency: (amount: number) => string;
   setOpenFatherDialog?: (value: SetStateAction<boolean>) => void;
 }
 
 export function AccountCard({
   account,
-  formatCurrency,
   setOpenFatherDialog,
 }: AccountCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
