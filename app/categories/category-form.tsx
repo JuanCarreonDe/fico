@@ -55,10 +55,10 @@ const categorySchema = z.object({
   p_name: z.string().min(1, "Category name is required"),
   p_type: z.enum(["income", "expense", "transfer"]),
   p_budget: z.number().optional(),
-  p_icon: z.string().optional(),
+  p_icon: z.string().min(1, "Icon is required"),
 });
 
-type AccountFormData =
+type CreateCategoryArgs =
   Database["public"]["Functions"]["create_category"]["Args"];
 
 export default function CategoryForm({
@@ -85,27 +85,29 @@ export default function CategoryForm({
     watch,
     reset,
     formState: { errors },
-  } = useForm<Database["public"]["Functions"]["create_category"]["Args"]>({
+  } = useForm<z.infer<typeof categorySchema>>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       p_type: "expense",
+      p_icon: "Tags",
     },
   });
 
   const selectedType = watch("p_type");
   const selectedIcon = watch("p_icon");
 
-  const onSubmit = async (data: AccountFormData) => {
-    await toast.promise(createCategory(data), {
+  const onSubmit = async (data: z.infer<typeof categorySchema>) => {
+    await toast.promise(createCategory(data as CreateCategoryArgs), {
       loading: "Creando categoría...",
       success: "Categoría creada",
       error: (err) => `Error al crear la categoría: ${err}`,
     });
 
     setOpen(false);
-    reset({
-      p_type: "expense",
-    });
+      reset({
+        p_type: "expense",
+        p_icon: "Tags",
+      });
     router.refresh();
   };
   return (
@@ -195,8 +197,8 @@ export default function CategoryForm({
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-2.5 pt-0">
                   <IconPicker
-                    value={selectedIcon ?? null}
-                    onChange={(icon) => setValue("p_icon", icon ?? undefined)}
+                    value={selectedIcon}
+                    onChange={(icon) => setValue("p_icon", icon)}
                   />
                 </CollapsibleContent>
               </Collapsible>

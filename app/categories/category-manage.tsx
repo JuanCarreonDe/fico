@@ -55,7 +55,8 @@ export default function CategoryManage({ categories }: Props) {
   >(null);
   const [editName, setEditName] = useState("");
   const [editType, setEditType] = useState<"income" | "expense">("expense");
-  const [editIcon, setEditIcon] = useState<string | null>(null);
+  const [editIcon, setEditIcon] = useState<string>("Tags");
+  const [editBudget, setEditBudget] = useState("");
   const [budgetValue, setBudgetValue] = useState("");
 
   const openEditDialog = (
@@ -64,7 +65,8 @@ export default function CategoryManage({ categories }: Props) {
     setSelectedCategory(category);
     setEditName(category.name);
     setEditType(category.type as "income" | "expense");
-    setEditIcon(category.icon ?? null);
+    setEditIcon(category.icon ?? "Tags");
+    setEditBudget(category.budget?.toString() ?? "");
     setEditDialogOpen(true);
     setListOpen(false);
   };
@@ -90,11 +92,13 @@ export default function CategoryManage({ categories }: Props) {
     if (!selectedCategory) return;
 
     try {
+      const budget = editBudget ? parseFloat(editBudget) : null;
       await updateCategory({
         p_category_id: selectedCategory.id,
         p_name: editName,
         p_type: editType,
-        p_icon: editIcon ?? undefined,
+        p_icon: editIcon,
+        p_budget: budget ?? undefined,
       });
       toast.success("Categoría actualizada");
       router.refresh();
@@ -319,6 +323,20 @@ export default function CategoryManage({ categories }: Props) {
               ))}
             </RadioGroup>
 
+            {editType === "expense" && (
+              <FieldSet>
+                <FieldLabel className="text-muted-foreground">
+                  Presupuesto mensual
+                </FieldLabel>
+                <Input
+                  type="number"
+                  value={editBudget}
+                  onChange={(e) => setEditBudget(e.target.value)}
+                  placeholder="0.00"
+                />
+              </FieldSet>
+            )}
+
             <FieldSet>
               <Collapsible className="rounded-md data-[state=open]:bg-muted">
                 <CollapsibleTrigger asChild>
@@ -328,9 +346,7 @@ export default function CategoryManage({ categories }: Props) {
                   >
                     <span className="flex items-center gap-2 text-sm font-medium">
                       Icono
-                      {editIcon ? (
-                        <CategoryIconDisplay icon={editIcon} type={editType} className="h-4 w-4" />
-                      ) : null}
+                      <CategoryIconDisplay icon={editIcon} type={editType} className="h-4 w-4" />
                     </span>
                     <ChevronDown className="h-4 w-4 group-data-[state=open]:rotate-180 transition-transform" />
                   </Button>
