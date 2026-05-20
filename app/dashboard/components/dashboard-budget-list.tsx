@@ -3,13 +3,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format-currency";
 import CopyButton from "@/components/copy-button";
+import { CategoryIconDisplay } from "@/lib/get-category-icon";
 
 type BudgetCategory = {
   category_id: string;
   category_name: string;
   budget_amount: number;
   spent_amount: number;
-  percentage_used: number;
+  percentage_used: number | null;
+  category_icon: string | null;
 };
 
 interface DashboardBudgetListProps {
@@ -29,28 +31,33 @@ function BudgetProgressItem({
     category_name: string;
     budget_amount: number;
     spent_amount: number;
-    percentage_used: number;
+    percentage_used: number | null;
+    category_icon: string | null;
   };
 }) {
-  const percentage = Math.min(category.percentage_used, 100);
+  const pct = category.percentage_used ?? 0;
+  const percentage = Math.min(pct, 100);
 
   return (
     <div className="space-y-2 py-2">
       <div className="flex justify-between items-center text-sm">
-        <span className="font-medium capitalize">{category.category_name}</span>
+        <span className="font-medium capitalize flex items-center gap-1.5">
+          <CategoryIconDisplay icon={category.category_icon} type="expense" className="h-4 w-4 text-muted-foreground" />
+          {category.category_name}
+        </span>
         <div className="text-right text-xs text-muted-foreground">
           <span>{formatCurrency(category.spent_amount)}</span>
           <span className="mx-1">|</span>
           <span>{formatCurrency(category.budget_amount)}</span>
           <span className="mx-1">|</span>
           <span className={"text-accent"}>
-            {Math.round(category.percentage_used)}%
+            {Math.round(pct)}%
           </span>
         </div>
       </div>
       <div className="h-2 rounded-full overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all border border-accent ${getProgressColor(category.percentage_used)}`}
+          className={`h-full rounded-full transition-all border border-accent ${getProgressColor(pct)}`}
           style={{
             width: `${percentage}%`,
             minWidth: `${percentage}%`,

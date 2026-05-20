@@ -30,6 +30,7 @@ import { getCategoryTransactions } from "../actions";
 import type { TransactionByCategory } from "@/app/transactions/services/transactions.service";
 import { es } from "date-fns/locale";
 import { formatCurrency } from "@/lib/format-currency";
+import { CategoryIconDisplay } from "@/lib/get-category-icon";
 
 const DEFAULT_ACCENT = "#ff7301";
 
@@ -38,6 +39,7 @@ interface DashboardPieChartProps {
     category_id: string;
     category_name: string;
     total_amount: number;
+    category_icon: string | null;
   }[];
   month?: string;
 }
@@ -72,6 +74,7 @@ export function DashboardPieChart({
     percentage: total > 0 ? (Number(item.total_amount) / total) * 100 : 0,
     fill: generateAccentColor(accentColor, index),
     category_id: item.category_id,
+    category_icon: item.category_icon,
   }));
 
   async function handleToggle(
@@ -156,6 +159,7 @@ export function DashboardPieChart({
                   <div className="space-y-2 py-2">
                     <div className="flex justify-between items-center text-sm">
                       <span className="font-medium capitalize flex items-center gap-1">
+                        <CategoryIconDisplay icon={i.category_icon ?? null} type="expense" className="h-4 w-4 text-muted-foreground" />
                         <ChevronDown
                           className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-0" : "-rotate-90"}`}
                         />

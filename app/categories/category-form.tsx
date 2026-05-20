@@ -24,9 +24,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, ChevronDown } from "lucide-react";
 import { createCategory } from "./actions";
 import { useRouter } from "next/navigation";
+import IconPicker from "@/components/icon-picker";
+import { CategoryIconDisplay } from "@/lib/get-category-icon";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface Props {
   variant?:
@@ -48,6 +55,7 @@ const categorySchema = z.object({
   p_name: z.string().min(1, "Category name is required"),
   p_type: z.enum(["income", "expense", "transfer"]),
   p_budget: z.number().optional(),
+  p_icon: z.string().optional(),
 });
 
 type AccountFormData =
@@ -85,6 +93,7 @@ export default function CategoryForm({
   });
 
   const selectedType = watch("p_type");
+  const selectedIcon = watch("p_icon");
 
   const onSubmit = async (data: AccountFormData) => {
     await toast.promise(createCategory(data), {
@@ -167,6 +176,32 @@ export default function CategoryForm({
                 />
               </FieldSet>
             )}
+
+            <FieldSet>
+              <Collapsible className="rounded-md data-[state=open]:bg-muted">
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="group w-full justify-between h-auto p-2"
+                  >
+                    <span className="flex items-center gap-2 text-sm font-medium">
+                      Icono
+                      {selectedIcon ? (
+                        <CategoryIconDisplay icon={selectedIcon} type={selectedType} className="h-4 w-4" />
+                      ) : null}
+                    </span>
+                    <ChevronDown className="h-4 w-4 group-data-[state=open]:rotate-180 transition-transform" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-2.5 pt-0">
+                  <IconPicker
+                    value={selectedIcon ?? null}
+                    onChange={(icon) => setValue("p_icon", icon ?? undefined)}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+            </FieldSet>
+
             <FieldSeparator />
 
             <Field orientation="horizontal" className="flex justify-end">
