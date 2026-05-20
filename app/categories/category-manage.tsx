@@ -23,7 +23,7 @@ import {
   ListX,
   Plus,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { archiveCategory, updateCategory } from "./actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -145,6 +145,40 @@ export default function CategoryManage({ categories }: Props) {
     router.refresh();
   };
 
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressCategory = useRef<Database["public"]["Functions"]["get_user_categories"]["Returns"][number] | null>(null);
+  const isLongPress = useRef(false);
+
+  const handleCardPointerDown = (
+    category: Database["public"]["Functions"]["get_user_categories"]["Returns"][number],
+  ) => () => {
+    longPressCategory.current = category;
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      openDeleteDialog(longPressCategory.current!);
+    }, 500);
+  };
+
+  const handleCardPointerUp = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    if (!isLongPress.current && longPressCategory.current) {
+      openEditDialog(longPressCategory.current);
+    }
+    longPressCategory.current = null;
+  };
+
+  const handleCardPointerLeave = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    longPressCategory.current = null;
+  };
+
   return (
     <>
       <Dialog open={listOpen} onOpenChange={setListOpen}>
@@ -165,12 +199,12 @@ export default function CategoryManage({ categories }: Props) {
             {categories.map((i) => (
               <Card
                 key={i.id}
-                className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors"
+                className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors select-none"
+                onPointerDown={handleCardPointerDown(i)}
+                onPointerUp={handleCardPointerUp}
+                onPointerLeave={handleCardPointerLeave}
               >
-                <div
-                  className="flex items-center gap-3 flex-1 cursor-pointer"
-                  onClick={() => openEditDialog(i)}
-                >
+                <div className="flex items-center gap-3 flex-1">
                   <div
                     className={`p-2 rounded-full ${i.type === "income" ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}
                   >
@@ -184,35 +218,22 @@ export default function CategoryManage({ categories }: Props) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    {i.type === "expense" && (
-                      <div
-                        className="flex items-center gap-2 text-sm cursor-pointer px-3 py-1.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openBudgetDialog(i);
-                        }}
-                      >
-                        <HandCoins className="h-4 w-4 text-amber-500" />
-                        <span className="text-amber-500 font-medium">
-                          {i.budget !== null ? formatCurrency(i.budget) : "Sin asignar"}
-                        </span>
-                      </div>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openDeleteDialog(i);
-                      }}
-                      className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                    >
-                      <span className="text-xs font-medium">Eliminar</span>
-                    </button>
+                {i.type === "expense" && (
+                  <div
+                    className="flex items-center gap-2 text-sm cursor-pointer px-3 py-1.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openBudgetDialog(i);
+                    }}
+                  >
+                    <HandCoins className="h-4 w-4 text-amber-500" />
+                    <span className="text-amber-500 font-medium">
+                      {i.budget !== null ? formatCurrency(i.budget) : "Sin asignar"}
+                    </span>
                   </div>
-                </Card>
-              ))}
+                )}
+              </Card>
+            ))}
 
             <Card
               className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors cursor-pointer border-dashed"
