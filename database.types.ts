@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.4"
   }
@@ -54,6 +52,7 @@ export type Database = {
         Row: {
           budget: number | null
           created_at: string
+          icon: string | null
           id: string
           is_archived: boolean | null
           name: string
@@ -64,6 +63,7 @@ export type Database = {
         Insert: {
           budget?: number | null
           created_at?: string
+          icon?: string | null
           id?: string
           is_archived?: boolean | null
           name: string
@@ -74,6 +74,7 @@ export type Database = {
         Update: {
           budget?: number | null
           created_at?: string
+          icon?: string | null
           id?: string
           is_archived?: boolean | null
           name?: string
@@ -208,34 +209,24 @@ export type Database = {
           updated_at: string
           user_id: string
         }
-        SetofOptions: {
-          from: "*"
-          to: "accounts"
-          isOneToOne: true
-          isSetofReturn: false
-        }
       }
       create_category: {
         Args: {
           p_budget?: number
+          p_icon?: string
           p_name: string
           p_type: Database["public"]["Enums"]["transaction_type"]
         }
         Returns: {
           budget: number | null
           created_at: string
+          icon: string | null
           id: string
           is_archived: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
           updated_at: string
           user_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "categories"
-          isOneToOne: true
-          isSetofReturn: false
         }
       }
       create_transaction: {
@@ -277,7 +268,7 @@ export type Database = {
         Returns: string
       }
       get_account_balances: {
-        Args: never
+        Args: Record<string, never>
         Returns: {
           account_created_at: string
           account_currency: string
@@ -291,28 +282,30 @@ export type Database = {
         Args: { p_month?: string }
         Returns: {
           budget_amount: number
+          category_icon: string | null
           category_id: string
           category_name: string
-          percentage_used: number
+          percentage_used: number | null
           spent_amount: number
         }[]
       }
       get_category_budget_summary: {
         Args: { p_category_id: string }
         Returns: {
-          budget_amount: number
-          remaining_amount: number
-          remaining_percentage: number
+          budget_amount: number | null
+          remaining_amount: number | null
+          remaining_percentage: number | null
           spent_amount: number
         }[]
       }
       get_category_summary: {
         Args: {
           p_month?: string
-          p_period: string
-          p_type: Database["public"]["Enums"]["transaction_type"]
+          p_period?: string
+          p_type?: Database["public"]["Enums"]["transaction_type"]
         }
         Returns: {
+          category_icon: string | null
           category_id: string
           category_name: string
           total_amount: number
@@ -335,17 +328,6 @@ export type Database = {
           total_income_month: number
         }[]
       }
-      get_spending_projection: {
-        Args: never
-        Returns: {
-          avg_daily_expense: number
-          projected_end_balance: number
-          days_in_period: number
-          days_with_transactions: number
-          diff_vs_last_month: number
-          has_previous_month: boolean
-        }[]
-      }
       get_recent_transactions: {
         Args: { limit_count?: number }
         Returns: {
@@ -363,12 +345,17 @@ export type Database = {
           updated_at: string
           user_id: string
         }[]
-        SetofOptions: {
-          from: "*"
-          to: "transactions"
-          isOneToOne: false
-          isSetofReturn: true
-        }
+      }
+      get_spending_projection: {
+        Args: Record<string, never>
+        Returns: {
+          avg_daily_expense: number
+          days_in_period: number
+          days_with_transactions: number
+          diff_vs_last_month: number
+          has_previous_month: boolean
+          projected_end_balance: number
+        }[]
       }
       get_transactions_by_category: {
         Args: { p_category_id: string; p_month?: string }
@@ -376,6 +363,7 @@ export type Database = {
           account_id: string
           account_name: string
           amount: number
+          category_icon: string | null
           category_id: string
           category_name: string
           description: string | null
@@ -388,23 +376,24 @@ export type Database = {
       get_transactions_by_day: {
         Args: { p_date: string }
         Returns: {
+          account_id: string
           account_name: string
           amount: number
+          category_icon: string | null
+          category_id: string
           category_name: string
-          description: string
-          from_account_name: string
+          description: string | null
+          from_account_name: string | null
           id: string
           is_transfer: boolean
-          to_account_name: string
+          to_account_name: string | null
           transaction_date: string
-          transfer_id: string
+          transfer_id: string | null
           type: string
-          account_id: string
-          category_id: string | null
         }[]
       }
       get_user_accounts: {
-        Args: never
+        Args: Record<string, never>
         Returns: {
           id: string
           name: string
@@ -412,9 +401,10 @@ export type Database = {
         }[]
       }
       get_user_categories: {
-        Args: never
+        Args: Record<string, never>
         Returns: {
-          budget: number
+          budget: number | null
+          icon: string | null
           id: string
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
@@ -439,35 +429,25 @@ export type Database = {
           updated_at: string
           user_id: string
         }
-        SetofOptions: {
-          from: "*"
-          to: "accounts"
-          isOneToOne: true
-          isSetofReturn: false
-        }
       }
       update_category: {
         Args: {
           p_budget?: number
           p_category_id: string
+          p_icon?: string
           p_name: string
           p_type: Database["public"]["Enums"]["transaction_type"]
         }
         Returns: {
           budget: number | null
           created_at: string
+          icon: string | null
           id: string
           is_archived: boolean | null
           name: string
           type: Database["public"]["Enums"]["transaction_type"]
           updated_at: string
           user_id: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "categories"
-          isOneToOne: true
-          isSetofReturn: false
         }
       }
       update_transaction: {
@@ -495,12 +475,6 @@ export type Database = {
           updated_at: string
           user_id: string
         }
-        SetofOptions: {
-          from: "*"
-          to: "transactions"
-          isOneToOne: true
-          isSetofReturn: false
-        }
       }
     }
     Enums: {
@@ -512,123 +486,6 @@ export type Database = {
     }
   }
 }
-
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
-
-export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
-
-export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
-
-export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
-
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
 
 export const Constants = {
   public: {

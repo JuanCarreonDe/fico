@@ -1,14 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/format-currency";
+import { CategoryIconDisplay } from "@/lib/get-category-icon";
 
 function DashboardCharts({
   categoryData,
 }: {
-  categoryData: { category_name: string; total_amount: number }[];
+  categoryData: { category_name: string; total_amount: number; category_icon: string | null }[];
 }) {
   const pieData = categoryData.map((item) => ({
     name: item.category_name,
     value: Number(item.total_amount),
+    category_icon: item.category_icon,
   }));
 
   return (
@@ -29,7 +31,7 @@ function DashboardCharts({
                     className="flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-accent" />
+                      <CategoryIconDisplay icon={item.category_icon ?? null} type="expense" className="w-3.5 h-3.5 text-muted-foreground" />
                       <span className="text-sm">{item.name}</span>
                     </div>
                     <div className="flex items-center gap-2">

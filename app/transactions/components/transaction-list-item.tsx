@@ -6,6 +6,7 @@ import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialo
 import { deleteTransaction } from "../actions";
 import { toast } from "sonner";
 import { ArrowLeftRight } from "lucide-react";
+import { CategoryIconDisplay } from "@/lib/get-category-icon";
 
 import { Database } from "@/database.types";
 import TransactionFormWrapper from "./transaction-form-wrapper";
@@ -99,7 +100,8 @@ export default function TransactionListItem({
               </>
             ) : (
               <>
-                <span className="px-2 py-1 bg-accent rounded-2xl">
+                <span className="px-2 py-1 bg-accent rounded-2xl flex items-center gap-1">
+                  <CategoryIconDisplay icon={item.category_icon} type={item.type} className="w-3 h-3" />
                   {item.category_name}
                 </span>
                 <span className="capitalize">
