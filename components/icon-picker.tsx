@@ -7,8 +7,8 @@ import {
 import { cn } from "@/lib/utils";
 
 interface IconPickerProps {
-  value: string | null;
-  onChange: (iconName: string | null) => void;
+  value: string;
+  onChange: (iconName: string) => void;
 }
 
 export default function IconPicker({ value, onChange }: IconPickerProps) {
@@ -28,7 +28,7 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
                 <button
                   key={name}
                   type="button"
-                  onClick={() => onChange(isSelected ? null : name)}
+                  onClick={() => onChange(name)}
                   className={cn(
                     "flex items-center justify-center p-2 rounded-md transition-colors",
                     "hover:bg-muted cursor-pointer",
