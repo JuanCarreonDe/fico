@@ -303,7 +303,8 @@ export default function TransactionFormClient({
                     control={control}
                     name="p_account_id"
                     render={({ field }) => (
-                      <div className="flex flex-wrap gap-2">
+                      // <div className="flex flex-wrap gap-2 ">
+                      <div className="flex gap-2 overflow-x-scroll pb-2">
                         {userAccounts?.map((account) => (
                           <Button
                             key={account.id}
@@ -317,7 +318,10 @@ export default function TransactionFormClient({
                             }}
                             className="gap-1.5"
                           >
-                            <AccountIconDisplay type={account.type} className="h-4 w-4" />
+                            <AccountIconDisplay
+                              type={account.type}
+                              className="h-4 w-4"
+                            />
                             {account.name}
                           </Button>
                         ))}
@@ -339,7 +343,8 @@ export default function TransactionFormClient({
                     control={control}
                     name="p_category_id"
                     render={({ field }) => (
-                      <div className="flex flex-wrap gap-2">
+                      // <div className="flex flex-wrap gap-2">
+                      <div className="flex gap-2 overflow-x-scroll pb-2">
                         {userCategories
                           ?.filter((i) => i.type === transactionType)
                           .map((category) => (
@@ -355,8 +360,13 @@ export default function TransactionFormClient({
                                 e.preventDefault();
                                 field.onChange(category.id);
                               }}
+                              className="whitespace-nowrap shrink-0"
                             >
-                              <CategoryIconDisplay icon={category.icon} type={transactionType} className="h-4 w-4 mr-1.5" />
+                              <CategoryIconDisplay
+                                icon={category.icon}
+                                type={transactionType}
+                                className="h-4 w-4 mr-1.5"
+                              />
                               {category.name}
                             </Button>
                           ))}

@@ -104,10 +104,10 @@ export default function CategoryForm({
     });
 
     setOpen(false);
-      reset({
-        p_type: "expense",
-        p_icon: "Tags",
-      });
+    reset({
+      p_type: "expense",
+      p_icon: "Tags",
+    });
     router.refresh();
   };
   return (
@@ -122,8 +122,8 @@ export default function CategoryForm({
         <DialogHeader>
           <DialogTitle>Agregar categoría</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FieldGroup>
+        <form onSubmit={handleSubmit(onSubmit)} className="overflow-hidden">
+          <FieldGroup className="">
             <FieldSet>
               <FieldGroup>
                 <Field>
@@ -179,7 +179,7 @@ export default function CategoryForm({
               </FieldSet>
             )}
 
-            <FieldSet>
+            <FieldSet className="max-w-full overflow-hidden">
               <Collapsible className="rounded-md data-[state=open]:bg-muted">
                 <CollapsibleTrigger asChild>
                   <Button
@@ -189,7 +189,11 @@ export default function CategoryForm({
                     <span className="flex items-center gap-2 text-sm font-medium">
                       Icono
                       {selectedIcon ? (
-                        <CategoryIconDisplay icon={selectedIcon} type={selectedType} className="h-4 w-4" />
+                        <CategoryIconDisplay
+                          icon={selectedIcon}
+                          type={selectedType}
+                          className="h-4 w-4"
+                        />
                       ) : null}
                     </span>
                     <ChevronDown className="h-4 w-4 group-data-[state=open]:rotate-180 transition-transform" />
