@@ -138,9 +138,6 @@ export function DashboardPieChart({
             </Pie>
           </PieChart>
         </ChartContainer>
-      </CardContent>
-
-      <CardFooter className="flex flex-col">
         <div className="w-full flex flex-col gap-2">
           {chartData.map((i) => {
             const isExpanded = expanded[i.category] ?? false;
@@ -245,6 +242,9 @@ export function DashboardPieChart({
             );
           })}
         </div>
+      </CardContent>
+
+      <CardFooter className="flex flex-col">
         <div className="flex gap-2 justify-end w-full pt-2">
           <CardTitle>Total de gastos:</CardTitle>
           <CardDescription className="text-accent">${total}</CardDescription>
