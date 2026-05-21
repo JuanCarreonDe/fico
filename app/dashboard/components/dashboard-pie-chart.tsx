@@ -159,11 +159,18 @@ export function DashboardPieChart({
                   <div className="space-y-2 py-2">
                     <div className="flex justify-between items-center text-sm">
                       <span className="font-medium capitalize flex items-center gap-1">
-                        <CategoryIconDisplay icon={i.category_icon ?? null} type="expense" className="h-4 w-4 text-muted-foreground" />
                         <ChevronDown
                           className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-0" : "-rotate-90"}`}
                         />
-                        {i.category}
+                        <span className="font-medium capitalize flex items-center gap-1.5">
+                          <CategoryIconDisplay
+                            icon={i.category_icon ?? null}
+                            type="expense"
+                            className="h-4 w-4 text-muted-foreground"
+                          />
+
+                          {i.category}
+                        </span>
                       </span>
                       <div className="text-right text-xs text-muted-foreground flex gap-1">
                         <span>{formatCurrency(i.amount)}</span>

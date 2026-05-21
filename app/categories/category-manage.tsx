@@ -91,45 +91,55 @@ export default function CategoryManage({ categories }: Props) {
   const handleSaveEdit = async () => {
     if (!selectedCategory) return;
 
-    try {
-      const budget = editBudget ? parseFloat(editBudget) : null;
-      await updateCategory({
-        p_category_id: selectedCategory.id,
+    const categoryId = selectedCategory.id;
+    setEditDialogOpen(false);
+    setListOpen(true);
+
+    const budget = editBudget ? parseFloat(editBudget) : null;
+
+    await toast.promise(
+      updateCategory({
+        p_category_id: categoryId,
         p_name: editName,
         p_type: editType,
         p_icon: editIcon,
         p_budget: budget ?? undefined,
-      });
-      toast.success("Categoría actualizada");
-      router.refresh();
-    } catch (error) {
-      toast.error(`Error al actualizar la categoría: ${error}`);
-    }
+      }),
+      {
+        loading: "Actualizando categoría...",
+        success: "Categoría actualizada",
+        error: (err) => `Error al actualizar: ${err}`,
+      },
+    );
 
-    setEditDialogOpen(false);
     setSelectedCategory(null);
+    router.refresh();
   };
 
   const handleSaveBudget = async () => {
     if (!selectedCategory) return;
 
+    const categoryId = selectedCategory.id;
+    setBudgetDialogOpen(false);
+
     const budget = budgetValue ? parseFloat(budgetValue) : null;
 
-    try {
-      await updateCategory({
-        p_category_id: selectedCategory.id,
+    await toast.promise(
+      updateCategory({
+        p_category_id: categoryId,
         p_name: selectedCategory.name,
         p_type: selectedCategory.type,
         p_budget: budget ?? undefined,
-      });
-      toast.success("Presupuesto actualizado");
-      router.refresh();
-    } catch (error) {
-      toast.error(`Error al actualizar el presupuesto: ${error}`);
-    }
+      }),
+      {
+        loading: "Actualizando presupuesto...",
+        success: "Presupuesto actualizado",
+        error: (err) => `Error al actualizar el presupuesto: ${err}`,
+      },
+    );
 
-    setBudgetDialogOpen(false);
     setSelectedCategory(null);
+    router.refresh();
   };
 
   const handleDelete = async () => {

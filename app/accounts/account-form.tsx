@@ -26,6 +26,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { createAccount } from "./actions";
+import { AccountIconDisplay } from "@/lib/get-account-icon";
 import { useRouter } from "next/navigation";
 import { Constants, Database } from "@/database.types";
 
@@ -168,8 +169,9 @@ export default function AccountForm({
                   <RadioGroupItem value={i} id={`${i}-account`} />
                   <FieldLabel
                     htmlFor={`${i}-account`}
-                    className="font-normal capitalize"
+                    className="font-normal capitalize flex items-center gap-2"
                   >
+                    <AccountIconDisplay type={i} className="h-4 w-4" />
                     {i === "bank"
                       ? "Banco"
                       : i === "cash"
