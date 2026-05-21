@@ -4,10 +4,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { DeleteConfirmationDialog } from "@/components/delete-confirmation-dialog";
 import { Database } from "@/database.types";
 import { formatCurrency } from "@/lib/format-currency";
-import { Trash, Wallet } from "lucide-react";
+import { Trash } from "lucide-react";
 import { SetStateAction, useState } from "react";
 import { archiveAccount } from "./actions";
 import { toast } from "sonner";
+import { AccountIconDisplay } from "@/lib/get-account-icon";
 
 interface AccountCardProps {
   account: Database["public"]["Functions"]["get_account_balances"]["Returns"][0];
@@ -44,7 +45,7 @@ export function AccountCard({
     <Card className="mx-auto relative">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Wallet className="w-5 h-5" />
+          <AccountIconDisplay type={account.account_type} className="w-5 h-5" />
           {account.account_name}
         </CardTitle>
       </CardHeader>

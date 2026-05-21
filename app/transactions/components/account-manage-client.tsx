@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { Database } from "@/database.types";
 import { formatCurrency } from "@/lib/format-currency";
-import { Trash2, Wallet, ListX } from "lucide-react";
+import { Wallet, ListX, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { archiveAccount } from "@/app/accounts/actions";
 import { toast } from "sonner";
 import AccountForm from "@/app/accounts/account-form";
+import { AccountIconDisplay } from "@/lib/get-account-icon";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -37,10 +38,6 @@ export default function AccountManageClient({
     null,
   );
   const [isLoading, setIsLoading] = useState(false);
-
-  const getAccountIcon = () => {
-    return <Wallet className="h-4 w-4" />;
-  };
 
   const getAccountColor = (type: string | null) => {
     switch (type) {
@@ -121,7 +118,10 @@ export default function AccountManageClient({
                   <div
                     className={`p-2 rounded-full ${getAccountColor(account.account_type)}`}
                   >
-                    {getAccountIcon()}
+                    <AccountIconDisplay
+                      type={account.account_type}
+                      className="h-4 w-4"
+                    />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-medium">{account.account_name}</span>

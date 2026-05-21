@@ -26,6 +26,7 @@ import { createTransaction, updateTransaction } from "../actions";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { Database } from "@/database.types";
 import { CategoryIconDisplay } from "@/lib/get-category-icon";
+import { AccountIconDisplay } from "@/lib/get-account-icon";
 import { useTransactionStore } from "@/lib/store/transaction-store";
 
 type UserAccountsData =
@@ -314,7 +315,9 @@ export default function TransactionFormClient({
                               e.preventDefault();
                               field.onChange(account.id);
                             }}
+                            className="gap-1.5"
                           >
+                            <AccountIconDisplay type={account.type} className="h-4 w-4" />
                             {account.name}
                           </Button>
                         ))}

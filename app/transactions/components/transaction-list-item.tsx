@@ -7,6 +7,7 @@ import { deleteTransaction } from "../actions";
 import { toast } from "sonner";
 import { ArrowLeftRight } from "lucide-react";
 import { CategoryIconDisplay } from "@/lib/get-category-icon";
+import { AccountIconDisplay } from "@/lib/get-account-icon";
 
 import { Database } from "@/database.types";
 import TransactionFormWrapper from "./transaction-form-wrapper";
@@ -77,6 +78,7 @@ export default function TransactionListItem({
   };
 
   const isTransfer = item.is_transfer;
+  const account = userAccounts?.find((a) => a.id === item.account_id);
 
   return (
     <>
@@ -131,7 +133,10 @@ export default function TransactionListItem({
         </div>
         {!isTransfer && (
           <div className="flex gap-4 text-xs text-muted-foreground">
-            <span>{item.account_name}</span>
+            <span className="flex items-center gap-1">
+              <AccountIconDisplay type={account?.type ?? null} className="h-3 w-3" />
+              {item.account_name}
+            </span>
             {item.description && (
               <span className="capitalize">{item.description}</span>
             )}

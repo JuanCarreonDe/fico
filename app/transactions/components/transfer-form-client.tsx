@@ -21,6 +21,7 @@ import { Database } from "@/database.types";
 import { createTransferAction } from "../transfer-actions";
 import { toast } from "sonner";
 import { ArrowLeftRight } from "lucide-react";
+import { AccountIconDisplay } from "@/lib/get-account-icon";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
@@ -177,7 +178,9 @@ export default function TransferFormClient({
                             e.preventDefault();
                             field.onChange(account.id);
                           }}
+                          className="gap-1.5"
                         >
+                          <AccountIconDisplay type={account.type} className="h-4 w-4" />
                           {account.name}
                         </Button>
                       ))}
@@ -209,7 +212,9 @@ export default function TransferFormClient({
                             e.preventDefault();
                             field.onChange(account.id);
                           }}
+                          className="gap-1.5"
                         >
+                          <AccountIconDisplay type={account.type} className="h-4 w-4" />
                           {account.name}
                         </Button>
                       ))}
