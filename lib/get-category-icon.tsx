@@ -36,6 +36,9 @@ import {
   BookOpen,
   Shirt,
   Baby,
+  Package,
+  Stethoscope,
+  Film,
   ArrowDownRight,
   ArrowUpRight,
   type LucideIcon,
@@ -80,6 +83,9 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   BookOpen,
   Shirt,
   Baby,
+  Package,
+  Stethoscope,
+  Film,
 };
 
 export type CategoryIconName = keyof typeof CATEGORY_ICONS;
@@ -102,15 +108,15 @@ export const CATEGORY_ICON_SECTIONS: {
   },
   {
     label: "Compras",
-    icons: ["ShoppingCart", "ShoppingBag", "Gift", "Tags"],
+    icons: ["ShoppingCart", "ShoppingBag", "Gift", "Tags", "Package"],
   },
   {
     label: "Salud y Bienestar",
-    icons: ["HeartPulse", "Pill", "Dumbbell", "Dog"],
+    icons: ["HeartPulse", "Pill", "Dumbbell", "Dog", "Stethoscope"],
   },
   {
     label: "Entretenimiento",
-    icons: ["Tv", "Gamepad2", "Music", "Ticket"],
+    icons: ["Tv", "Gamepad2", "Music", "Ticket", "Film"],
   },
   {
     label: "Finanzas y Trabajo",
