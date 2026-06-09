@@ -67,6 +67,7 @@ Use `"use server"` directive. Found in `actions.ts` files per route:
 
 ## Important Quirks
 
+- Fast type-check: `npx tsc --noEmit` (not `bun run build`)
 - `.env.local` contains live Supabase credentials - do not commit
 - App language is Spanish (`lang="es"`)
 - Mobile-first layout with `h-dvh` (dynamic viewport height)

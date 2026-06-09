@@ -8,6 +8,7 @@ import { NavigationWrapper } from "@/components/navigation-wrapper";
 import { AuthProvider } from "@/components/auth-provider";
 import { AuthSync } from "@/components/auth-sync";
 import PageTransition from "@/components/page-transition";
+import { SwipeableContainer } from "@/components/swipeable-container";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -77,7 +78,9 @@ export default function RootLayout({
             <div className="h-dvh bg-transparent overflow-hidden p-2 flex flex-col gap-4">
               <main className="overflow-auto flex-1 rounded-2xl relative">
                 <div className="min-h-full p-4 max-w-4xl m-auto">
-                  <PageTransition>{children}</PageTransition>
+                  <SwipeableContainer>
+                    <PageTransition>{children}</PageTransition>
+                  </SwipeableContainer>
                 </div>
               </main>
               <div className="h-fit max-w-4xl m-auto">

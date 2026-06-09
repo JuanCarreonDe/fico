@@ -86,7 +86,7 @@ export default function TransferFormClient({
       success: "Transferencia creada",
       error: (err) => `Error: ${err}`,
       finally() {
-        setIsLoading(true);
+        setIsLoading(false);
       },
     });
 
@@ -180,7 +180,10 @@ export default function TransferFormClient({
                           }}
                           className="gap-1.5"
                         >
-                          <AccountIconDisplay type={account.type} className="h-4 w-4" />
+                          <AccountIconDisplay
+                            type={account.type}
+                            className="h-4 w-4"
+                          />
                           {account.name}
                         </Button>
                       ))}
@@ -214,7 +217,10 @@ export default function TransferFormClient({
                           }}
                           className="gap-1.5"
                         >
-                          <AccountIconDisplay type={account.type} className="h-4 w-4" />
+                          <AccountIconDisplay
+                            type={account.type}
+                            className="h-4 w-4"
+                          />
                           {account.name}
                         </Button>
                       ))}

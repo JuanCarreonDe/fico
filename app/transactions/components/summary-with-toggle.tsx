@@ -5,6 +5,7 @@ import { ArrowUpRight, ArrowDownLeft, Scale, Eye, EyeOff } from "lucide-react";
 import { TransactionsMetricCard } from "./transactions-metric-card";
 import { createClient } from "@/lib/db/client";
 import { useAuth } from "@/components/auth-provider";
+import { useTransactionStore } from "@/lib/store/transaction-store";
 import { toast } from "sonner";
 
 interface Props {
@@ -64,6 +65,7 @@ export default function SummaryWithToggle({
       showAmountsRef.current = savedValue;
       initialShowAmountsRef.current = savedValue;
       pendingSavedRef.current = savedValue;
+      useTransactionStore.getState().setShowAmounts(savedValue);
       setLoading(false);
     }
 
@@ -103,6 +105,7 @@ export default function SummaryWithToggle({
     const newValue = !showAmounts;
     setShowAmounts(newValue);
     showAmountsRef.current = newValue;
+    useTransactionStore.getState().setShowAmounts(newValue);
   };
 
   const formatValue = (value: string) => {
