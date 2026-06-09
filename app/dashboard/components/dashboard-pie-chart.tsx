@@ -247,7 +247,7 @@ export function DashboardPieChart({
       <CardFooter className="flex flex-col">
         <div className="flex gap-2 justify-end w-full pt-2">
           <CardTitle>Total de gastos:</CardTitle>
-          <CardDescription className="text-accent">${total}</CardDescription>
+          <CardDescription className="text-accent">${formatCurrency(total)}</CardDescription>
         </div>
       </CardFooter>
     </Card>

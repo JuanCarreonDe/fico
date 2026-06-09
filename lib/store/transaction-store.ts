@@ -4,7 +4,7 @@ interface TransactionState {
   isLoading: boolean;
   showAmounts: boolean;
   setIsLoading: (isLoading: boolean) => void;
-  toggleShowAmounts: () => void;
+  setShowAmounts: (showAmounts: boolean) => void;
 }
 
 export const useTransactionStore = create<TransactionState>((set) => ({
@@ -13,7 +13,7 @@ export const useTransactionStore = create<TransactionState>((set) => ({
   setIsLoading: (isLoading: boolean) => {
     set({ isLoading: isLoading });
   },
-  toggleShowAmounts: () => {
-    set((state) => ({ showAmounts: !state.showAmounts }));
+  setShowAmounts: (showAmounts: boolean) => {
+    set({ showAmounts });
   },
 }));
