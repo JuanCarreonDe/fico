@@ -16,6 +16,10 @@ export function useSwipe({
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const onTouchStart = useCallback((e: TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('[role="dialog"], [role="listbox"], [role="combobox"]')) {
+      return;
+    }
     touchStart.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
