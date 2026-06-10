@@ -83,7 +83,7 @@ export default function RootLayout({
                   </SwipeableContainer>
                 </div>
               </main>
-              <div className="h-fit max-w-4xl m-auto">
+              <div className="h-fit w-full max-w-4xl">
                 <NavigationWrapper />
               </div>
               <Toaster position="top-center" />

@@ -61,6 +61,10 @@ function Button({
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      onClick={(e) => {
+        navigator.vibrate([60]);
+        props.onClick?.(e);
+      }}
       {...props}
     />
   );
