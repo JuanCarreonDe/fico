@@ -20,8 +20,8 @@ export function NavigationMenu() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center justify-center w-full min-h-12 p-2 rounded-2xl">
-      <div className="flex justify-center items-center gap-2 h-full w-full px-2">
+    <nav className="flex items-center justify-center w-full min-h-12 p-2 rounded-2xl ">
+      <div className="flex items-center gap-2 h-full w-full px-2 ">
         {navigationItems.map((item) => {
           const isActive = isActiveRoute(pathname, item.href);
           return (
@@ -31,7 +31,7 @@ export function NavigationMenu() {
               variant={isActive ? "default" : "outline"}
               className={cn("flex-1 transition-all duration-200")}
             >
-              <Link href={item.href} title={item.name}>
+              <Link href={item.href} title={item.name} className="w-full">
                 <item.icon className="h-5 w-5" />
                 <span className="sr-only">{item.name}</span>
               </Link>
