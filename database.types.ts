@@ -328,6 +328,14 @@ export type Database = {
           total_income_month: number
         }[]
       }
+      get_monthly_income_expenses: {
+        Args: Record<string, never>
+        Returns: {
+          month: string
+          total_expense: number
+          total_income: number
+        }[]
+      }
       get_recent_transactions: {
         Args: { limit_count?: number }
         Returns: {

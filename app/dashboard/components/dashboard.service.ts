@@ -14,6 +14,8 @@ export type GetAllCategoriesBudgetSummaryParams =
   Database["public"]["Functions"]["get_all_categories_budget_summary"]["Args"];
 export type GetCategorySummaryParams =
   Database["public"]["Functions"]["get_category_summary"]["Args"];
+export type MonthlyIncomeExpenses =
+  Database["public"]["Functions"]["get_monthly_income_expenses"]["Returns"];
 
 export const getDailySummaryByMonth = async (
   params?: GetDailySummaryByMonthParams,
@@ -64,4 +66,11 @@ export const getCategorySummary = async (params?: GetCategorySummaryParams) => {
   if (error) throw error;
 
   return data;
+};
+
+export const getMonthlyIncomeExpenses = async () => {
+  const db = await createClient();
+  const { data, error } = await db.rpc("get_monthly_income_expenses");
+  if (error) throw error;
+  return data ?? [];
 };

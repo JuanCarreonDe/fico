@@ -4,6 +4,7 @@ import DashboardExpensesChartWrapper from "./components/dashboard-expenses-chart
 import CategoryChartWrapper from "./components/category-chart-wrapper";
 import DashboardMonthPicker from "./components/dashboard-month-picker";
 import DashboardBudgetListWrapper from "./components/dashboard-budget-list-wrapper";
+import MonthlyIncomeExpensesChartWrapper from "./components/monthly-income-expenses-chart-wrapper";
 
 export default async function DashboardPage({ 
   searchParams 
@@ -33,6 +34,10 @@ export default async function DashboardPage({
           <CategoryChartWrapper month={month} />
         </Suspense>
       </div>
+
+      <Suspense fallback={<Skeleton className="h-80 w-full" />}>
+        <MonthlyIncomeExpensesChartWrapper />
+      </Suspense>
     </div>
   );
 }

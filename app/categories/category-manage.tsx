@@ -10,19 +10,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Database } from "@/database.types";
 import { formatCurrency } from "@/lib/format-currency";
-import {
-  HandCoins,
-  ListX,
-  Plus,
-} from "lucide-react";
+import { HandCoins, ListX, Plus } from "lucide-react";
 import { useState, useRef } from "react";
 import { archiveCategory, updateCategory } from "./actions";
 import { toast } from "sonner";
@@ -160,19 +151,24 @@ export default function CategoryManage({ categories }: Props) {
   };
 
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
-  const longPressCategory = useRef<Database["public"]["Functions"]["get_user_categories"]["Returns"][number] | null>(null);
+  const longPressCategory = useRef<
+    | Database["public"]["Functions"]["get_user_categories"]["Returns"][number]
+    | null
+  >(null);
   const isLongPress = useRef(false);
 
-  const handleCardPointerDown = (
-    category: Database["public"]["Functions"]["get_user_categories"]["Returns"][number],
-  ) => () => {
-    longPressCategory.current = category;
-    isLongPress.current = false;
-    longPressTimer.current = setTimeout(() => {
-      isLongPress.current = true;
-      openDeleteDialog(longPressCategory.current!);
-    }, 500);
-  };
+  const handleCardPointerDown =
+    (
+      category: Database["public"]["Functions"]["get_user_categories"]["Returns"][number],
+    ) =>
+    () => {
+      longPressCategory.current = category;
+      isLongPress.current = false;
+      longPressTimer.current = setTimeout(() => {
+        isLongPress.current = true;
+        openDeleteDialog(longPressCategory.current!);
+      }, 500);
+    };
 
   const handleCardPointerUp = () => {
     if (longPressTimer.current) {
@@ -209,7 +205,7 @@ export default function CategoryManage({ categories }: Props) {
             <DialogTitle className="text-lg">Categorías</DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-2 max-h-100 overflow-y-auto">
+          <div className="space-y-2 max-h-100 overflow-y-auto p-1">
             {categories.map((i) => (
               <Card
                 key={i.id}
@@ -222,7 +218,11 @@ export default function CategoryManage({ categories }: Props) {
                   <div
                     className={`p-2 rounded-full ${i.type === "income" ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"}`}
                   >
-                    <CategoryIconDisplay icon={i.icon} type={i.type} className="h-4 w-4" />
+                    <CategoryIconDisplay
+                      icon={i.icon}
+                      type={i.type}
+                      className="h-4 w-4"
+                    />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-medium">{i.name}</span>
@@ -242,7 +242,9 @@ export default function CategoryManage({ categories }: Props) {
                   >
                     <HandCoins className="h-4 w-4 text-amber-500" />
                     <span className="text-amber-500 font-medium">
-                      {i.budget !== null ? formatCurrency(i.budget) : "Sin asignar"}
+                      {i.budget !== null
+                        ? formatCurrency(i.budget)
+                        : "Sin asignar"}
                     </span>
                   </div>
                 )}
@@ -356,16 +358,17 @@ export default function CategoryManage({ categories }: Props) {
                   >
                     <span className="flex items-center gap-2 text-sm font-medium">
                       Icono
-                      <CategoryIconDisplay icon={editIcon} type={editType} className="h-4 w-4" />
+                      <CategoryIconDisplay
+                        icon={editIcon}
+                        type={editType}
+                        className="h-4 w-4"
+                      />
                     </span>
                     <ChevronDown className="h-4 w-4 group-data-[state=open]:rotate-180 transition-transform" />
                   </Button>
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-2.5 pt-0">
-                  <IconPicker
-                    value={editIcon}
-                    onChange={setEditIcon}
-                  />
+                  <IconPicker value={editIcon} onChange={setEditIcon} />
                 </CollapsibleContent>
               </Collapsible>
             </FieldSet>
@@ -427,7 +430,9 @@ export default function CategoryManage({ categories }: Props) {
             <div className="flex items-center justify-between text-sm bg-muted/30 p-2 rounded">
               <span className="text-muted-foreground">Actual:</span>
               <span className="font-medium">
-                {selectedCategory?.budget != null ? formatCurrency(selectedCategory.budget) : "Sin asignar"}
+                {selectedCategory?.budget != null
+                  ? formatCurrency(selectedCategory.budget)
+                  : "Sin asignar"}
               </span>
             </div>
           </div>
