@@ -94,7 +94,7 @@ export default function AccountManageClient({
             <DialogTitle className="text-lg">Cuentas</DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-2 max-h-100 overflow-y-auto">
+          <div className="space-y-2 max-h-100 overflow-y-auto p-1">
             {!accountBalances && !isLoading && (
               <div className="text-center py-4 text-muted-foreground text-sm">
                 Cargando cuentas...
