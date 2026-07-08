@@ -15,7 +15,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { login } from "../../login/actions";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, startTransition, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
@@ -66,6 +66,25 @@ function LoginFormInner() {
   const success = searchParamsHook.get("success");
   const error = searchParamsHook.get("error");
   const toastShown = useRef({ success: false, error: false });
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isDemoLoggingIn, setIsDemoLoggingIn] = useState(false);
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_DEMO !== "true") return;
+
+    const form = formRef.current;
+    if (!form) return;
+
+    setIsDemoLoggingIn(true);
+
+    const formData = new FormData(form);
+    formData.set("email", "test@test.com");
+    formData.set("password", "test123");
+
+    startTransition(() => {
+      login(formData);
+    });
+  }, []);
 
   useEffect(() => {
     if (success === "signup" && !toastShown.current.success) {
@@ -83,6 +102,17 @@ function LoginFormInner() {
 
   return (
     <div className={cn("flex flex-col gap-6")}>
+      {isDemoLoggingIn && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4 rounded-xl border bg-card p-8 shadow-lg">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+            <p className="text-sm text-muted-foreground">
+              Iniciando sesión como usuario de prueba...
+            </p>
+          </div>
+        </div>
+      )}
+
       <Card className="border-0 ring-0">
         <CardHeader>
           <CardTitle>Iniciar sesión</CardTitle>
@@ -91,7 +121,7 @@ function LoginFormInner() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={login}>
+          <form action={login} ref={formRef}>
             <input type="hidden" name="redirectTo" value="/transactions" />
             <FieldGroup>
               <LoginFormFields />
