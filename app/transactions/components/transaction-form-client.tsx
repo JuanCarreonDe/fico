@@ -304,7 +304,7 @@ export default function TransactionFormClient({
                     name="p_account_id"
                     render={({ field }) => (
                       // <div className="flex flex-wrap gap-2 ">
-                      <div className="flex gap-2 overflow-x-scroll pb-2">
+                      <div className="flex gap-2 overflow-x-scroll pb-2 touch-pan-x touch-pan-y select-none">
                         {userAccounts?.map((account) => (
                           <Button
                             key={account.id}
@@ -344,7 +344,7 @@ export default function TransactionFormClient({
                     name="p_category_id"
                     render={({ field }) => (
                       // <div className="flex flex-wrap gap-2">
-                      <div className="flex gap-2 overflow-x-scroll pb-2">
+                      <div className="flex gap-2 overflow-x-scroll pb-2 touch-pan-x touch-pan-y select-none">
                         {userCategories
                           ?.filter((i) => i.type === transactionType)
                           .map((category) => (
