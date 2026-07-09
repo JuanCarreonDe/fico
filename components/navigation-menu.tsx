@@ -20,7 +20,7 @@ export function NavigationMenu() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center justify-center w-full min-h-12 p-2 rounded-2xl m-auto">
+    <nav className="flex items-center justify-center w-full min-h-12 p-2 rounded-2xl ">
       <div className="flex items-center gap-2 h-full w-full px-2 ">
         {navigationItems.map((item) => {
           const isActive = isActiveRoute(pathname, item.href);
