@@ -24,6 +24,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { createTransaction, updateTransaction } from "../actions";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import DateSwiper from "@/components/date-swiper";
 import { Database } from "@/database.types";
 import { CategoryIconDisplay } from "@/lib/get-category-icon";
 import { AccountIconDisplay } from "@/lib/get-account-icon";
@@ -386,12 +387,9 @@ export default function TransactionFormClient({
                   control={control}
                   name="p_transaction_date"
                   render={({ field }) => (
-                    <Input
-                      id="transaction_date"
-                      type="date"
+                    <DateSwiper
                       value={field.value || ""}
                       onChange={field.onChange}
-                      max={getLocalDateString()}
                     />
                   )}
                 />
