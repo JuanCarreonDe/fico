@@ -22,6 +22,7 @@ import { createTransferAction } from "../transfer-actions";
 import { toast } from "sonner";
 import { ArrowLeftRight } from "lucide-react";
 import { AccountIconDisplay } from "@/lib/get-account-icon";
+import DateSwiper from "@/components/date-swiper";
 // import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
@@ -38,6 +39,7 @@ const transferSchema = z
     p_from_account_id: z.string().min(1, "Selecciona cuenta origen"),
     p_to_account_id: z.string().min(1, "Selecciona cuenta destino"),
     p_amount: z.number().min(0.01, "El monto debe ser mayor a 0"),
+    p_description: z.string().optional(),
     p_transaction_date: z.string().min(1, "La fecha es requerida"),
   })
   .refine((data) => data.p_from_account_id !== data.p_to_account_id, {
@@ -49,6 +51,7 @@ type TransferFormData = {
   p_from_account_id: string;
   p_to_account_id: string;
   p_amount: number;
+  p_description?: string;
   p_transaction_date: string;
 };
 
@@ -235,16 +238,28 @@ export default function TransferFormClient({
               </Field>
 
               <Field>
-                <FieldLabel>Fecha</FieldLabel>
+                <FieldLabel>Descripción (opcional)</FieldLabel>
+                <Controller
+                  control={control}
+                  name="p_description"
+                  render={({ field }) => (
+                    <Input
+                      placeholder="Descripción (opcional)"
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </Field>
+
+              <Field>
                 <Controller
                   control={control}
                   name="p_transaction_date"
                   render={({ field }) => (
-                    <Input
-                      type="date"
-                      value={field.value || ""}
+                    <DateSwiper
+                      value={field.value || getLocalDateString()}
                       onChange={field.onChange}
-                      max={getLocalDateString()}
                     />
                   )}
                 />
