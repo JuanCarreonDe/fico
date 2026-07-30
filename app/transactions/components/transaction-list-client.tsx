@@ -92,7 +92,7 @@ export default function TransactionListClient({
                   <Button
                     variant="ghost"
                     className="group w-full justify-between min-h-fit p-2 ring-0 outline-none bg-transparent aria-expanded:bg-transparent"
-                    disabled={i.total_expense === 0 && i.total_income === 0}
+                    disabled={i.total_expense === 0 && i.total_income === 0 && i.total_transfer === 0}
                   >
                     <div className="flex gap-2 items-center justify-start">
                       <b>{format(new Date(i.day_date + "T00:00:00"), "d")}</b>

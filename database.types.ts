@@ -261,6 +261,7 @@ export type Database = {
       create_transfer: {
         Args: {
           p_amount: number
+          p_description?: string
           p_from_account_id: string
           p_to_account_id: string
           p_transaction_date: string
@@ -317,6 +318,7 @@ export type Database = {
           day_date: string
           total_expense: number
           total_income: number
+          total_transfer: number
         }[]
       }
       get_monthly_financial_summary: {
