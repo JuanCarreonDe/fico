@@ -103,7 +103,11 @@ export default function TransactionListItem({
             ) : (
               <>
                 <span className="px-2 py-1 bg-accent rounded-2xl flex items-center gap-1">
-                  <CategoryIconDisplay icon={item.category_icon} type={item.type} className="w-3 h-3" />
+                  <CategoryIconDisplay
+                    icon={item.category_icon}
+                    type={item.type}
+                    className="w-3 h-3"
+                  />
                   {item.category_name}
                 </span>
                 <span className="capitalize">
@@ -134,7 +138,10 @@ export default function TransactionListItem({
         {!isTransfer && (
           <div className="flex gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <AccountIconDisplay type={account?.type ?? null} className="h-3 w-3" />
+              <AccountIconDisplay
+                type={account?.type ?? null}
+                className="h-3 w-3"
+              />
               {item.account_name}
             </span>
             {item.description && (
