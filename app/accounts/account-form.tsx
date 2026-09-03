@@ -229,6 +229,7 @@ export default function AccountForm({
                     id="initial_balance"
                     placeholder="Balance inicial"
                     type="number"
+                    step="0.01"
                     {...register("p_initial_balance", { valueAsNumber: true })}
                   />
                   {errors.p_initial_balance && (
