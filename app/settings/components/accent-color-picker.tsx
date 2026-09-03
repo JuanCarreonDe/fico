@@ -108,9 +108,9 @@ export default function AccentColorPicker() {
         <span className="text-sm">Color de acento</span>
         <div className="w-fit flex items-center gap-2">
           <div className="flex gap-2">
-            <div className="grid grid-cols-3 gap-1 gap-x-2 max-w-20">
+            <div className="flex flex-wrap gap-1 gap-x-2 items-center">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-6 w-6 rounded-md" />
+                <Skeleton key={i} className="h-8 w-5 rounded-md" />
               ))}
             </div>
             <div className="flex items-center justify-end gap-2">
@@ -125,7 +125,7 @@ export default function AccentColorPicker() {
   return (
     <div className="flex items-start justify-between py-2">
       <span className="text-sm">Color de acento</span>
-      <div className="w-fit flex items-center gap-2">
+      <div className="w-fit flex items-center flex-row-reverse gap-2 max-w-35">
         <ColorPicker value={color} onChange={handleColorChange} />
       </div>
     </div>

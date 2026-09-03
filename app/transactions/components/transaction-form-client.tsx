@@ -319,10 +319,20 @@ export default function TransactionFormClient({
                             }}
                             className="gap-1.5"
                           >
-                            <AccountIconDisplay
-                              type={account.type}
-                              className="h-4 w-4"
-                            />
+                            <span
+                              className="p-1.5 rounded-full"
+                              style={{
+                                backgroundColor: account.color
+                                  ? `${account.color}1A`
+                                  : undefined,
+                                color: account.color || undefined,
+                              }}
+                            >
+                              <AccountIconDisplay
+                                type={account.type}
+                                className="h-4 w-4"
+                              />
+                            </span>
                             {account.name}
                           </Button>
                         ))}

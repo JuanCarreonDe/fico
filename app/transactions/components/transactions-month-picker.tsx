@@ -29,13 +29,13 @@ export default function TransactionsMonthPicker() {
   };
 
   return (
-    <Field className="bg-card w-fit max-w-40 m-auto rounded-lg right-0 flex items-center gap-2">
+    <Field className="bg-card w-fit m-auto rounded-lg right-0 flex items-center gap-2">
       <Input
         id="transaction_month"
         type="month"
         onChange={handleChange}
         value={month}
-        className="bg-card overflow-hidden w-fit"
+        className="bg-card overflow-hidden w-fit max-w-md"
         max={currentMonth}
         disabled={isPending}
       />

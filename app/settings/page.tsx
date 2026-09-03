@@ -6,6 +6,7 @@ import SettingsUserEmail from "./components/settings-user-email";
 import AccentColorPicker from "./components/accent-color-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
+import { Card } from "@/components/ui/card";
 
 export default function SettingsPage() {
   return (
@@ -13,7 +14,7 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold">Configuración</h1>
 
       <div className="space-y-4">
-        <div className="p-4 border rounded-lg">
+        <Card className="p-4 border rounded-lg">
           <h3 className="font-semibold mb-2">Mis opciones</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Personaliza las opciones de tu cuenta y categorías
@@ -36,9 +37,9 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="p-4 border rounded-lg">
+        <Card className="p-4 border rounded-lg">
           <h3 className="font-semibold mb-2">Perfil</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Cerrar sesión y cambiar tema
@@ -60,7 +61,7 @@ export default function SettingsPage() {
               <LogoutButton />
             </div>
           </div>
-        </div>
+        </Card>
 
         {process.env.NEXT_PUBLIC_DEMO === "true" && (
           <div className="text-center text-xs text-muted-foreground py-4">

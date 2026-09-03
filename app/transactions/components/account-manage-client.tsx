@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Database } from "@/database.types";
 import { formatCurrency } from "@/lib/format-currency";
-import { Wallet, ListX, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Wallet, ListX, Trash2, Plus } from "lucide-react";
+import { useRef, useState } from "react";
 import { archiveAccount } from "@/app/accounts/actions";
 import { toast } from "sonner";
 import AccountForm from "@/app/accounts/account-form";
@@ -38,26 +38,53 @@ export default function AccountManageClient({
     null,
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [editAccountOpen, setEditAccountOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<AccountBalance | null>(
+    null,
+  );
+  const longPressFired = useRef(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const LONG_PRESS_MS = 500;
 
-  const getAccountColor = (type: string | null) => {
-    switch (type) {
-      case "bank":
-        return "bg-blue-500/10 text-blue-500";
-      case "cash":
-        return "bg-green-500/10 text-green-500";
-      case "credit":
-        return "bg-purple-500/10 text-purple-500";
-      case "savings":
-        return "bg-amber-500/10 text-amber-500";
-      default:
-        return "bg-muted text-muted-foreground";
+  const clearLongPressTimer = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
     }
   };
 
-  const openDeleteDialog = (account: AccountBalance) => {
-    setSelectedAccount(account);
-    setDeleteDialogOpen(true);
+  const handleRowPointerDown = (account: AccountBalance) => {
+    longPressFired.current = false;
+    clearLongPressTimer();
+    longPressTimer.current = setTimeout(() => {
+      longPressFired.current = true;
+      longPressTimer.current = null;
+      setSelectedAccount(account);
+      setDeleteDialogOpen(true);
+      setListOpen(false);
+    }, LONG_PRESS_MS);
+  };
+
+  const handleRowPointerUp = (account: AccountBalance) => {
+    clearLongPressTimer();
+    if (longPressFired.current) return;
+    setEditingAccount(account);
     setListOpen(false);
+    setEditAccountOpen(true);
+  };
+
+  const handleRowPointerLeave = () => {
+    clearLongPressTimer();
+  };
+
+  const getAccountColor = (color: string | null) => {
+    if (color) {
+      return { backgroundColor: `${color}1A`, color };
+    }
+    return {
+      backgroundColor: "var(--muted)",
+      color: "var(--muted-foreground)",
+    };
   };
 
   const handleDelete = async () => {
@@ -109,14 +136,23 @@ export default function AccountManageClient({
             {accountBalances?.map((account) => (
               <Card
                 key={account.account_id}
-                className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors"
+                className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors shadow-none!"
               >
                 <div
-                  className="flex items-center gap-3 flex-1 cursor-pointer"
-                  onClick={() => openDeleteDialog(account)}
+                  className="flex items-center gap-3 flex-1 cursor-pointer select-none"
+                  onPointerDown={() => handleRowPointerDown(account)}
+                  onPointerUp={() => handleRowPointerUp(account)}
+                  onPointerLeave={handleRowPointerLeave}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    setSelectedAccount(account);
+                    setDeleteDialogOpen(true);
+                    setListOpen(false);
+                  }}
                 >
                   <div
-                    className={`p-2 rounded-full ${getAccountColor(account.account_type)}`}
+                    className="p-2 rounded-full"
+                    style={getAccountColor(account.account_color)}
                   >
                     <AccountIconDisplay
                       type={account.account_type}
@@ -140,7 +176,7 @@ export default function AccountManageClient({
             ))}
 
             <Card
-              className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors cursor-pointer border-dashed"
+              className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors cursor-pointer border-dashed shadow-none!"
               onClick={() => {
                 setListOpen(false);
                 setAddAccountOpen(true);
@@ -148,7 +184,7 @@ export default function AccountManageClient({
             >
               <div className="flex items-center gap-3 flex-1">
                 <div className="p-2 rounded-full bg-muted">
-                  <Wallet className="h-4 w-4 text-muted-foreground" />
+                  <Plus className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <span className="font-medium text-muted-foreground">
                   Agregar cuenta
@@ -209,11 +245,22 @@ export default function AccountManageClient({
       </Dialog>
 
       <AccountForm
+        key="add-account-form"
         open={addAccountOpen}
         onOpenChange={setAddAccountOpen}
         buttonClassName="hidden"
         buttonText=""
         variant="default"
+      />
+
+      <AccountForm
+        key={editingAccount?.account_id ?? "edit-account-form"}
+        open={editAccountOpen}
+        onOpenChange={setEditAccountOpen}
+        account={editingAccount ?? undefined}
+        buttonClassName="hidden"
+        buttonText=""
+        setOpenFatherDialog={setListOpen}
       />
     </>
   );
