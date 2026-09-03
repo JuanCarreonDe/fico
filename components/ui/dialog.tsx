@@ -63,7 +63,8 @@ function DialogContent({
         className={cn(
           "fixed left-1/2 z-50 grid w-full max-w-[calc(100%-6rem)] -translate-x-1/2 gap-4 rounded-xl bg-background p-4 text-sm ring-1 ring-foreground/10 duration-100 outline-none overflow-y-auto",
           "top-[50dvh] -translate-y-1/2 max-h-[80dvh]",
-          "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 border border-accent",
+          "border border-white/10 bg-white/[0.05] backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.20),inset_0_1px_1px_rgba(255,255,255,0.15)]",
           className,
         )}
         {...props}

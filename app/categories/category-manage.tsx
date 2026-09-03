@@ -205,11 +205,11 @@ export default function CategoryManage({ categories }: Props) {
             <DialogTitle className="text-lg">Categorías</DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-2 max-h-100 overflow-y-auto p-1">
+          <div className="space-y-2 max-w-full overflow-hidden">
             {categories.map((i) => (
               <Card
                 key={i.id}
-                className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors select-none"
+                className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors select-none shadow-none! max-w-full"
                 onPointerDown={handleCardPointerDown(i)}
                 onPointerUp={handleCardPointerUp}
                 onPointerLeave={handleCardPointerLeave}
@@ -252,7 +252,7 @@ export default function CategoryManage({ categories }: Props) {
             ))}
 
             <Card
-              className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors cursor-pointer border-dashed"
+              className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors cursor-pointer border-dashed shadow-none!"
               onClick={() => {
                 setListOpen(false);
                 setAddCategoryOpen(true);
@@ -268,7 +268,7 @@ export default function CategoryManage({ categories }: Props) {
               </div>
             </Card>
           </div>
-          <DialogFooter className="rounded-md flex flex-row p-3 justify-between items-center bg-amber-500/5 border-amber-500/20">
+          <DialogFooter className="rounded-md flex! flex-row p-3 justify-between items-center bg-amber-500/5 border-amber-500/20">
             <div className="flex items-center gap-3 flex-1">
               <div className="p-2 rounded-full bg-amber-500/10">
                 <HandCoins className="h-4 w-4 text-amber-500" />

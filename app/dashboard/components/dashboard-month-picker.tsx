@@ -29,13 +29,13 @@ export default function DashboardMonthPicker() {
   }, [isPending]);
 
   return (
-    <Field className="flex items-center gap-2">
+    <Field className="bg-card w-fit m-auto rounded-lg right-0 flex items-center gap-2">
       <Input
         id="dashboard_month"
         type="month"
         value={month}
         onChange={handleChange}
-        className="max-w-40"
+        className="bg-card overflow-hidden w-fit max-w-md"
         max={currentMonth}
         disabled={isPending}
       />
