@@ -6,7 +6,6 @@ import { TransactionsMetricCard } from "./transactions-metric-card";
 import { createClient } from "@/lib/db/client";
 import { useAuth } from "@/components/auth-provider";
 import { useTransactionStore } from "@/lib/store/transaction-store";
-import { toast } from "sonner";
 
 interface Props {
   total_balance: string;
@@ -36,13 +35,12 @@ export default function SummaryWithToggle({
     async (valueToSave: boolean) => {
       if (!user?.id) return;
 
-      const { error } = await supabase
+      await supabase
         .from("profiles")
         .upsert(
           { id: user.id, show_amounts: valueToSave },
           { onConflict: "id" },
         );
-
     },
     [user, supabase],
   );
@@ -111,8 +109,6 @@ export default function SummaryWithToggle({
   const formatValue = (value: string) => {
     return showAmounts ? value : "******";
   };
-
-
 
   if (loading) {
     return (

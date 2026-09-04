@@ -137,140 +137,157 @@ export default function TransferFormClient({
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <FieldSet>
-              <Field>
-                <FieldLabel>Monto</FieldLabel>
-                <Controller
-                  control={control}
-                  name="p_amount"
-                  render={({ field }) => (
-                    <Input
-                      placeholder="0.00"
-                      type="number"
-                      value={field.value || ""}
-                      onChange={(e) =>
-                        field.onChange(
-                          e.target.value ? Number(e.target.value) : undefined,
-                        )
-                      }
-                    />
-                  )}
-                />
-                {errors.p_amount && (
-                  <p className="text-red-500 text-sm">
-                    {errors.p_amount.message}
-                  </p>
+            <Field>
+              <FieldLabel>Monto</FieldLabel>
+              <Controller
+                control={control}
+                name="p_amount"
+                render={({ field }) => (
+                  <Input
+                    placeholder="0.00"
+                    type="number"
+                    value={field.value || ""}
+                    onChange={(e) =>
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : undefined,
+                      )
+                    }
+                  />
                 )}
-              </Field>
+              />
+              {errors.p_amount && (
+                <p className="text-red-500 text-sm">
+                  {errors.p_amount.message}
+                </p>
+              )}
+            </Field>
 
-              <Field>
-                <FieldLabel>Cuenta origen</FieldLabel>
-                <Controller
-                  control={control}
-                  name="p_from_account_id"
-                  render={({ field }) => (
-                    <div className="flex flex-wrap gap-2">
-                      {userAccounts?.map((account) => (
-                        <Button
-                          key={account.id}
-                          type="button"
-                          variant={
-                            field.value === account.id ? "default" : "outline"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            field.onChange(account.id);
+            <Field>
+              <FieldLabel>Descripción (opcional)</FieldLabel>
+              <Controller
+                control={control}
+                name="p_description"
+                render={({ field }) => (
+                  <Input
+                    placeholder="Descripción (opcional)"
+                    value={field.value || ""}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>Cuenta origen</FieldLabel>
+              <Controller
+                control={control}
+                name="p_from_account_id"
+                render={({ field }) => (
+                  <div className="flex gap-2 overflow-x-scroll pb-2 touch-pan-x touch-pan-y select-none">
+                    {userAccounts?.map((account) => (
+                      <Button
+                        key={account.id}
+                        type="button"
+                        variant={
+                          field.value === account.id ? "default" : "outline"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          field.onChange(account.id);
+                        }}
+                        className="gap-1.5 whitespace-nowrap shrink-0"
+                      >
+                        <span
+                          className="p-1.5 rounded-full"
+                          style={{
+                            backgroundColor: account.color
+                              ? `${account.color}1A`
+                              : undefined,
+                            color: account.color || undefined,
                           }}
-                          className="gap-1.5"
                         >
                           <AccountIconDisplay
                             type={account.type}
                             className="h-4 w-4"
                           />
-                          {account.name}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                />
-                {errors.p_from_account_id && (
-                  <p className="text-red-500 text-sm">
-                    {errors.p_from_account_id.message}
-                  </p>
+                        </span>
+                        {account.name}
+                      </Button>
+                    ))}
+                  </div>
                 )}
-              </Field>
+              />
+              {errors.p_from_account_id && (
+                <p className="text-red-500 text-sm">
+                  {errors.p_from_account_id.message}
+                </p>
+              )}
+            </Field>
 
-              <Field>
-                <FieldLabel>Cuenta destino</FieldLabel>
-                <Controller
-                  control={control}
-                  name="p_to_account_id"
-                  render={({ field }) => (
-                    <div className="flex flex-wrap gap-2">
-                      {userAccounts?.map((account) => (
-                        <Button
-                          key={account.id}
-                          type="button"
-                          variant={
-                            field.value === account.id ? "default" : "outline"
-                          }
-                          onClick={(e) => {
-                            e.preventDefault();
-                            field.onChange(account.id);
+            <Field>
+              <FieldLabel>Cuenta destino</FieldLabel>
+              <Controller
+                control={control}
+                name="p_to_account_id"
+                render={({ field }) => (
+                  <div className="flex gap-2 overflow-x-scroll pb-2 touch-pan-x touch-pan-y select-none">
+                    {userAccounts?.map((account) => (
+                      <Button
+                        key={account.id}
+                        type="button"
+                        variant={
+                          field.value === account.id ? "default" : "outline"
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          field.onChange(account.id);
+                        }}
+                        className="gap-1.5 whitespace-nowrap shrink-0"
+                      >
+                        <span
+                          className="p-1.5 rounded-full"
+                          style={{
+                            backgroundColor: account.color
+                              ? `${account.color}1A`
+                              : undefined,
+                            color: account.color || undefined,
                           }}
-                          className="gap-1.5"
                         >
                           <AccountIconDisplay
                             type={account.type}
                             className="h-4 w-4"
                           />
-                          {account.name}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                />
-                {errors.p_to_account_id && (
-                  <p className="text-red-500 text-sm">
-                    {errors.p_to_account_id.message}
-                  </p>
+                        </span>
+                        {account.name}
+                      </Button>
+                    ))}
+                  </div>
                 )}
-              </Field>
+              />
+              {errors.p_to_account_id && (
+                <p className="text-red-500 text-sm">
+                  {errors.p_to_account_id.message}
+                </p>
+              )}
+            </Field>
 
-              <Field>
-                <FieldLabel>Descripción (opcional)</FieldLabel>
-                <Controller
-                  control={control}
-                  name="p_description"
-                  render={({ field }) => (
-                    <Input
-                      placeholder="Descripción (opcional)"
-                      value={field.value || ""}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </Field>
-
-              <Field>
-                <Controller
-                  control={control}
-                  name="p_transaction_date"
-                  render={({ field }) => (
-                    <DateSwiper
-                      value={field.value || getLocalDateString()}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-                {errors.p_transaction_date && (
-                  <p className="text-red-500 text-sm">
-                    {errors.p_transaction_date.message}
-                  </p>
+            <Field>
+              <Controller
+                control={control}
+                name="p_transaction_date"
+                render={({ field }) => (
+                  <DateSwiper
+                    value={field.value || getLocalDateString()}
+                    onChange={field.onChange}
+                  />
                 )}
-              </Field>
-            </FieldSet>
-
+              />
+              {errors.p_transaction_date && (
+                <p className="text-red-500 text-sm">
+                  {errors.p_transaction_date.message}
+                </p>
+              )}
+            </Field>
             <FieldSeparator />
 
             <Field orientation="horizontal" className="flex justify-end gap-2">
