@@ -6,10 +6,10 @@ import DashboardMonthPicker from "./components/dashboard-month-picker";
 import DashboardBudgetListWrapper from "./components/dashboard-budget-list-wrapper";
 import MonthlyIncomeExpensesChartWrapper from "./components/monthly-income-expenses-chart-wrapper";
 
-export default async function DashboardPage({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ month?: string }>
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ month?: string }>;
 }) {
   const currentMonth = new Date().toISOString().slice(0, 7);
   const params = await searchParams;
@@ -17,7 +17,7 @@ export default async function DashboardPage({
 
   return (
     <div className="space-y-4">
-      <div className="w-fit mx-auto">
+      <div className="mx-auto">
         <DashboardMonthPicker />
       </div>
 
