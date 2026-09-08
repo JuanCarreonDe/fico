@@ -117,7 +117,7 @@ export default function AccountForm({
           p_sum_to_total: account.account_sum_to_total ?? true,
           p_currency: account.account_currency,
           p_account_id: account.account_id,
-          p_color: account.account_color ?? undefined,
+          p_color: account.account_color ?? "#ff7301",
         }
       : {
           p_type: "bank",
@@ -138,7 +138,7 @@ export default function AccountForm({
         p_sum_to_total: account.account_sum_to_total ?? true,
         p_currency: account.account_currency,
         p_account_id: account.account_id,
-        p_color: account.account_color ?? undefined,
+        p_color: account.account_color ?? "#ff7301",
       });
     }
   }, [account, isEditMode, reset]);

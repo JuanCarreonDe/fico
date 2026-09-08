@@ -138,10 +138,20 @@ export default function TransactionListItem({
         {!isTransfer && (
           <div className="flex gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <AccountIconDisplay
-                type={account?.type ?? null}
-                className="h-3 w-3"
-              />
+              <span
+                className="p-1 rounded-full"
+                style={{
+                  backgroundColor: account?.color
+                    ? `${account.color}1A`
+                    : undefined,
+                  color: account?.color || undefined,
+                }}
+              >
+                <AccountIconDisplay
+                  type={account?.type ?? null}
+                  className="h-3 w-3"
+                />
+              </span>
               {item.account_name}
             </span>
             {item.description && (

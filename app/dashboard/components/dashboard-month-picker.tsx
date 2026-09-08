@@ -1,10 +1,10 @@
 "use client";
 
 import { Field } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
+import MonthSwiper from "@/components/month-swiper";
 
 export default function DashboardMonthPicker() {
   const router = useRouter();
@@ -12,14 +12,12 @@ export default function DashboardMonthPicker() {
   const [isPending, startTransition] = useTransition();
   const currentMonth = new Date().toISOString().slice(0, 7);
   const month = searchParams.get("month") || currentMonth;
+  const [displayMonth, setDisplayMonth] = useState(month);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("month", e.target.value);
-    startTransition(() => {
-      router.push(`/dashboard?${params.toString()}`);
-    });
-  };
+  useEffect(() => {
+    setDisplayMonth(month);
+  }, [month]);
 
   useEffect(() => {
     if (isPending) {
@@ -28,16 +26,31 @@ export default function DashboardMonthPicker() {
     toast.dismiss();
   }, [isPending]);
 
+  useEffect(
+    () => () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    },
+    [],
+  );
+
+  const handleChange = (value: string) => {
+    setDisplayMonth(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("month", value);
+      startTransition(() => {
+        router.push(`/dashboard?${params.toString()}`);
+      });
+    }, 400);
+  };
+
   return (
     <Field className="bg-card w-fit m-auto rounded-lg right-0 flex items-center gap-2">
-      <Input
-        id="dashboard_month"
-        type="month"
-        value={month}
-        onChange={handleChange}
-        className="bg-card overflow-hidden w-fit max-w-md"
+      <MonthSwiper
+        value={displayMonth}
         max={currentMonth}
-        disabled={isPending}
+        onChange={handleChange}
       />
     </Field>
   );
