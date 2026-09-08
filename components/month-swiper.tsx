@@ -109,7 +109,7 @@ export default function MonthSwiper({
 
   return (
     <div
-      className="flex items-center justify-center select-none"
+      className="flex items-center justify-center select-none p-1"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >

@@ -28,8 +28,10 @@ export function NavigationMenu() {
             <Button
               key={item.name}
               asChild
-              variant={isActive ? "default" : "outline"}
-              className={cn("flex-1 transition-all duration-200")}
+              variant={"default"}
+              className={cn(
+                `flex-1 transition-all duration-200 glass text-primary ${isActive && "text-accent scale-95"}`,
+              )}
             >
               <Link href={item.href} title={item.name} className="w-full">
                 <item.icon className="h-5 w-5" />
