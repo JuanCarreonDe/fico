@@ -340,3 +340,7 @@
     transform: rotate(360deg);
   }
 }
+
+.glass {
+  @apply border border-black/10 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_8px_24px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] dark:border-white/10 dark:bg-white/5 dark:shadow-[0_8px_32px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.15)] dark:backdrop-blur-2xl;
+}

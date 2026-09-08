@@ -45,7 +45,7 @@ export default function TransactionsMonthPicker() {
   };
 
   return (
-    <Field className="bg-card m-auto rounded-lg right-0 flex items-center gap-2 w-fit">
+    <Field className="m-auto rounded-lg right-0 flex items-center gap-2 w-full">
       <MonthSwiper
         value={displayMonth}
         max={currentMonth}
