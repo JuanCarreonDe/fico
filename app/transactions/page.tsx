@@ -20,7 +20,7 @@ export default async function TransactionsPage({
       <TransactionsMonthPicker />
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-6">
-          <Card className="w-full md:w-[70%] mx-auto">
+          <Card className="w-full mx-auto">
             <CardContent className="p-6">
               <Suspense fallback={<Skeleton className="h-80 w-full" />}>
                 <TransactionsSummaryCard month={month} />
@@ -30,7 +30,7 @@ export default async function TransactionsPage({
           </Card>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 relative">
           <Suspense
             fallback={
               <div className="space-y-4">
