@@ -166,7 +166,7 @@
   background: radial-gradient(circle, var(--accent) 0%, transparent 65%);
   opacity: 0.35;
   filter: blur(90px);
-  animation: glow-aurora-1 8s ease-in-out infinite;
+  animation: glow-aurora-1 3s ease-in-out infinite;
 }
 
 .ne-bg::after {
@@ -184,7 +184,7 @@
   );
   opacity: 0.4;
   filter: blur(100px);
-  animation: glow-aurora-2 10s ease-in-out infinite;
+  animation: glow-aurora-2 3s ease-in-out infinite;
 }
 
 .ne-glow {
@@ -196,7 +196,7 @@
   background: radial-gradient(circle, var(--accent) 0%, transparent 50%);
   opacity: 0.25;
   filter: blur(70px);
-  animation: glow-aurora-3 12s ease-in-out infinite;
+  animation: glow-aurora-3 1s ease-in-out infinite;
 }
 
 .ne-orb {
@@ -281,7 +281,7 @@
     opacity: 0.4;
   }
   50% {
-    transform: translate(-30px, 20px) scale(1.1);
+    transform: translate(-30px, 200px) scale(1.1);
     opacity: 0.5;
   }
 }
