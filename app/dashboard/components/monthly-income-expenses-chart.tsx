@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { format } from "date-fns";
+import { addMonths, format } from "date-fns";
 import { es } from "date-fns/locale";
 
 import {
@@ -68,7 +68,9 @@ export default function MonthlyIncomeExpensesChart({ data }: Props) {
   const chartData = useMemo(
     () =>
       (data ?? []).map((item) => ({
-        month: format(new Date(item.month + "-01"), "MMM", { locale: es }),
+        month: format(new Date(addMonths(`${item.month}-01`, 1)), "MMM", {
+          locale: es,
+        }),
         ingresos: item.total_income,
         gastos: item.total_expense,
       })),
