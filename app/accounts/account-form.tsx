@@ -54,6 +54,7 @@ const createAccountSchema = z.object({
   p_name: z.string().min(1, "Account name is required"),
   p_type: z.enum(["bank", "cash", "credit", "savings"]),
   p_initial_balance: z.number().optional(),
+  p_credit_limit: z.number().optional(),
   p_sum_to_total: z.boolean().optional(),
   p_color: z.string().optional(),
 });
@@ -62,6 +63,7 @@ const updateAccountSchema = z.object({
   p_name: z.string().min(1, "Account name is required"),
   p_type: z.enum(["bank", "cash", "credit", "savings"]),
   p_initial_balance: z.number().optional(),
+  p_credit_limit: z.number().optional(),
   p_sum_to_total: z.boolean(),
   p_currency: z.string(),
   p_account_id: z.string(),
@@ -114,6 +116,7 @@ export default function AccountForm({
             | "credit"
             | "savings",
           p_initial_balance: account.balance ?? 0,
+          p_credit_limit: account.credit_limit ?? undefined,
           p_sum_to_total: account.account_sum_to_total ?? true,
           p_currency: account.account_currency,
           p_account_id: account.account_id,
@@ -135,6 +138,7 @@ export default function AccountForm({
         p_name: account.account_name,
         p_type: account.account_type as "bank" | "cash" | "credit" | "savings",
         p_initial_balance: account.balance ?? 0,
+        p_credit_limit: account.credit_limit ?? undefined,
         p_sum_to_total: account.account_sum_to_total ?? true,
         p_currency: account.account_currency,
         p_account_id: account.account_id,
@@ -171,6 +175,7 @@ export default function AccountForm({
         p_name: "",
         p_currency: "bank",
         p_initial_balance: undefined,
+        p_credit_limit: undefined,
         p_sum_to_total: true,
         p_color: "#ff7301",
       });
@@ -185,6 +190,7 @@ export default function AccountForm({
         p_name: "",
         p_currency: "bank",
         p_initial_balance: undefined,
+        p_credit_limit: undefined,
         p_sum_to_total: true,
         p_color: "#ff7301",
       });
@@ -271,6 +277,27 @@ export default function AccountForm({
                 </Field>
               ))}
             </RadioGroup>
+
+            {selectedType === "credit" && (
+              <Field>
+                <FieldLabel className="text-muted-foreground">
+                  Límite de crédito (MXN)
+                </FieldLabel>
+                <Input
+                  id="credit_limit"
+                  placeholder="0.00"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  {...register("p_credit_limit", { valueAsNumber: true })}
+                />
+                {errors.p_credit_limit && (
+                  <p className="text-red-500 text-sm">
+                    {errors.p_credit_limit.message}
+                  </p>
+                )}
+              </Field>
+            )}
 
             <Field className="flex flex-row gap-2 items-center justify-start">
               <Input

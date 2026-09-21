@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,7 +14,6 @@ import {
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Database } from "@/database.types";
@@ -59,16 +58,41 @@ interface TransferFormClientProps {
   userAccounts: UserAccountsData;
   label?: string;
   setIsFatherOpen?: Dispatch<SetStateAction<boolean>>;
+  presetFromAccountId?: string;
+  presetToAccountId?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
 export default function TransferFormClient({
   userAccounts,
   label,
   setIsFatherOpen,
+  presetFromAccountId,
+  presetToAccountId,
+  open: externalOpen,
+  onOpenChange,
+  hideTrigger,
 }: TransferFormClientProps) {
   // const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const { setIsLoading } = useTransactionStore();
+
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen : internalOpen;
+  const setOpen = (value: boolean) => {
+    if (onOpenChange) onOpenChange(value);
+    else setInternalOpen(value);
+  };
+
+  const buildDefaults = (): Partial<TransferFormData> => ({
+    p_from_account_id: presetFromAccountId,
+    p_to_account_id: presetToAccountId,
+    p_amount: undefined,
+    p_description: undefined,
+    p_transaction_date: getLocalDateString(),
+  });
 
   const {
     handleSubmit,
@@ -77,10 +101,15 @@ export default function TransferFormClient({
     formState: { errors },
   } = useForm<TransferFormData>({
     resolver: zodResolver(transferSchema),
-    defaultValues: {
-      p_transaction_date: getLocalDateString(),
-    },
+    defaultValues: buildDefaults(),
   });
+
+  useEffect(() => {
+    if (open) {
+      reset(buildDefaults());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, presetFromAccountId, presetToAccountId]);
 
   const onSubmit = async (data: TransferFormData) => {
     setIsLoading(true);
@@ -94,12 +123,7 @@ export default function TransferFormClient({
     });
 
     setOpen(false);
-    reset({
-      p_from_account_id: undefined,
-      p_to_account_id: undefined,
-      p_amount: undefined,
-      p_transaction_date: getLocalDateString(),
-    });
+    reset(buildDefaults());
     // router.refresh();
     if (setIsFatherOpen) setIsFatherOpen(false);
   };
@@ -109,28 +133,25 @@ export default function TransferFormClient({
       open={open}
       onOpenChange={(newOpen) => {
         if (!newOpen) {
-          reset({
-            p_from_account_id: undefined,
-            p_to_account_id: undefined,
-            p_amount: undefined,
-            p_transaction_date: getLocalDateString(),
-          });
+          reset(buildDefaults());
         }
         setOpen(newOpen);
       }}
     >
-      <DialogTrigger asChild>
-        {label ? (
-          <Button className="shadow-2xl" size="xl">
-            <ArrowLeftRight className="h-4 w-4" />
-            <span className="ml-2">{label}</span>
-          </Button>
-        ) : (
-          <Button variant="outline" size="icon" className="rounded-full">
-            <ArrowLeftRight className="h-4 w-4" />
-          </Button>
-        )}
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          {label ? (
+            <Button className="shadow-2xl" size="xl">
+              <ArrowLeftRight className="h-4 w-4" />
+              <span className="ml-2">{label}</span>
+            </Button>
+          ) : (
+            <Button variant="outline" size="icon" className="rounded-full">
+              <ArrowLeftRight className="h-4 w-4" />
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Transferir entre cuentas</DialogTitle>
@@ -295,12 +316,7 @@ export default function TransferFormClient({
                 variant="outline"
                 type="button"
                 onClick={() => {
-                  reset({
-                    p_from_account_id: undefined,
-                    p_to_account_id: undefined,
-                    p_amount: undefined,
-                    p_transaction_date: getLocalDateString(),
-                  });
+                  reset(buildDefaults());
                   setOpen(false);
                 }}
               >

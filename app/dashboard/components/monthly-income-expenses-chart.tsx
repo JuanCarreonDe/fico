@@ -91,7 +91,7 @@ export default function MonthlyIncomeExpensesChart({ data }: Props) {
         <CopyButton data={data} label="Ingresos y gastos" />
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
+        <ChartContainer config={chartConfig} className="min-h-62.5 w-full">
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} className="stroke-muted" />
             <XAxis
