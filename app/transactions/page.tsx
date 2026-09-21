@@ -5,6 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TransactionsSummaryCard } from "./components/tansactions-summary-card";
 import AccountManageWrapper from "./components/account-manage-wrapper";
 import TransactionsDataWrapper from "./components/transactions-data-wrapper";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default async function TransactionsPage({
   searchParams,
@@ -43,6 +49,14 @@ export default async function TransactionsPage({
             <TransactionsDataWrapper month={month} />
           </Suspense>
         </div>
+        {/* `Transacción creada. Presupuesto restante: ${remainingFormatted} de ${budgetFormatted} (${percentage}%)` */}
+        {/* <Dialog open>
+          <DialogContent showCloseButton={false}>
+            <DialogHeader>
+              <DialogTitle>title</DialogTitle>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog> */}
       </div>
     </div>
   );

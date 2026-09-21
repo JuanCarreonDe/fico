@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Database } from "@/database.types";
 import { formatCurrency } from "@/lib/format-currency";
-import { Wallet, ListX, Trash2, Plus } from "lucide-react";
+import { Wallet, ListX, Trash2, Plus, ArrowLeftRight } from "lucide-react";
 import { useRef, useState } from "react";
 import { archiveAccount } from "@/app/accounts/actions";
 import { toast } from "sonner";
@@ -19,16 +19,21 @@ import AccountForm from "@/app/accounts/account-form";
 import { AccountIconDisplay } from "@/lib/get-account-icon";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import TransferFormClient from "./transfer-form-client";
 
 type AccountBalance =
   Database["public"]["Functions"]["get_account_balances"]["Returns"][number];
+type UserAccountsData =
+  Database["public"]["Functions"]["get_user_accounts"]["Returns"];
 
 interface AccountManageClientProps {
   accountBalances: AccountBalance[] | null;
+  userAccounts: UserAccountsData;
 }
 
 export default function AccountManageClient({
   accountBalances,
+  userAccounts,
 }: AccountManageClientProps) {
   const router = useRouter();
   const [listOpen, setListOpen] = useState(false);
@@ -42,6 +47,7 @@ export default function AccountManageClient({
   const [editingAccount, setEditingAccount] = useState<AccountBalance | null>(
     null,
   );
+  const [payAccount, setPayAccount] = useState<AccountBalance | null>(null);
   const longPressFired = useRef(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const LONG_PRESS_MS = 500;
@@ -85,6 +91,30 @@ export default function AccountManageClient({
       backgroundColor: "var(--muted)",
       color: "var(--muted-foreground)",
     };
+  };
+
+  const getAccountTypeLabel = (type: string | null) => {
+    if (type === "bank") return "Banco";
+    if (type === "cash") return "Efectivo";
+    if (type === "credit") return "Crédito";
+    if (type === "savings") return "Ahorros";
+    return "Cuenta";
+  };
+
+  const getCreditUsage = (account: AccountBalance) => {
+    const limit = account.credit_limit ?? 0;
+    const debt = account.balance < 0 ? Math.abs(account.balance) : 0;
+    const percentage =
+      limit > 0 ? Math.min(100, Math.round((debt / limit) * 100)) : null;
+    const barColor =
+      percentage === null
+        ? ""
+        : percentage >= 80
+          ? "bg-red-500"
+          : percentage >= 50
+            ? "bg-amber-500"
+            : "bg-emerald-500";
+    return { limit, debt, percentage, barColor };
   };
 
   const handleDelete = async () => {
@@ -133,47 +163,85 @@ export default function AccountManageClient({
                 <Skeleton className="h-15" />
               </>
             )}
-            {accountBalances?.map((account) => (
-              <Card
-                key={account.account_id}
-                className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors shadow-none!"
-              >
-                <div
-                  className="flex items-center gap-3 flex-1 cursor-pointer select-none"
-                  onPointerDown={() => handleRowPointerDown(account)}
-                  onPointerUp={() => handleRowPointerUp(account)}
-                  onPointerLeave={handleRowPointerLeave}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    setSelectedAccount(account);
-                    setDeleteDialogOpen(true);
-                    setListOpen(false);
-                  }}
+            {accountBalances?.map((account) => {
+              const isCredit = account.account_type === "credit";
+              const credit = getCreditUsage(account);
+              return (
+                <Card
+                  key={account.account_id}
+                  className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors shadow-none!"
                 >
                   <div
-                    className="p-2 rounded-full"
-                    style={getAccountColor(account.account_color)}
+                    className="flex items-center gap-3 flex-1 cursor-pointer select-none"
+                    onPointerDown={() => handleRowPointerDown(account)}
+                    onPointerUp={() => handleRowPointerUp(account)}
+                    onPointerLeave={handleRowPointerLeave}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setSelectedAccount(account);
+                      setDeleteDialogOpen(true);
+                      setListOpen(false);
+                    }}
                   >
-                    <AccountIconDisplay
-                      type={account.account_type}
-                      className="h-4 w-4"
-                    />
+                    <div
+                      className="p-2 rounded-full"
+                      style={getAccountColor(account.account_color)}
+                    >
+                      <AccountIconDisplay
+                        type={account.account_type}
+                        className="h-4 w-4"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{account.account_name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {getAccountTypeLabel(account.account_type)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{account.account_name}</span>
-                    <span className="text-xs text-muted-foreground capitalize">
-                      {account.account_type || "Cuenta"}
-                    </span>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-sm">
-                    {formatCurrency(account.balance || 0)}
-                  </span>
-                </div>
-              </Card>
-            ))}
+                  {isCredit ? (
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="font-medium text-sm">
+                        {credit.debt > 0
+                          ? `Deuda: ${formatCurrency(credit.debt)}`
+                          : "Sin deuda"}
+                      </span>
+                      {credit.percentage !== null && (
+                        <>
+                          <div className="h-1.5 w-28 rounded-full bg-muted overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${credit.barColor}`}
+                              style={{ width: `${credit.percentage}%` }}
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {credit.percentage}% de {formatCurrency(credit.limit)}
+                          </span>
+                        </>
+                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 gap-1 text-xs"
+                        onClick={() => {
+                          setPayAccount(account);
+                          setListOpen(false);
+                        }}
+                      >
+                        <ArrowLeftRight className="h-3 w-3" />
+                        Pagar
+                      </Button>
+                    </div>
+                  ) : (
+                    <span className="font-medium text-sm">
+                      {formatCurrency(account.balance || 0)}
+                    </span>
+                  )}
+                </Card>
+              );
+            })}
 
             <Card
               className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors cursor-pointer border-dashed shadow-none!"
@@ -261,6 +329,20 @@ export default function AccountManageClient({
         buttonClassName="hidden"
         buttonText=""
         setOpenFatherDialog={setListOpen}
+      />
+
+      <TransferFormClient
+        userAccounts={userAccounts}
+        hideTrigger
+        open={payAccount !== null}
+        onOpenChange={(openNow) => {
+          if (!openNow) {
+            setPayAccount(null);
+            setListOpen(true);
+          }
+        }}
+        presetToAccountId={payAccount?.account_id}
+        presetFromAccountId={userAccounts.find((a) => a.type !== "credit")?.id}
       />
     </>
   );

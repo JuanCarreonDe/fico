@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           color: string | null
           created_at: string
+          credit_limit: number | null
           currency: string
           id: string
           initial_balance: number
@@ -31,6 +32,7 @@ export type Database = {
         Insert: {
           color?: string | null
           created_at?: string
+          credit_limit?: number | null
           currency?: string
           id?: string
           initial_balance?: number
@@ -44,6 +46,7 @@ export type Database = {
         Update: {
           color?: string | null
           created_at?: string
+          credit_limit?: number | null
           currency?: string
           id?: string
           initial_balance?: number
@@ -202,6 +205,7 @@ export type Database = {
       create_account: {
         Args: {
           p_color?: string
+          p_credit_limit?: number
           p_currency?: string
           p_initial_balance?: number
           p_name: string
@@ -211,6 +215,7 @@ export type Database = {
         Returns: {
           color: string | null
           created_at: string
+          credit_limit: number | null
           currency: string
           id: string
           initial_balance: number
@@ -320,14 +325,15 @@ export type Database = {
       get_account_balances: {
         Args: never
         Returns: {
-          account_color: string | null
+          account_color: string
           account_created_at: string
           account_currency: string
           account_id: string
           account_name: string
-          account_sum_to_total: boolean | null
+          account_sum_to_total: boolean
           account_type: string
           balance: number
+          credit_limit: number
         }[]
       }
       get_all_categories_budget_summary: {
@@ -462,7 +468,7 @@ export type Database = {
       get_user_accounts: {
         Args: never
         Returns: {
-          color: string | null
+          color: string
           id: string
           name: string
           sum_to_total: boolean
@@ -483,6 +489,7 @@ export type Database = {
         Args: {
           p_account_id: string
           p_color?: string
+          p_credit_limit?: number
           p_currency: string
           p_initial_balance: number
           p_name: string
@@ -492,6 +499,7 @@ export type Database = {
         Returns: {
           color: string | null
           created_at: string
+          credit_limit: number | null
           currency: string
           id: string
           initial_balance: number
