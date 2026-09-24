@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       accounts: {
         Row: {
+          billing_cutoff_day: number | null
           color: string | null
           created_at: string
           credit_limit: number | null
@@ -30,6 +31,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          billing_cutoff_day?: number | null
           color?: string | null
           created_at?: string
           credit_limit?: number | null
@@ -44,6 +46,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          billing_cutoff_day?: number | null
           color?: string | null
           created_at?: string
           credit_limit?: number | null
@@ -204,6 +207,7 @@ export type Database = {
       }
       create_account: {
         Args: {
+          p_billing_cutoff_day?: number
           p_color?: string
           p_credit_limit?: number
           p_currency?: string
@@ -213,6 +217,7 @@ export type Database = {
           p_type: Database["public"]["Enums"]["account_type"]
         }
         Returns: {
+          billing_cutoff_day: number | null
           color: string | null
           created_at: string
           credit_limit: number | null
@@ -333,7 +338,10 @@ export type Database = {
           account_sum_to_total: boolean
           account_type: string
           balance: number
+          billing_cutoff_day: number
+          credit_balance: number
           credit_limit: number
+          credit_pending: number
         }[]
       }
       get_all_categories_budget_summary: {
@@ -488,6 +496,7 @@ export type Database = {
       update_account: {
         Args: {
           p_account_id: string
+          p_billing_cutoff_day?: number
           p_color?: string
           p_credit_limit?: number
           p_currency: string
@@ -497,6 +506,7 @@ export type Database = {
           p_type: Database["public"]["Enums"]["account_type"]
         }
         Returns: {
+          billing_cutoff_day: number | null
           color: string | null
           created_at: string
           credit_limit: number | null

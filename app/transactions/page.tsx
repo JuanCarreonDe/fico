@@ -5,12 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TransactionsSummaryCard } from "./components/tansactions-summary-card";
 import AccountManageWrapper from "./components/account-manage-wrapper";
 import TransactionsDataWrapper from "./components/transactions-data-wrapper";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogHeader,
+//   DialogTitle,
+// } from "@/components/ui/dialog";
 
 export default async function TransactionsPage({
   searchParams,
