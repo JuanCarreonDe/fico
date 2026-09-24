@@ -50,25 +50,54 @@ interface Props {
   account?: AccountBalance;
 }
 
-const createAccountSchema = z.object({
-  p_name: z.string().min(1, "Account name is required"),
-  p_type: z.enum(["bank", "cash", "credit", "savings"]),
-  p_initial_balance: z.number().optional(),
-  p_credit_limit: z.number().optional(),
-  p_sum_to_total: z.boolean().optional(),
-  p_color: z.string().optional(),
-});
+const billingCutoffDaySchema = z
+  .number()
+  .int()
+  .min(1, "El día de corte debe estar entre 1 y 31")
+  .max(31, "El día de corte debe estar entre 1 y 31")
+  .optional();
 
-const updateAccountSchema = z.object({
-  p_name: z.string().min(1, "Account name is required"),
-  p_type: z.enum(["bank", "cash", "credit", "savings"]),
-  p_initial_balance: z.number().optional(),
-  p_credit_limit: z.number().optional(),
-  p_sum_to_total: z.boolean(),
-  p_currency: z.string(),
-  p_account_id: z.string(),
-  p_color: z.string().optional(),
-});
+const createAccountSchema = z
+  .object({
+    p_name: z.string().min(1, "Account name is required"),
+    p_type: z.enum(["bank", "cash", "credit", "savings"]),
+    p_initial_balance: z.number().optional(),
+    p_credit_limit: z.number().optional(),
+    p_billing_cutoff_day: billingCutoffDaySchema,
+    p_sum_to_total: z.boolean().optional(),
+    p_color: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.p_type === "credit" && data.p_billing_cutoff_day == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["p_billing_cutoff_day"],
+        message: "El día de corte es obligatorio para tarjetas de crédito",
+      });
+    }
+  });
+
+const updateAccountSchema = z
+  .object({
+    p_name: z.string().min(1, "Account name is required"),
+    p_type: z.enum(["bank", "cash", "credit", "savings"]),
+    p_initial_balance: z.number().optional(),
+    p_credit_limit: z.number().optional(),
+    p_billing_cutoff_day: billingCutoffDaySchema,
+    p_sum_to_total: z.boolean(),
+    p_currency: z.string(),
+    p_account_id: z.string(),
+    p_color: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.p_type === "credit" && data.p_billing_cutoff_day == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["p_billing_cutoff_day"],
+        message: "El día de corte es obligatorio para tarjetas de crédito",
+      });
+    }
+  });
 
 type CreateFormData = Database["public"]["Functions"]["create_account"]["Args"];
 type UpdateFormData = Database["public"]["Functions"]["update_account"]["Args"];
@@ -115,8 +144,10 @@ export default function AccountForm({
             | "cash"
             | "credit"
             | "savings",
-          p_initial_balance: account.balance ?? 0,
+          p_initial_balance:
+            account.account_type === "credit" ? 0 : account.balance ?? 0,
           p_credit_limit: account.credit_limit ?? undefined,
+          p_billing_cutoff_day: account.billing_cutoff_day ?? undefined,
           p_sum_to_total: account.account_sum_to_total ?? true,
           p_currency: account.account_currency,
           p_account_id: account.account_id,
@@ -137,8 +168,10 @@ export default function AccountForm({
       reset({
         p_name: account.account_name,
         p_type: account.account_type as "bank" | "cash" | "credit" | "savings",
-        p_initial_balance: account.balance ?? 0,
+        p_initial_balance:
+          account.account_type === "credit" ? 0 : account.balance ?? 0,
         p_credit_limit: account.credit_limit ?? undefined,
+        p_billing_cutoff_day: account.billing_cutoff_day ?? undefined,
         p_sum_to_total: account.account_sum_to_total ?? true,
         p_currency: account.account_currency,
         p_account_id: account.account_id,
@@ -176,6 +209,7 @@ export default function AccountForm({
         p_currency: "bank",
         p_initial_balance: undefined,
         p_credit_limit: undefined,
+        p_billing_cutoff_day: undefined,
         p_sum_to_total: true,
         p_color: "#ff7301",
       });
@@ -191,6 +225,7 @@ export default function AccountForm({
         p_currency: "bank",
         p_initial_balance: undefined,
         p_credit_limit: undefined,
+        p_billing_cutoff_day: undefined,
         p_sum_to_total: true,
         p_color: "#ff7301",
       });
@@ -230,20 +265,25 @@ export default function AccountForm({
                   )}
                 </Field>
 
-                <Field>
-                  <Input
-                    id="initial_balance"
-                    placeholder="Balance inicial"
-                    type="number"
-                    step="0.01"
-                    {...register("p_initial_balance", { valueAsNumber: true })}
-                  />
-                  {errors.p_initial_balance && (
-                    <p className="text-red-500 text-sm">
-                      {errors.p_initial_balance.message}
-                    </p>
-                  )}
-                </Field>
+                {selectedType !== "credit" && (
+                  <Field>
+                    <Input
+                      id="initial_balance"
+                      placeholder="Balance inicial"
+                      type="number"
+                      step="0.01"
+                      {...register("p_initial_balance", {
+                        valueAsNumber: true,
+                      })}
+                    />
+                    {errors.p_initial_balance && (
+                      <p className="text-red-500 text-sm">
+                        {errors.p_initial_balance.message}
+                      </p>
+                    )}
+                  </Field>
+                )}
+
               </FieldGroup>
             </FieldSet>
 
@@ -279,10 +319,11 @@ export default function AccountForm({
             </RadioGroup>
 
             {selectedType === "credit" && (
-              <Field>
-                <FieldLabel className="text-muted-foreground">
-                  Límite de crédito (MXN)
-                </FieldLabel>
+              <>
+                <Field>
+                  <FieldLabel className="text-muted-foreground">
+                    Límite de crédito (MXN)
+                  </FieldLabel>
                 <Input
                   id="credit_limit"
                   placeholder="0.00"
@@ -297,6 +338,34 @@ export default function AccountForm({
                   </p>
                 )}
               </Field>
+
+              <Field>
+                <FieldLabel className="text-muted-foreground">
+                  Día de corte
+                </FieldLabel>
+                <Input
+                  id="billing_cutoff_day"
+                  placeholder="Ej: 23 (1-31)"
+                  type="number"
+                  min="1"
+                  max="31"
+                  step="1"
+                  {...register("p_billing_cutoff_day", {
+                    setValueAs: (value) =>
+                      value === "" ? undefined : Number(value),
+                  })}
+                />
+                {errors.p_billing_cutoff_day && (
+                  <p className="text-red-500 text-sm">
+                    {errors.p_billing_cutoff_day.message}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Día del mes en que se cierra el ciclo de la tarjeta. El saldo
+                  se dividirá en facturado y en proceso.
+                </p>
+              </Field>
+              </>
             )}
 
             <Field className="flex flex-row gap-2 items-center justify-start">

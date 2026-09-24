@@ -12,6 +12,7 @@ interface Props {
   income: string;
   balance: string;
   expense: string;
+  credit_debt?: string;
 }
 
 export default function SummaryWithToggle({
@@ -19,6 +20,7 @@ export default function SummaryWithToggle({
   income,
   balance,
   expense,
+  credit_debt,
 }: Props) {
   const { user } = useAuth();
   const supabase = React.useMemo(() => createClient(), []);
@@ -119,7 +121,8 @@ export default function SummaryWithToggle({
             <div className="h-4 bg-muted rounded w-60 mx-auto" />
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="animate-pulse h-20 bg-muted rounded-lg" />
           <div className="animate-pulse h-20 bg-muted rounded-lg" />
           <div className="animate-pulse h-20 bg-muted rounded-lg" />
           <div className="animate-pulse h-20 bg-muted rounded-lg" />
@@ -130,13 +133,13 @@ export default function SummaryWithToggle({
 
   return (
     <>
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 flex flex-col gap-1">
         <div className="relative inline-block">
           <div className="text-4xl font-bold text-primary mb-2 transition-opacity duration-300 animate-in fade-in">
             {formatValue(total_balance)}
           </div>
         </div>
-        <p className="text-sm text-muted-foreground flex items-center justify-center">
+        <p className="text-sm text-muted-foreground flex items-center justify-center ">
           <button
             onClick={handleToggle}
             className="px-1 text-muted-foreground hover:text-foreground transition-colors"
@@ -150,6 +153,12 @@ export default function SummaryWithToggle({
           </button>
           Balance total de todas las cuentas
         </p>
+        {credit_debt && (
+          <span className="text-xs text-muted-foreground">
+            <span className="text-red-600">{formatValue(credit_debt)} </span>
+            de crédito por pagar
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-6">

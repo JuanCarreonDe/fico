@@ -11,7 +11,14 @@ import {
 } from "@/components/ui/dialog";
 import { Database } from "@/database.types";
 import { formatCurrency } from "@/lib/format-currency";
-import { Wallet, ListX, Trash2, Plus, ArrowLeftRight } from "lucide-react";
+import {
+  Wallet,
+  ListX,
+  Trash2,
+  Plus,
+  ArrowLeftRight,
+  ChevronDown,
+} from "lucide-react";
 import { useRef, useState } from "react";
 import { archiveAccount } from "@/app/accounts/actions";
 import { toast } from "sonner";
@@ -20,6 +27,11 @@ import { AccountIconDisplay } from "@/lib/get-account-icon";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import TransferFormClient from "./transfer-form-client";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
 
 type AccountBalance =
   Database["public"]["Functions"]["get_account_balances"]["Returns"][number];
@@ -103,7 +115,10 @@ export default function AccountManageClient({
 
   const getCreditUsage = (account: AccountBalance) => {
     const limit = account.credit_limit ?? 0;
-    const debt = account.balance < 0 ? Math.abs(account.balance) : 0;
+    const beforeCutoff = Math.abs(account.credit_balance ?? 0);
+    const inProgress = Math.abs(account.credit_pending ?? 0);
+    const debt = beforeCutoff + inProgress;
+    const available = Math.max(limit - debt, 0);
     const percentage =
       limit > 0 ? Math.min(100, Math.round((debt / limit) * 100)) : null;
     const barColor =
@@ -114,7 +129,7 @@ export default function AccountManageClient({
           : percentage >= 50
             ? "bg-amber-500"
             : "bg-emerald-500";
-    return { limit, debt, percentage, barColor };
+    return { limit, beforeCutoff, inProgress, debt, available, percentage, barColor };
   };
 
   const handleDelete = async () => {
@@ -166,13 +181,10 @@ export default function AccountManageClient({
             {accountBalances?.map((account) => {
               const isCredit = account.account_type === "credit";
               const credit = getCreditUsage(account);
-              return (
-                <Card
-                  key={account.account_id}
-                  className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors shadow-none!"
-                >
+              const accountRow = (
+                <>
                   <div
-                    className="flex items-center gap-3 flex-1 cursor-pointer select-none"
+                    className="flex items-center gap-3 flex-1 cursor-pointer select-none min-w-0"
                     onPointerDown={() => handleRowPointerDown(account)}
                     onPointerUp={() => handleRowPointerUp(account)}
                     onPointerLeave={handleRowPointerLeave}
@@ -193,7 +205,9 @@ export default function AccountManageClient({
                       />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-medium">{account.account_name}</span>
+                      <span className="font-medium">
+                        {account.account_name}
+                      </span>
                       <span className="text-xs text-muted-foreground">
                         {getAccountTypeLabel(account.account_type)}
                       </span>
@@ -201,45 +215,114 @@ export default function AccountManageClient({
                   </div>
 
                   {isCredit ? (
-                    <div className="flex flex-col items-end gap-1.5">
-                      <span className="font-medium text-sm">
-                        {credit.debt > 0
-                          ? `Deuda: ${formatCurrency(credit.debt)}`
-                          : "Sin deuda"}
-                      </span>
-                      {credit.percentage !== null && (
-                        <>
-                          <div className="h-1.5 w-28 rounded-full bg-muted overflow-hidden">
-                            <div
-                              className={`h-full rounded-full ${credit.barColor}`}
-                              style={{ width: `${credit.percentage}%` }}
-                            />
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {credit.percentage}% de {formatCurrency(credit.limit)}
-                          </span>
-                        </>
-                      )}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-7 gap-1 text-xs"
-                        onClick={() => {
-                          setPayAccount(account);
-                          setListOpen(false);
-                        }}
-                      >
-                        <ArrowLeftRight className="h-3 w-3" />
-                        Pagar
-                      </Button>
-                    </div>
+                    <CollapsibleTrigger
+                      asChild
+                      className="group flex items-center gap-1 rounded-md px-1.5 py-1 hover:bg-muted/50 transition-colors"
+                    >
+                      <button type="button">
+                        <span className="font-medium text-sm">
+                          {formatCurrency(credit.available)}
+                        </span>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                      </button>
+                    </CollapsibleTrigger>
                   ) : (
                     <span className="font-medium text-sm">
                       {formatCurrency(account.balance || 0)}
                     </span>
                   )}
-                </Card>
+                </>
+              );
+
+              if (!isCredit) {
+                return (
+                  <Card
+                    key={account.account_id}
+                    className="rounded-md flex flex-row p-3 justify-between items-center hover:bg-muted/50 transition-colors shadow-none!"
+                  >
+                    {accountRow}
+                  </Card>
+                );
+              }
+
+              return (
+                <Collapsible key={account.account_id}>
+                  <Card className="rounded-md p-3 hover:bg-muted/50 transition-colors shadow-none!">
+                    <div className="flex items-center justify-between gap-2">
+                      {accountRow}
+                    </div>
+                    <CollapsibleContent>
+                      <div className="mt-3 flex items-center justify-between gap-2">
+                        <span className="text-xs text-muted-foreground">
+                          Fecha de corte: día {account.billing_cutoff_day}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 gap-1 text-xs"
+                          onClick={() => {
+                            setPayAccount(account);
+                            setListOpen(false);
+                          }}
+                        >
+                          <ArrowLeftRight className="h-3 w-3" />
+                          Pagar
+                        </Button>
+                      </div>
+
+                      <div className="mt-3 grid grid-cols-2 gap-1.5">
+                        <div className="rounded-lg bg-muted/50 p-2.5">
+                          <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
+                            Antes del corte
+                          </span>
+                          <span className="block text-sm font-semibold mt-0.5">
+                            {formatCurrency(credit.beforeCutoff)}
+                          </span>
+                        </div>
+                        <div className="rounded-lg bg-muted/50 p-2.5">
+                          <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
+                            En proceso
+                          </span>
+                          <span className="block text-sm font-semibold mt-0.5">
+                            {formatCurrency(credit.inProgress)}
+                          </span>
+                        </div>
+                        <div className="rounded-lg bg-muted/50 p-2.5 col-span-1">
+                          <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
+                            Total
+                          </span>
+                          <span className="block text-sm font-semibold mt-0.5">
+                            {formatCurrency(credit.debt)}
+                          </span>
+                        </div>
+                        <div className="rounded-lg bg-emerald-500/10 p-2.5 col-span-1">
+                          <span className="block text-[10px] uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                            Disponible
+                          </span>
+                          <span className="block text-sm font-semibold mt-0.5 text-emerald-600 dark:text-emerald-400">
+                            {formatCurrency(credit.available)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {credit.percentage !== null && (
+                        <div className="mt-2.5">
+                          <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${credit.barColor}`}
+                              style={{ width: `${credit.percentage}%` }}
+                            />
+                          </div>
+                          <span className="block text-[10px] text-muted-foreground mt-1">
+                            {formatCurrency(credit.debt)} /{" "}
+                            {formatCurrency(credit.limit)} de límite
+                          </span>
+                        </div>
+                      )}
+                    </CollapsibleContent>
+                  </Card>
+                </Collapsible>
               );
             })}
 

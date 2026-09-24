@@ -111,7 +111,7 @@ export default function MonthSwiper({
 
   return (
     <div
-      className="flex items-center justify-center select-none p-2"
+      className="flex items-center justify-center select-none py-1"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -149,68 +149,6 @@ export default function MonthSwiper({
         >
           <ChevronRight className="h-5 w-5" />
         </Button>
-        {/* 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="shrink-0"
-            >
-              <CalendarIcon className="h-5 w-5" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent side="bottom" align="end" className="w-64 p-2">
-            <div className="flex items-center justify-between mb-2">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="size-7"
-                onClick={() => setViewYear((y) => y - 1)}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-medium">{viewYear}</span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="size-7"
-                disabled={viewYear >= maxYear}
-                onClick={() => setViewYear((y) => y + 1)}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="grid grid-cols-4 gap-1">
-              {monthNames.map((monthName, i) => {
-                const monthDate = setMonth(new Date(viewYear, 0), i);
-                const isSelected = format(monthDate, "yyyy-MM") === value;
-                const isDisabled = isAfter(monthDate, maxDate);
-                return (
-                  <Button
-                    key={i}
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={isDisabled}
-                    onClick={() => onChange(format(monthDate, "yyyy-MM"))}
-                    className={cn(
-                      "px-1 h-9 text-xs",
-                      isSelected
-                        ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-                        : "",
-                    )}
-                  >
-                    {capitalize(monthName)}
-                  </Button>
-                );
-              })}
-            </div>
-          </PopoverContent>
-        </Popover> */}
       </div>
     </div>
   );

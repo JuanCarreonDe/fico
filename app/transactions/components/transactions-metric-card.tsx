@@ -8,7 +8,7 @@ interface MetricCardProps {
   title?: string;
   value: string;
   icon: ReactNode;
-  variant: "income" | "expense" | "balance";
+  variant: "income" | "expense" | "balance" ;
 }
 
 export function TransactionsMetricCard({
