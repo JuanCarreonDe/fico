@@ -391,6 +391,7 @@ export type Database = {
         Returns: {
           monthly_balance: number
           total_balance: number
+          total_credit_debt: number
           total_expense_month: number
           total_income_month: number
         }[]
