@@ -141,6 +141,8 @@ export type Database = {
           description: string | null
           id: string
           is_archived: boolean | null
+          raw_text: string | null
+          source: Database["public"]["Enums"]["transaction_source"]
           transaction_date: string
           transfer_id: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -156,6 +158,8 @@ export type Database = {
           description?: string | null
           id?: string
           is_archived?: boolean | null
+          raw_text?: string | null
+          source?: Database["public"]["Enums"]["transaction_source"]
           transaction_date: string
           transfer_id?: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -171,6 +175,8 @@ export type Database = {
           description?: string | null
           id?: string
           is_archived?: boolean | null
+          raw_text?: string | null
+          source?: Database["public"]["Enums"]["transaction_source"]
           transaction_date?: string
           transfer_id?: string | null
           type?: Database["public"]["Enums"]["transaction_type"]
@@ -415,6 +421,8 @@ export type Database = {
           description: string | null
           id: string
           is_archived: boolean | null
+          raw_text: string | null
+          source: Database["public"]["Enums"]["transaction_source"]
           transaction_date: string
           transfer_id: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -599,6 +607,8 @@ export type Database = {
           description: string | null
           id: string
           is_archived: boolean | null
+          raw_text: string | null
+          source: Database["public"]["Enums"]["transaction_source"]
           transaction_date: string
           transfer_id: string | null
           type: Database["public"]["Enums"]["transaction_type"]
@@ -615,6 +625,7 @@ export type Database = {
     }
     Enums: {
       account_type: "bank" | "cash" | "credit" | "savings"
+      transaction_source: "manual" | "auto"
       transaction_type: "income" | "expense" | "transfer"
     }
     CompositeTypes: {
@@ -648,8 +659,7 @@ export type Tables<
     : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
         DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -744,6 +754,7 @@ export const Constants = {
   public: {
     Enums: {
       account_type: ["bank", "cash", "credit", "savings"],
+      transaction_source: ["manual", "auto"],
       transaction_type: ["income", "expense", "transfer"],
     },
   },

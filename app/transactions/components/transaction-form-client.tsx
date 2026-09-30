@@ -35,6 +35,8 @@ type UserAccountsData =
 type UserCategoriesData =
   Database["public"]["Functions"]["get_user_categories"]["Returns"];
 type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
+type CreatedTransaction =
+  Database["public"]["Functions"]["create_transaction"]["Returns"][number];
 type TransactionByDay =
   Database["public"]["Functions"]["get_transactions_by_day"]["Returns"][number];
 
@@ -145,7 +147,10 @@ export default function TransactionFormClient({
           p_type: transactionType,
         });
 
-    toast.promise(action, {
+    // createTransaction devuelve campos de presupuesto y updateTransaction no,
+    // así que la unión de ambos no es asignable. El callback solo lee `res` en
+    // la rama de creación (ver isUpdate más abajo), por lo que el cast es seguro.
+    toast.promise(action as Promise<CreatedTransaction[]>, {
       loading: isUpdate
         ? "Actualizando transacción..."
         : "Creando transacción...",
