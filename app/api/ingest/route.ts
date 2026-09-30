@@ -4,9 +4,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { createAdmin } from "@/lib/db/admin";
 
+import { classifyTransaction } from "@/lib/ingest/classify";
+
 export const maxDuration = 30;
 
-const DEDUP_WINDOW_MS = 5 * 60_000;
+// 1 * 60_000 = 300_000 ms = 1 minuto
+const DEDUP_WINDOW_MS = 1 * 60_000;
 
 type IngestBody = {
   user_id?: unknown;
@@ -27,7 +30,6 @@ function secretMatches(provided: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  console.log("🚀 ~ POST ~ request:", request);
   const bearer = request.headers
     .get("authorization_token")
     ?.replace(/^Bearer\s+/i, "")
@@ -83,12 +85,14 @@ export async function POST(request: NextRequest) {
       .from("accounts")
       .select("id,name,type")
       .eq("user_id", userId)
-      .eq("is_archived", false),
+      .eq("is_archived", false)
+      .order("name"),
     db
       .from("categories")
       .select("id,name,type")
       .eq("user_id", userId)
-      .eq("is_archived", false),
+      .eq("is_archived", false)
+      .order("name"),
   ]);
 
   if (!accounts?.length || !categories?.length) {
@@ -98,20 +102,27 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // TODO(etapa 6): reemplazar por la clasificación con IA.
-  const account = accounts[0];
-  const category =
-    categories.find((c) => c.type === "expense") ?? categories[0];
+  const result = await classifyTransaction({
+    text,
+    app,
+    accounts,
+    categories,
+  });
+
+  if (!result.ok) {
+    console.warn(`[ingest] skip: ${result.reason} | app=${app} | raw=${text}`);
+    return NextResponse.json({ skipped: true, reason: result.reason });
+  }
 
   const { data: inserted, error } = await db
     .from("transactions")
     .insert({
       user_id: userId,
-      account_id: account.id,
-      category_id: category.id,
-      type: "expense",
-      amount: 30,
-      description: "prueba de ingesta",
+      account_id: result.accountId,
+      category_id: result.categoryId,
+      type: result.type,
+      amount: result.amount,
+      description: result.description,
       transaction_date: new Date().toLocaleDateString("en-CA"),
       source: "auto",
       raw_text: text,
@@ -119,15 +130,21 @@ export async function POST(request: NextRequest) {
     .select("id")
     .single();
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error || !inserted) {
+    return NextResponse.json(
+      { error: error?.message ?? "no se pudo insertar la transacción" },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json(
     {
       id: inserted.id,
-      account: account.name,
-      category: category.name,
+      account: accounts.find((a) => a.id === result.accountId)?.name,
+      category: categories.find((c) => c.id === result.categoryId)?.name,
+      type: result.type,
+      amount: result.amount,
+      description: result.description,
       app,
     },
     { status: 201 },

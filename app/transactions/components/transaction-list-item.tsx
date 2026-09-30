@@ -78,6 +78,7 @@ export default function TransactionListItem({
   };
 
   const isTransfer = item.is_transfer;
+  const isAuto = item.source === "auto";
   const account = userAccounts?.find((a) => a.id === item.account_id);
 
   return (
@@ -110,8 +111,19 @@ export default function TransactionListItem({
                   />
                   {item.category_name}
                 </span>
-                <span className="capitalize">
-                  {item.type === "income" ? "Ingreso" : "Gasto"}
+                <span className="flex items-center gap-1.5">
+                  <span className="capitalize">
+                    {item.type === "income" ? "Ingreso" : "Gasto"}
+                  </span>
+                  {isAuto && (
+                    <span
+                      title="Transacción automática"
+                      aria-label="Transacción automática"
+                      className="text-xs leading-none"
+                    >
+                      ✨
+                    </span>
+                  )}
                 </span>
               </>
             )}

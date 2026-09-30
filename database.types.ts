@@ -476,6 +476,7 @@ export type Database = {
           from_account_name: string
           id: string
           is_transfer: boolean
+          source: Database["public"]["Enums"]["transaction_source"]
           to_account_name: string
           transaction_date: string
           transfer_id: string
