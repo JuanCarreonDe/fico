@@ -29,7 +29,7 @@ function secretMatches(provided: string): boolean {
 export async function POST(request: NextRequest) {
   console.log("🚀 ~ POST ~ request:", request);
   const bearer = request.headers
-    .get("authorization")
+    .get("authorization_token")
     ?.replace(/^Bearer\s+/i, "")
     .trim();
   if (!bearer || !secretMatches(bearer)) {
