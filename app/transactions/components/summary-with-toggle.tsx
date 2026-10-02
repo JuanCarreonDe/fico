@@ -6,13 +6,14 @@ import { TransactionsMetricCard } from "./transactions-metric-card";
 import { createClient } from "@/lib/db/client";
 import { useAuth } from "@/components/auth-provider";
 import { useTransactionStore } from "@/lib/store/transaction-store";
+import { formatCurrency } from "@/lib/format-currency";
 
 interface Props {
-  total_balance: string;
-  income: string;
-  balance: string;
-  expense: string;
-  credit_debt?: string;
+  total_balance: number;
+  income: number;
+  balance: number;
+  expense: number;
+  credit_debt: number;
 }
 
 export default function SummaryWithToggle({
@@ -136,7 +137,7 @@ export default function SummaryWithToggle({
       <div className="text-center mb-8 flex flex-col gap-1">
         <div className="relative inline-block">
           <div className="text-4xl font-bold text-primary mb-2 transition-opacity duration-300 animate-in fade-in">
-            {formatValue(total_balance)}
+            {formatValue(formatCurrency(total_balance))}
           </div>
         </div>
         <p className="text-sm text-muted-foreground flex items-center justify-center ">
@@ -155,8 +156,17 @@ export default function SummaryWithToggle({
         </p>
         {credit_debt && (
           <span className="text-xs text-muted-foreground">
-            <span className="text-red-600">{formatValue(credit_debt)} </span>
-            de crédito por pagar
+            <span className="text-red-600">
+              {formatValue(formatCurrency(credit_debt))}
+            </span>
+            de crédito por pagar,
+            <span>
+              <span className="text-accent">
+                {" "}
+                {formatValue(formatCurrency(credit_debt + total_balance))}
+              </span>{" "}
+              después de saldar.
+            </span>
           </span>
         )}
       </div>
@@ -164,21 +174,21 @@ export default function SummaryWithToggle({
       <div className="grid grid-cols-3 gap-4 mb-6">
         <TransactionsMetricCard
           title="Ingresos"
-          value={formatValue(income)}
+          value={formatValue(formatCurrency(income))}
           icon={<ArrowDownLeft className="w-4 h-4" />}
           variant="income"
         />
 
         <TransactionsMetricCard
           title="Balance"
-          value={formatValue(balance)}
+          value={formatValue(formatCurrency(balance))}
           icon={<Scale className="w-4 h-4 text-accent" />}
           variant="balance"
         />
 
         <TransactionsMetricCard
           title="Gastos"
-          value={formatValue(expense)}
+          value={formatValue(formatCurrency(expense))}
           icon={<ArrowUpRight className="w-4 h-4" />}
           variant="expense"
         />

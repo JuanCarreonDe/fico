@@ -19,15 +19,11 @@ export async function TransactionsSummaryCard({ month }: { month?: string }) {
   return (
     <div className="text-center mb-8">
       <SummaryWithToggle
-        total_balance={formatCurrency(summaryData?.total_balance || 0)}
-        income={formatCurrency(summaryData?.total_income_month || 0)}
-        balance={formatCurrency(summaryData?.monthly_balance || 0)}
-        expense={formatCurrency(summaryData?.total_expense_month || 0)}
-        credit_debt={
-          summaryData?.total_credit_debt
-            ? formatCurrency(summaryData?.total_credit_debt || 0)
-            : undefined
-        }
+        total_balance={summaryData?.total_balance || 0}
+        income={summaryData?.total_income_month || 0}
+        balance={summaryData?.monthly_balance || 0}
+        expense={summaryData?.total_expense_month || 0}
+        credit_debt={summaryData?.total_credit_debt || 0}
       />
       {projectionData && <SpendingProjectionClient data={projectionData} />}
     </div>
