@@ -1,4 +1,3 @@
-import { formatCurrency } from "@/lib/format-currency";
 import {
   getMonthlyFinancialSummary,
   getSpendingProjection,

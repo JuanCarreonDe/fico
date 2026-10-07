@@ -113,6 +113,13 @@ export default function SummaryWithToggle({
     return showAmounts ? value : "******";
   };
 
+  // Deuda de TDC en positivo (lo que se debe).
+  const debt = Math.abs(Number(credit_debt) || 0);
+  const realBalance = total_balance - debt;
+  const hasDebt = debt > 0;
+  const pctDebt =
+    total_balance > 0 ? Math.min(100, (debt / total_balance) * 100) : 0;
+
   if (loading) {
     return (
       <>
@@ -152,22 +159,50 @@ export default function SummaryWithToggle({
               <EyeOff className="w-5 h-5" />
             )}
           </button>
-          Balance total de todas las cuentas
+          Saldo en tus cuentas
         </p>
-        {credit_debt && (
-          <span className="text-xs text-muted-foreground">
-            <span className="text-red-600">
-              {formatValue(formatCurrency(credit_debt))}
-            </span>
-            de crédito por pagar,
-            <span>
-              <span className="text-accent">
-                {" "}
-                {formatValue(formatCurrency(credit_debt + total_balance))}
-              </span>{" "}
-              después de saldar.
-            </span>
-          </span>
+        {hasDebt && (
+          <div className="mt-2 flex items-center justify-center gap-2 sm:gap-5 animate-in fade-in duration-500">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-sm sm:text-base font-semibold tabular-nums text-red-600 dark:text-red-400">
+                {formatValue(`− ${formatCurrency(debt)}`)}
+              </span>
+              <span className="text-[10px] tracking-wide text-muted-foreground text-left">
+                TDC por pagar
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center gap-1">
+              <span className="flex h-5 items-center sm:h-6">
+                <span className="block h-1.5 w-16 overflow-hidden rounded-full bg-muted sm:w-24">
+                  <span
+                    className="block h-full rounded-full bg-red-500 transition-[width] duration-500"
+                    style={{ width: `${pctDebt}%` }}
+                  />
+                </span>
+              </span>
+              <span className="text-[10px] tracking-wide text-muted-foreground text-center">
+                {total_balance > 0
+                  ? `${Math.round(pctDebt)}% comprometido`
+                  : "Sin saldo"}
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center gap-1">
+              <span
+                className={`text-sm sm:text-base font-semibold tabular-nums ${
+                  realBalance < 0
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-accent"
+                }`}
+              >
+                {formatValue(formatCurrency(realBalance))}
+              </span>
+              <span className="text-[10px] tracking-wide text-muted-foreground text-right">
+                Real
+              </span>
+            </div>
+          </div>
         )}
       </div>
 
