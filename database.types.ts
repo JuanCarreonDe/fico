@@ -160,7 +160,7 @@ export type Database = {
           is_archived?: boolean | null
           raw_text?: string | null
           source?: Database["public"]["Enums"]["transaction_source"]
-          transaction_date: string
+          transaction_date?: string
           transfer_id?: string | null
           type: Database["public"]["Enums"]["transaction_type"]
           updated_at?: string
