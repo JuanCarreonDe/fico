@@ -114,6 +114,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ skipped: true, reason: result.reason });
   }
 
+  // transaction_date se omite a propósito: el DEFAULT CURRENT_DATE de la
+  // columna usa la TimeZone del proyecto. Calcularlo aquí con
+  // toLocaleDateString() daba el día siguiente, porque el proceso Node en
+  // Vercel corre en UTC.
   const { data: inserted, error } = await db
     .from("transactions")
     .insert({
@@ -123,7 +127,6 @@ export async function POST(request: NextRequest) {
       type: result.type,
       amount: result.amount,
       description: result.description,
-      transaction_date: new Date().toLocaleDateString("en-CA"),
       source: "auto",
       raw_text: text,
     })
